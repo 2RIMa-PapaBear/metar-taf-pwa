@@ -214,6 +214,7 @@ export function _expandFileItem(c) {
         _id: c.i, name: c.n, type: c.ty, icaoClass: c.ic,
         lowerLimit: lim(c.lo), upperLimit: lim(c.up),
         frequencies: c.f || [], radius: Array.isArray(c.r) ? { value: c.r[0] } : null,
+        activity: c.act || null,   // activité officielle des zones R/D/P (« Parachutage »)
         geometry,
     };
 }
@@ -723,7 +724,7 @@ export function createAirspaceController(map) {
                 .join('<br>');
             const tooltip = `<strong>${escapeHtml(name)}</strong><br>
                 <span style="color:${style.color};font-weight:700;">${style.label}</span>${clsDisplay}<br>
-                ${isFr ? 'Alt.' : 'Alt.'}: ${lower} → ${upper}
+                ${as.activity ? `<span style="font-style:italic;">${escapeHtml(as.activity)}</span><br>` : ''}${isFr ? 'Alt.' : 'Alt.'}: ${lower} → ${upper}
                 ${freqTxt ? `<br><span style="font-family:'DM Mono',monospace;">${freqTxt}</span>` : ''}`;
 
             rings.forEach((ring, ringIdx) => {

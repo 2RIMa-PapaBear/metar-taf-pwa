@@ -68,9 +68,15 @@ export function classifyNavaid(freq, unit) {
 export function parseRadioPoints(json) {
     if (!json || !Array.isArray(json.navaids) || !Array.isArray(json.vrps)) return null;
     const vor = [], ndb = [], vrp = [];
-    for (const [type, ident, lat, lon, freq, unit] of json.navaids) {
+    // 7ᵉ élément (optionnel, SIA) : [nom phraséologique, portée NM].
+    for (const n of json.navaids) {
+        const [type, ident, lat, lon, freq, unit, meta] = n;
         if (!Number.isFinite(lat) || !Number.isFinite(lon) || !ident) continue;
-        const it = { ident, lat, lon, freq: Number.isFinite(freq) ? freq : null, type };
+        const it = {
+            ident, lat, lon, freq: Number.isFinite(freq) ? freq : null, type,
+            officialName: Array.isArray(meta) && meta[0] ? String(meta[0]) : null,
+            rangeNm: Array.isArray(meta) && Number.isFinite(meta[1]) ? meta[1] : null,
+        };
         (classifyNavaid(freq, unit) === 'NDB' ? ndb : vor).push(it);
     }
     // VRP : [name, lat, lon, cc] openAIP monde + [name, lat, lon, 'FR', desc]

@@ -1263,14 +1263,16 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
                     if (!zone) continue;
                     const bx0 = Math.max(xOf(s.fa), x0), bx1 = Math.min(xOf(s.fb), x1);
                     if (bx1 - bx0 < 2) continue;
-                    // Fréquence radio sous le nom : celle de la zone, sinon
-                    // (TMA/CTA/CTR uniquement) celle du secteur sous-jacent.
+                    // Seconde ligne du cadre : fréquence radio (TMA/CTA/CTR
+                    // — propre ou empruntée au secteur sous-jacent), sinon
+                    // ACTIVITÉ officielle des zones R/D/P (« Parachutage »).
                     // Uniquement si le cadre est assez haut pour deux lignes.
                     const freq = !twoLines ? null
                         : (g.freq || (/^(TMA|CTA|CTR)\b/i.test(zone) ? _borrowFreq(s.fa, s.fb) : null));
+                    const sub = freq || (/^(R|D|P)\b/i.test(zone) ? (s.act || null) : null);
                     _boxLabels.push({
                         label: zone.replace(/\s+partie\s+/i, ' '),
-                        freq: freq || null,
+                        freq: sub,
                         cx: (bx0 + bx1) / 2,
                         boxW: bx1 - bx0,
                         cy: byB - byT >= 11 ? cy - 1.5 : cy + 2,

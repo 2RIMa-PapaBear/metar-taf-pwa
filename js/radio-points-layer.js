@@ -129,8 +129,11 @@ export function createRadioPointsController(map, deps = {}) {
             parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${fr ? 'Point de repère VFR' : 'VFR reporting point'}${it.cc ? ' · ' + _esc(it.cc) : ''}${it.sia ? ' · SIA' : ''}</div>`);
         } else {
             parts.push(`<div class="fw-title"><strong style="color:${COLORS[kind]};">${_esc(it.ident)}</strong></div>`);
-            parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${kind === 'vor' ? 'VOR' + (fr ? ' · DME colocalisé le cas échéant' : ' · co-located DME if any') : 'NDB'}</div>`);
-            if (it.freq != null) parts.push(`<div style="font-family:'DM Mono',monospace;font-size:12px;">${_esc(formatFreq(it.freq, kind === 'ndb' ? 1 : 2))}</div>`);
+            // Nom phraséologique officiel SIA (« BMC » → « BORDEAUX ») et
+            // portée RadioNav, comme sur les cartes.
+            if (it.officialName) parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${_esc(it.officialName)}</div>`);
+            else parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${kind === 'vor' ? 'VOR' + (fr ? ' · DME colocalisé le cas échéant' : ' · co-located DME if any') : 'NDB'}</div>`);
+            if (it.freq != null) parts.push(`<div style="font-family:'DM Mono',monospace;font-size:12px;">${_esc(formatFreq(it.freq, kind === 'ndb' ? 1 : 2))}${it.rangeNm ? ` <span style="color:var(--text-muted,#94A3B8);font-size:10px;">· ${fr ? 'portée' : 'range'} ${it.rangeNm} NM</span>` : ''}</div>`);
         }
         const wpName = kind === 'vrp' ? it.name : `${it.ident} (${kind === 'vor' ? 'VOR' : 'NDB'})`;
         // Fréquence portée par le bouton : le waypoint créé la conservera

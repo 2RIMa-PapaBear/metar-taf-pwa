@@ -431,7 +431,7 @@ function _drawZoneTooltip({ g, seg }, cw, xOf) {
     const lines = [
         g.name,
         `ALT MIN : ${_altTxt(g.lo)}   ALT MAX : ${_altTxt(seg.up)}`,
-        g.freq ? `${g.freq} MHz` : `${nm} NM`,
+        g.freq ? `${g.freq} MHz` : (seg.act || `${nm} NM`),
     ];
     _ctx.font = 'bold 10px "DM Sans", sans-serif';
     const w0 = _ctx.measureText(lines[0]).width;

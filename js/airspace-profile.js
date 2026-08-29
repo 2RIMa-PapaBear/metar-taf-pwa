@@ -183,7 +183,9 @@ export function computeRouteAirspaces(points, items, opts) {
         g.lo = Math.min(g.lo, lo);
         g.up = Math.max(g.up, up);
         g.ranges.push(...ranges);
-        for (const [fa, fb] of ranges) g.segs.push({ fa, fb, up, zone });
+        // Activité officielle des zones R/D/P (« Parachutage ») : portée au
+        // segment pour l'infobulle du profil écran et les cadres du PDF.
+        for (const [fa, fb] of ranges) g.segs.push({ fa, fb, up, zone, act: as.activity || null });
     }
 
     const groups = [...byKey.values()].map(g => {
