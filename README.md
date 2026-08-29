@@ -72,12 +72,16 @@ dans une PWA installable qui fonctionne aussi hors ligne.
   performances et centrage — généré dans le navigateur, sans serveur.
 
 ### Général
-- **PWA prête** (manifest + service worker) : installation et démarrage
-  hors ligne complets **sur un hébergement HTTPS** ou en local (localhost).
-  L'hébergement Free.fr actuel est en HTTP seul — les navigateurs n'y
-  exécutent pas les service workers, l'application y fonctionne comme un
-  site classique : données consultées mises en cache navigateur (IndexedDB)
-  pour la réactivité, versions rafraîchies au rechargement (numérotation
+- **PWA installable** sur le **miroir GitHub Pages** :
+  <https://2rima-papabear.github.io/metar-taf-pwa/> (HTTPS — service worker
+  actif, installation mobile / bureau, shell hors ligne). Ce miroir public
+  reçoit automatiquement les mêmes fichiers prod que Free.fr à chaque
+  publication, **cellules openAIP incluses** (servies en HTTPS, sans dépôt
+  FTP manuel).
+- L'hébergement Free.fr (<http://papabear56.free.fr/>) est en HTTP seul —
+  les navigateurs n'y exécutent pas les service workers : l'application y
+  fonctionne comme un site classique, données consultées mises en cache
+  navigateur (IndexedDB), versions rafraîchies au rechargement (numérotation
   automatique à chaque déploiement).
 - **Interface française / anglaise**, thème sombre.
 
@@ -124,6 +128,7 @@ En local, la routine complète tient en une commande :
 
 ```bash
 npm run pub -- "message du commit"   # commit + push + attente du déploiement
+                                    # + miroir GitHub Pages (metar-taf-pwa)
 ```
 
 ### Données aéronautiques — mises à jour automatiques
