@@ -314,11 +314,36 @@ function _siaItemsForArea(minLat, minLon, maxLat, maxLon) {
     return out;
 }
 
+// Clé de désignateur pour les zones réglementées françaises : le SIA nomme
+// « R 278 » ce qu'openAIP nomme « LF-R278 VANNES » — le dé-duplounage par
+// nom exact laissait donc les DEUX copies se dessiner (et la copie openAIP
+// apporter ses fréquences communautaires, parfois fausses — LF-R278/279
+// Vannes « 122.600 » alors que le SIA ne publie AUCUNE fréquence pour ces
+// zones). On rapproche sur le désignateur : R278A, D59B, P23…
+export function _rdpKey(name) {
+    const n = String(name || '').toUpperCase();
+    let m = n.match(/^LF-([RDP]\d+(?:[A-Z]\d?)?(?:\(\d+\))?)\b/);
+    if (m) return m[1];
+    m = n.match(/^([RDP]) (\d+(?:[A-Z]\d?)?(?:\(\d+\))?)( |$)/);
+    return m ? m[1] + m[2] : null;
+}
+
+/** Écarte les zones openAIP déjà couvertes par la base SIA : par nom exact,
+ *  ou par désignateur R/D/P (LF-R278 ≡ R 278). Les items SIA passent tel
+ *  quels. Exporté pour les tests. */
+export function _dropOpenAipDuplicates(items, sia) {
+    const siaNames = new Set(sia.map(z => String(z.name || '').toUpperCase()));
+    const siaRdp = new Set(sia.map(z => _rdpKey(z.name)).filter(Boolean));
+    return items.filter(z => sia.includes(z)
+        || !(siaNames.has(String(z.name || '').toUpperCase()) || siaRdp.has(_rdpKey(z.name))));
+}
+
 async function _loadCellsGrid(minLat, minLon, maxLat, maxLon) {
     // Base officielle SIA : prioritaire dans la couverture (France) — les
-    // zones openAIP homologues (même nom) sont écartées pour éviter les
-    // doublons — mais les familles que le SIA ne publie pas (ATZ…) et
-    // l'étranger viennent TOUJOURS des cellules openAIP.
+    // zones openAIP homologues sont écartées pour éviter les doublons
+    // (par nom exact, ET par désignateur R/D/P pour les zones
+    // réglementées) — mais les familles que le SIA ne publie pas (ATZ…)
+    // et l'étranger viennent TOUJOURS des cellules openAIP.
     await _loadSiaItems();
     const sia = _siaItemsForArea(minLat, minLon, maxLat, maxLon);
 
@@ -333,11 +358,7 @@ async function _loadCellsGrid(minLat, minLon, maxLat, maxLon) {
         if (r) items.push(...r);
         else missing.push(cells[i]);
     });
-    if (sia.length) {
-        const siaNames = new Set(sia.map(z => String(z.name || '').toUpperCase()));
-        const filtered = items.filter(z => sia.includes(z) || !siaNames.has(String(z.name || '').toUpperCase()));
-        return { items: filtered, missing };
-    }
+    if (sia.length) return { items: _dropOpenAipDuplicates(items, sia), missing };
     return { items, missing };
 }
 
