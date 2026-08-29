@@ -33,6 +33,7 @@ import { initWatchdog, openWatchdogPanel, getWatchdogSettings } from './watchdog
 import { fetchAirportByIcao } from './openaip.js';
 import { initPlanIo } from './flight-plan-io.js';
 import { loadFreqSources, getSiaAirac } from './freq-sia.js';
+import { config, applyLocalOverride } from './config.js';
 
 const lastFetchTime = {};
 
@@ -600,6 +601,9 @@ export function telechargerMessage(typeMessage) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
+    // Surcharge locale (config.local.js, gitignorée) : relais privé + clé
+    // openAIP. Absente sur le miroir public GitHub Pages → défauts.
+    await applyLocalOverride();
     // Mode nuit rouge : restauré AVANT tout le reste pour éviter un flash de
     // lumière blanche destructrice pour la vision nocturne déjà adaptée.
     initNightMode();

@@ -1,4 +1,4 @@
-import { OPENAIP_API_KEY } from './config.local.js';
+import { config } from './config.js';
 import { injectMagvar } from './magvar.js';
 
 const BASE_URL = 'https://api.core.openaip.net/api/airports';
@@ -194,7 +194,7 @@ export async function fetchAirportByIcao(icao, opts = {}) {
     try {
         const url = `${BASE_URL}?search=${encodeURIComponent(key)}&limit=1`;
         const res = await fetch(url, {
-            headers: { 'x-openaip-api-key': OPENAIP_API_KEY },
+            headers: { 'x-openaip-api-key': config.OPENAIP_API_KEY },
             signal: AbortSignal.timeout(12000),
         });
         if (!res.ok) {
@@ -229,7 +229,7 @@ export async function searchAirports(query, limit = 8) {
     try {
         const url = `${BASE_URL}?search=${encodeURIComponent(query.trim())}&limit=${limit}`;
         const res = await fetch(url, {
-            headers: { 'x-openaip-api-key': OPENAIP_API_KEY },
+            headers: { 'x-openaip-api-key': config.OPENAIP_API_KEY },
             signal: AbortSignal.timeout(8000),
         });
         if (!res.ok) return [];

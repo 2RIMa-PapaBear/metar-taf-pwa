@@ -1,4 +1,4 @@
-import { PROXY_URL } from './config.local.js';
+import { config } from './config.js';
 
 export const UNIFIED_RED = "#BF360C";
 export const PALETTE = ["#1976D2", "#F57C00", "#00ACC1", "#5D4037", "#3949AB", "#455A64"];
@@ -631,7 +631,28 @@ export async function fetchAvecRelais(url, type = 'text', ttlSec = null) {
 // invoqué via la file de _fetchAvecRelais (jamais en parallèle d'un autre).
 async function _viaRelais(url, type, ttlSec) {
 
-    let proxyUrl = `${PROXY_URL}?url=${encodeURIComponent(url)}`;
+    // Sans relais configuré (miroir public GitHub Pages) : appel DIRECT
+    // — aviationweather.gov expose son API en CORS ouvert, seule la
+    // mise en cache Google est perdue.
+    if (!config.PROXY_URL) {
+        let raw = null;
+        try {
+            const res = await fetch(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error('__HTML_INATTENDU__');
+            raw = await res.text();
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new Error(state.lang === 'fr'
+                    ? 'Service météo inaccessible (réseau) — réessayez.'
+                    : 'Weather service unreachable (network) — retry.');
+            }
+            throw e;
+        }
+        if (raw.trim().startsWith('<') && !raw.toLowerCase().includes('<?xml')) throw new Error('__HTML_INATTENDU__');
+        return type === 'json' ? (raw.trim() === '' ? [] : JSON.parse(raw)) : raw;
+    }
+
+    let proxyUrl = `${config.PROXY_URL}?url=${encodeURIComponent(url)}`;
     if (ttlSec) proxyUrl += `&ttl=${ttlSec}`;
 
     // Familles d'échec, distinguées par des marqueurs internes :
@@ -672,7 +693,7 @@ async function _viaRelais(url, type, ttlSec) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
         try {
-            await fetch(PROXY_URL, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
+            await fetch(config.PROXY_URL, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
             return true;
         } catch { return false; } finally { clearTimeout(timeoutId); }
     }

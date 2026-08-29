@@ -1,4 +1,4 @@
-import { OPENAIP_API_KEY } from './config.local.js';
+import { config } from './config.js';
 import { state } from './core.js';
 import { getServiceFreq } from './freq-sia.js';
 
@@ -320,7 +320,7 @@ export function fetchOpenAipItems(url) {
         for (let attempt = 0; attempt < 2; attempt++) {
             try {
                 const res = await fetch(url, {
-                    headers: { 'x-openaip-api-key': OPENAIP_API_KEY },
+                    headers: { 'x-openaip-api-key': config.OPENAIP_API_KEY },
                     signal: AbortSignal.timeout(15000),
                 });
                 if (res.ok) {
