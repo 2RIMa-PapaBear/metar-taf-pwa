@@ -1456,6 +1456,20 @@ html.night-mode body::before {
 }
 .fleet-form-hint i { flex-shrink: 0; margin-top: 1px; }
 
+/* Export / Import de la flotte — même gabarit que les boutons du
+ * formulaire, répartis sur la largeur de la liste. */
+.fleet-io { display: flex; gap: 8px; margin: 10px 0 4px 0; }
+.fleet-io .fleet-io-btn {
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.fleet-io .fleet-io-btn i { width: 14px; height: 14px; }
+
 .fleet-form-actions { display: flex; gap: 8px; }
 .fleet-form-actions .btn-primary,
 .fleet-form-actions .btn-secondary {

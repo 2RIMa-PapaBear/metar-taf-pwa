@@ -186,6 +186,58 @@ export function deleteAircraft(id) {
 }
 
 /* ----------------------------------------------------------------
+ * EXPORT / IMPORT de la flotte (JSON) — la flotte vit dans le
+ * localStorage, donc PAR NAVIGATEUR et PAR SITE (celle de free.fr
+ * n'existe ni sur le miroir Pages ni sur un autre PC) : ces deux
+ * fonctions permettent la sauvegarde et le transfert.
+ * ---------------------------------------------------------------- */
+
+/** Capture la flotte complète (avions + avion actif) en objet sérialisable. */
+export function exportFleetData() {
+    return {
+        app: 'metar-taf-pwa', kind: 'fleet', version: 1,
+        exportedAt: new Date().toISOString(),
+        fleet: getFleet(),
+        activeId: getActiveAircraftId(),
+    };
+}
+
+/**
+ * Valide/normalise une charge d'import. PUR (aucune écriture) → testable
+ * sous Node. Chaque avion repasse par _sanitize (défauts comblés, bloc
+ * centrage conservé seulement s'il est complet) ; les id valides sont
+ * conservés pour garder l'avion actif stable d'un export à l'autre.
+ * @returns {{fleet:Array, activeId:string}|null} null si la charge est inutilisable.
+ */
+export function normalizeFleetImport(data) {
+    if (!data || typeof data !== 'object' || data.kind === 'plan') return null;
+    const list = Array.isArray(data.fleet) ? data.fleet : null;
+    if (!list || list.length === 0 || list.length > 30) return null;
+    const fleet = [];
+    for (const a of list) {
+        if (!a || typeof a !== 'object') return null;
+        const ac = _sanitize(a);
+        if (typeof ac.id !== 'string' || !ac.id) ac.id = _uid();   // id manquant → régénéré
+        fleet.push(ac);
+    }
+    const activeId = fleet.some(a => a.id === data.activeId) ? data.activeId : fleet[0].id;
+    return { fleet, activeId };
+}
+
+/**
+ * Remplace la flotte locale par une charge d'import (validée par
+ * normalizeFleetImport). L'avion actif suit l'import quand il y figure.
+ * @returns {boolean} true si appliqué, false si charge invalide.
+ */
+export function importFleetData(data) {
+    const norm = normalizeFleetImport(data);
+    if (!norm) return false;
+    _writeLs(LS_FLEET, norm.fleet);
+    _writeLs(LS_ACTIVE, norm.activeId);
+    return true;
+}
+
+/* ----------------------------------------------------------------
  * Bloc centrage (wb = weight & balance), OPTIONNEL par avion.
  * Stockage interne TOUJOURS en kg et mm (conversions à la saisie /
  * l'affichage, voir wb-core.js) ; enveloppe = polygone [masse kg,

@@ -18,6 +18,7 @@ import { state } from './core.js';
 import {
     getFleet, getActiveAircraftId, setActiveAircraft,
     addAircraft, updateAircraft, deleteAircraft,
+    exportFleetData, importFleetData, normalizeFleetImport,
 } from './aircraft-fleet.js';
 import { searchAircraft } from './aircraft-database.js';
 import {
@@ -147,6 +148,18 @@ function _render() {
     });
     html += `</div>`;
 
+    // --- Export / Import (la flotte est locale au navigateur ET au site :
+    //     transfert free.fr ↔ miroir ↔ autre PC, et sauvegarde) ---
+    html += `<div class="fleet-io">
+        <button id="fleet-export" class="btn-secondary fleet-io-btn" title="${isFr ? 'Télécharger la flotte en JSON (sauvegarde / transfert vers un autre appareil)' : 'Download the fleet as JSON (backup / transfer to another device)'}">
+            <i data-lucide="download"></i> ${isFr ? 'Exporter' : 'Export'}
+        </button>
+        <button id="fleet-import" class="btn-secondary fleet-io-btn" title="${isFr ? 'Charger une flotte exportée (remplace la flotte actuelle)' : 'Load an exported fleet (replaces the current one)'}">
+            <i data-lucide="upload"></i> ${isFr ? 'Importer' : 'Import'}
+        </button>
+        <input type="file" id="fleet-import-file" accept=".json,application/json" hidden>
+    </div>`;
+
     // --- Formulaire d'ajout/édition ---
     html += `<div class="fleet-form-section">
         <div class="fleet-section-title" id="fleet-form-title">${isFr ? 'Ajouter un avion' : 'Add an aircraft'}</div>
@@ -215,6 +228,42 @@ function _render() {
 
     content.querySelector('#fleet-save').addEventListener('click', _doSave);
     content.querySelector('#fleet-cancel-form').addEventListener('click', _resetForm);
+
+    // --- Export / Import ---
+    content.querySelector('#fleet-export').addEventListener('click', () => {
+        const data = exportFleetData();
+        const d = new Date().toISOString().slice(0, 10);
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `flotte-${d}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+    const fileInput = content.querySelector('#fleet-import-file');
+    content.querySelector('#fleet-import').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        fileInput.value = '';   // permettre de re-choisir le même fichier
+        if (!file) return;
+        try {
+            const data = JSON.parse(await file.text());
+            const norm = normalizeFleetImport(data);
+            if (!norm) {
+                alert(isFr ? 'Fichier de flotte invalide (attendu : un JSON exporté par le bouton Exporter).' : 'Invalid fleet file (expected: JSON exported via the Export button).');
+                return;
+            }
+            const cur = getFleet();
+            const msg = isFr
+                ? `Remplacer la flotte actuelle (${cur.length} avion${cur.length > 1 ? 's' : ''}) par celle du fichier (${norm.fleet.length} avion${norm.fleet.length > 1 ? 's' : ''}) ?`
+                : `Replace the current fleet (${cur.length} aircraft) with the file's (${norm.fleet.length})?`;
+            if (!confirm(msg)) return;
+            if (importFleetData(data)) _render();
+        } catch {
+            alert(isFr ? 'Impossible de lire ce fichier (JSON attendu).' : 'Cannot read this file (JSON expected).');
+        }
+    });
 
     _setupNameAutocomplete();
 }
