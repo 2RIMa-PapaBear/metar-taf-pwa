@@ -238,6 +238,38 @@ export function importFleetData(data) {
 }
 
 /* ----------------------------------------------------------------
+ * EXPORT / IMPORT d'UN SEUL avion — même conteneur JSON que la flotte
+ * (fleet: [avion]) : un fichier monoplace se réimporte donc partout
+ * (bouton avion OU bouton flotte).
+ * ---------------------------------------------------------------- */
+
+/** Capture un avion (avec son centrage) en objet sérialisable. */
+export function exportAircraftData(id) {
+    const ac = getFleet().find(a => a.id === id);
+    if (!ac) return null;
+    return {
+        app: 'metar-taf-pwa', kind: 'fleet', version: 1, single: true,
+        exportedAt: new Date().toISOString(),
+        fleet: [ac], activeId: ac.id,
+    };
+}
+
+/**
+ * Remplace l'avion `id` par celui d'un fichier MONOPLACE (fleet de 1).
+ * L'id local est conservé (l'avion actif et les références ne bougent
+ * pas) ; seuls les champs de l'avion sont remplacés.
+ * @returns {{ok:boolean, reason?:string}}
+ */
+export function importAircraftData(id, data) {
+    const list = data && typeof data === 'object' && Array.isArray(data.fleet) ? data.fleet : null;
+    if (!list || list.length !== 1 || !list[0] || typeof list[0] !== 'object') {
+        return { ok: false, reason: 'not-single' };   // fichier multi-avions ou invalide → flotte
+    }
+    const updated = updateAircraft(id, _sanitize(list[0]));
+    return updated ? { ok: true } : { ok: false, reason: 'not-found' };
+}
+
+/* ----------------------------------------------------------------
  * Bloc centrage (wb = weight & balance), OPTIONNEL par avion.
  * Stockage interne TOUJOURS en kg et mm (conversions à la saisie /
  * l'affichage, voir wb-core.js) ; enveloppe = polygone [masse kg,

@@ -19,6 +19,7 @@ import {
     getFleet, getActiveAircraftId, setActiveAircraft,
     addAircraft, updateAircraft, deleteAircraft,
     exportFleetData, importFleetData, normalizeFleetImport,
+    exportAircraftData, importAircraftData,
 } from './aircraft-fleet.js';
 import { searchAircraft } from './aircraft-database.js';
 import {
@@ -36,6 +37,7 @@ let _wbDraft = null;
 let _wbTouched = false;
 let _wbRemove = false;      // retrait explicite de la configuration (bouton)
 let _wbPreviewDispose = null;
+let _importOneTargetId = null;   // avion ciblé par l'import monoplace
 
 /** Marque la section comme modifiée (annule un retrait demandé). */
 function _wbTouch() { _wbTouched = true; _wbRemove = false; }
@@ -139,6 +141,12 @@ function _render() {
                     <button class="fleet-mini-btn" data-action="edit" data-id="${ac.id}" title="${isFr ? 'Éditer' : 'Edit'}">
                         <i data-lucide="pencil"></i>
                     </button>
+                    <button class="fleet-mini-btn" data-action="export-one" data-id="${ac.id}" title="${isFr ? 'Exporter cet avion (JSON, centrage compris)' : 'Export this aircraft (JSON, W&B included)'}">
+                        <i data-lucide="download"></i>
+                    </button>
+                    <button class="fleet-mini-btn" data-action="import-one" data-id="${ac.id}" title="${isFr ? 'Remplacer cet avion par un fichier exporté' : 'Replace this aircraft from an exported file'}">
+                        <i data-lucide="upload"></i>
+                    </button>
                     <button class="fleet-mini-btn fleet-delete" data-action="delete" data-id="${ac.id}" title="${isFr ? 'Supprimer' : 'Delete'}" ${fleet.length <= 1 ? 'disabled' : ''}>
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -158,6 +166,7 @@ function _render() {
             <i data-lucide="upload"></i> ${isFr ? 'Importer' : 'Import'}
         </button>
         <input type="file" id="fleet-import-file" accept=".json,application/json" hidden>
+        <input type="file" id="fleet-import-one-file" accept=".json,application/json" hidden>
     </div>`;
 
     // --- Formulaire d'ajout/édition ---
@@ -223,11 +232,61 @@ function _render() {
             if (action === 'activate') { setActiveAircraft(id); _render(); }
             else if (action === 'edit') { _fillForm(id); }
             else if (action === 'delete') { _doDelete(id); }
+            else if (action === 'export-one') {
+                const data = exportAircraftData(id);
+                if (!data) return;
+                const ac = data.fleet[0];
+                const slug = (ac.registration || ac.name || 'avion').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'avion';
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `avion-${slug}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            else if (action === 'import-one') {
+                _importOneTargetId = id;
+                content.querySelector('#fleet-import-one-file').click();
+            }
         });
     });
 
     content.querySelector('#fleet-save').addEventListener('click', _doSave);
     content.querySelector('#fleet-cancel-form').addEventListener('click', _resetForm);
+
+    // --- Import d'UN avion (remplace l'avion ciblé, id et statut actif
+    //     conservés ; le fichier doit contenir un seul avion). ---
+    const oneInput = content.querySelector('#fleet-import-one-file');
+    oneInput.addEventListener('change', async () => {
+        const file = oneInput.files?.[0];
+        oneInput.value = '';
+        const id = _importOneTargetId;
+        _importOneTargetId = null;
+        if (!file || !id) return;
+        const cur = getFleet().find(a => a.id === id);
+        if (!cur) return;
+        try {
+            const data = JSON.parse(await file.text());
+            const single = data && Array.isArray(data.fleet) && data.fleet.length === 1 ? data.fleet[0] : null;
+            if (!single) {
+                alert(isFr
+                    ? 'Ce fichier ne contient pas un avion unique (flotte multiple ou invalide) — utilisez le bouton Importer de la flotte pour un fichier complet.'
+                    : 'This file does not contain a single aircraft (multi-aircraft or invalid) — use the fleet Import button for a full file.');
+                return;
+            }
+            const nom = String(single.name || 'Avion');
+            const msg = isFr
+                ? `Remplacer « ${cur.name}${cur.registration ? ' (' + cur.registration + ')' : ''} » par « ${nom} » (fichier) ?`
+                : `Replace "${cur.name}" with "${nom}" (file)?`;
+            if (!confirm(msg)) return;
+            const res = importAircraftData(id, data);
+            if (res.ok) _render();
+            else alert(isFr ? 'Import impossible (avion introuvable).' : 'Import failed (aircraft not found).');
+        } catch {
+            alert(isFr ? 'Impossible de lire ce fichier (JSON attendu).' : 'Cannot read this file (JSON expected).');
+        }
+    });
 
     // --- Export / Import ---
     content.querySelector('#fleet-export').addEventListener('click', () => {
