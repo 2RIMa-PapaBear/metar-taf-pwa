@@ -25,7 +25,9 @@ function _getMainFreq(icao) {
 
 /** Meilleure fréquence d'une étape pour le « Détail des waypoints » :
  *  SIA officiel en priorité (types RÉELS : TWR, AFIS, APP, FIS, ATIS…),
- *  à défaut openAIP (types souvent génériques COM/UNK). Retourne
+ *  à défaut openAIP (types souvent génériques COM/UNK). Un terrain
+ *  FRANÇAIS connu sans fréquence fixe reçoit 123.500 MHz (fréquence
+ *  standard VFR en l'absence de fréquence spécifique). Retourne
  *  { freq, type } ou null. */
 function _legMainFreq(icao) {
     const { source, freqs } = getAirportFreqs(icao, getAirportByICAO(icao)?.frequencies || []);
@@ -37,6 +39,9 @@ function _legMainFreq(icao) {
             if (f) return f;
         }
         return freqs[0];
+    }
+    if (/^LF/.test(String(icao || '')) && getAirportByICAO(icao)) {
+        return { freq: 123.5, type: 'STD' };
     }
     return null;
 }
