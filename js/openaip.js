@@ -179,6 +179,7 @@ const _memCache = new Map();
 
 export async function fetchAirportByIcao(icao, opts = {}) {
     if (!icao) return null;
+    if (!config.OPENAIP_API_KEY) return null; // miroir public : pas d'appel API
     const key = icao.toUpperCase();
 
     if (!opts.forceRefresh && _memCache.has(key)) return _memCache.get(key);
@@ -226,6 +227,7 @@ export async function fetchAirportByIcao(icao, opts = {}) {
 
 export async function searchAirports(query, limit = 8) {
     if (!query || query.trim().length < 2) return [];
+    if (!config.OPENAIP_API_KEY) return [];   // miroir public : pas d'appel API
     try {
         const url = `${BASE_URL}?search=${encodeURIComponent(query.trim())}&limit=${limit}`;
         const res = await fetch(url, {

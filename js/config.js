@@ -16,6 +16,9 @@
 export const config = {
     PROXY_URL: '',
     OPENAIP_API_KEY: '',
+    // Clé corsproxy.io — repli météo du miroir public quand aviationweather.gov
+    // bloque CORS (fréquent : leurs backends n'envoient pas toujours ACAO).
+    CORS_PROXY_KEY: '',
 };
 
 /** Applique js/config.local.js si présent (silencieux sinon). */
@@ -24,5 +27,6 @@ export async function applyLocalOverride() {
         const m = await import('./config.local.js');
         if (m.PROXY_URL) config.PROXY_URL = m.PROXY_URL;
         if (m.OPENAIP_API_KEY) config.OPENAIP_API_KEY = m.OPENAIP_API_KEY;
+        if (m.CORS_PROXY_KEY) config.CORS_PROXY_KEY = m.CORS_PROXY_KEY;
     } catch { /* absent (miroir public) : on garde les défauts */ }
 }

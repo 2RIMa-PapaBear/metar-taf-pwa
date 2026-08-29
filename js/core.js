@@ -635,20 +635,39 @@ async function _viaRelais(url, type, ttlSec) {
     // — aviationweather.gov expose son API en CORS ouvert, seule la
     // mise en cache Google est perdue.
     if (!config.PROXY_URL) {
+        // Mode SANS relais privé (miroir public) : direct d'abord, puis
+        // corsproxy.io (clé perso, plafond gratuit) quand aviationweather
+        // bloque CORS — leurs backends n'envoient pas toujours ACAO.
+        const looksHtml = (t) => t.trim().startsWith('<') && !t.toLowerCase().includes('<?xml');
         let raw = null;
         try {
             const res = await fetch(url, { cache: 'no-store' });
-            if (!res.ok) throw new Error('__HTML_INATTENDU__');
-            raw = await res.text();
-        } catch (e) {
-            if (e instanceof TypeError) {
-                throw new Error(state.lang === 'fr'
-                    ? 'Service météo inaccessible (réseau) — réessayez.'
-                    : 'Weather service unreachable (network) — retry.');
+            if (res.ok) raw = await res.text();
+        } catch { /* CORS coupé ou réseau : tentative proxy ci-dessous */ }
+        if (raw == null || looksHtml(raw)) {
+            if (!config.CORS_PROXY_KEY) {
+                if (raw == null) {
+                    throw new Error(state.lang === 'fr'
+                        ? 'Service météo inaccessible (réseau) — réessayez.'
+                        : 'Weather service unreachable (network) — retry.');
+                }
+                throw new Error('__HTML_INATTENDU__');
             }
-            throw e;
+            try {
+                const px = `https://corsproxy.io/?key=${encodeURIComponent(config.CORS_PROXY_KEY)}&url=${encodeURIComponent(url)}`;
+                const res = await fetch(px, { cache: 'no-store' });
+                if (!res.ok) throw new Error('__HTML_INATTENDU__');
+                raw = await res.text();
+            } catch (e) {
+                if (e instanceof TypeError) {
+                    throw new Error(state.lang === 'fr'
+                        ? 'Service météo inaccessible (réseau) — réessayez.'
+                        : 'Weather service unreachable (network) — retry.');
+                }
+                throw e;
+            }
         }
-        if (raw.trim().startsWith('<') && !raw.toLowerCase().includes('<?xml')) throw new Error('__HTML_INATTENDU__');
+        if (looksHtml(raw)) throw new Error('__HTML_INATTENDU__');
         return type === 'json' ? (raw.trim() === '' ? [] : JSON.parse(raw)) : raw;
     }
 

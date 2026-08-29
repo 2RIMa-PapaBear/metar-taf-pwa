@@ -313,6 +313,9 @@ async function _loadCellsGrid(minLat, minLon, maxLat, maxLon) {
 }
 
 export function fetchOpenAipItems(url) {
+    // Sans clé openAIP (miroir public) : jamais d'appel API — les fichiers
+    // statiques (cellules 1° servies par l'hébergeur) couvrent le besoin.
+    if (!config.OPENAIP_API_KEY) return Promise.resolve(null);
     const run = async () => {
         const wait = _oaLastReq + OA_MIN_SPACING_MS - Date.now();
         if (wait > 0) await new Promise(r => setTimeout(r, wait));
