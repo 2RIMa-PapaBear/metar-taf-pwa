@@ -1,0 +1,7288 @@
+{
+ "generatedAt": "2026-08-28T15:11:49.674Z",
+ "airac": "2026-08-06",
+ "source": "SIA eAIP France AD 2.17/2.18",
+ "counts": {
+  "airports": 143,
+  "frequencies": 1165,
+  "failed": 0
+ },
+ "airports": {
+  "LFAC": [
+   {
+    "type": "AFIS",
+    "name": "CALAIS Information",
+    "value": "119.485",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "CALAIS",
+    "value": "119.485",
+    "hor": "HX"
+   }
+  ],
+  "LFAQ": [
+   {
+    "type": "TWR",
+    "name": "ALBERT Tour",
+    "value": "136.360",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "ALBERT Information",
+    "value": "136.360",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "ALBERT Gonio",
+    "value": "136.360",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ALBERT",
+    "value": "136.360",
+    "hor": "HX"
+   }
+  ],
+  "LFAT": [
+   {
+    "type": "TWR",
+    "name": "LE TOUQUET Sol",
+    "value": "121.755",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE TOUQUET Tour",
+    "value": "118.450",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LE TOUQUET Gonio",
+    "value": "118.450",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LE TOUQUET",
+    "value": "123.130",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LE TOUQUET",
+    "value": "118.450",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 13 (I.E.",
+    "name": "LT",
+    "value": "110.15",
+    "hor": "H24"
+   }
+  ],
+  "LFAV": [
+   {
+    "type": "AFIS",
+    "name": "VALENCIENNES Information",
+    "value": "122.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "VALENCIENNES",
+    "value": "122.605",
+    "hor": "HO"
+   }
+  ],
+  "LFAY": [
+   {
+    "type": "A/A",
+    "name": "AMIENS",
+    "value": "119.890",
+    "hor": "H24"
+   }
+  ],
+  "LFBA": [
+   {
+    "type": "TWR",
+    "name": "AGEN Tour",
+    "value": "121.305",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "AGEN",
+    "value": "129.605",
+    "hor": "H24"
+   },
+   {
+    "type": "A/A",
+    "name": "AGEN",
+    "value": "121.305",
+    "hor": "HX"
+   }
+  ],
+  "LFBC": [
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "119.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "232.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "251.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "265.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "277.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "CAZAUX Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "CAZAUX Precision",
+    "value": "120.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "CAZAUX Precision",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "CAZAUX Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "CAZAUX Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "118.400",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "CAZAUX Tour",
+    "value": "375.975",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFBD": [
+   {
+    "type": "FIS",
+    "name": "AQUITAINE Information",
+    "value": "120.575",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "AQUITAINE Approche",
+    "value": "119.275",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "AQUITAINE Approche",
+    "value": "126.730",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "AQUITAINE Approche",
+    "value": "129.875",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "MERIGNAC Approche",
+    "value": "121.200",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MERIGNAC Sol",
+    "value": "121.730",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MERIGNAC Sol",
+    "value": "121.900",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MERIGNAC Tour",
+    "value": "118.300",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "118.300",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "119.275",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "120.575",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "121.500",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "126.730",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MERIGNAC Gonio",
+    "value": "129.875",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "MERIGNAC",
+    "value": "131.155",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 29 (I.E.",
+    "name": "BEI",
+    "value": "111.15",
+    "hor": "H24"
+   }
+  ],
+  "LFBE": [
+   {
+    "type": "TWR",
+    "name": "BERGERAC Tour",
+    "value": "119.805",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "BERGERAC",
+    "value": "127.480",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BERGERAC",
+    "value": "119.805",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 27 (I.E.",
+    "name": "RM",
+    "value": "108.15",
+    "hor": "H24"
+   }
+  ],
+  "LFBF": [
+   {
+    "type": "AFIS",
+    "name": "FRANCAZAL Information",
+    "value": "118.805",
+    "hor": "HO"
+   }
+  ],
+  "LFBG": [
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "132.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "335.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "369.375",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "COGNAC Approche",
+    "value": "387.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "COGNAC Precision",
+    "value": "138.025",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "COGNAC Precision",
+    "value": "138.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "COGNAC Precision",
+    "value": "142.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "COGNAC Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "COGNAC Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "COGNAC Radar",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "COGNAC Radar",
+    "value": "234.650",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "COGNAC Radar",
+    "value": "281.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "COGNAC Radar",
+    "value": "281.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "COGNAC Radar",
+    "value": "386.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "COGNAC Tour",
+    "value": "120.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "COGNAC Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "COGNAC Tour",
+    "value": "253.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "COGNAC Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "121.500",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "123.300",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "132.450",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "138.025",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "142.450",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "COGNAC Gonio",
+    "value": "142.875",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "234.650",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "243.000",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "253.200",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "281.000",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "281.625",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "336.100",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "362.300",
+    "hor": "HX"
+   },
+   {
+    "type": "UDF",
+    "name": "COGNAC Gonio",
+    "value": "387.300",
+    "hor": "HX"
+   }
+  ],
+  "LFBH": [
+   {
+    "type": "FIS",
+    "name": "LA ROCHELLE Information",
+    "value": "124.205",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LA ROCHELLE Approche",
+    "value": "124.205",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LA ROCHELLE Tour",
+    "value": "118.005",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LA ROCHELLE",
+    "value": "126.880",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LA ROCHELLE",
+    "value": "118.005",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 27 (I.E.",
+    "name": "RL",
+    "value": "109.55",
+    "hor": "H24"
+   }
+  ],
+  "LFBI": [
+   {
+    "type": "FIS",
+    "name": "POITIERS Information",
+    "value": "124.000",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "POITIERS Approche",
+    "value": "134.100",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "POITIERS Tour",
+    "value": "118.505",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "POITIERS",
+    "value": "121.780",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "POITIERS",
+    "value": "118.505",
+    "hor": "HX"
+   }
+  ],
+  "LFBK": [
+   {
+    "type": "AFIS",
+    "name": "MONTLUCON Information",
+    "value": "118.405",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MONTLUCON",
+    "value": "118.405",
+    "hor": "HX"
+   }
+  ],
+  "LFBL": [
+   {
+    "type": "FIS",
+    "name": "LIMOGES Information",
+    "value": "124.050",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LIMOGES Approche",
+    "value": "118.080",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LIMOGES Tour",
+    "value": "119.555",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LIMOGES Gonio",
+    "value": "118.080",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LIMOGES Gonio",
+    "value": "119.555",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LIMOGES Gonio",
+    "value": "124.050",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LIMOGES",
+    "value": "128.080",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LIMOGES",
+    "value": "119.555",
+    "hor": "HX"
+   }
+  ],
+  "LFBM": [
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "344.175",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "MARSAN Approche",
+    "value": "375.100",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "MARSAN Precision",
+    "value": "139.675",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "MARSAN Precision",
+    "value": "142.525",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "MARSAN Precision",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "MARSAN Radar",
+    "value": "139.675",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "MARSAN Radar",
+    "value": "256.725",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "MARSAN Radar",
+    "value": "336.100",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "MARSAN Radar",
+    "value": "362.975",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MARSAN Tour",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MARSAN Tour",
+    "value": "142.750",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MARSAN Tour",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MARSAN Tour",
+    "value": "282.350",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "139.675",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "142.525",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MARSAN Gonio",
+    "value": "142.750",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "256.725",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "282.350",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "336.100",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "341.875",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "344.175",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "MARSAN Gonio",
+    "value": "375.100",
+    "hor": "HO"
+   }
+  ],
+  "LFBN": [
+   {
+    "type": "AFIS",
+    "name": "NIORT Information",
+    "value": "119.105",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "NIORT",
+    "value": "119.105",
+    "hor": "HX"
+   }
+  ],
+  "LFBO": [
+   {
+    "type": "FIS",
+    "name": "TOULOUSE Information",
+    "value": "121.250",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "TOULOUSE Information",
+    "value": "123.930",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BLAGNAC Approche",
+    "value": "121.105",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "TOULOUSE Approche",
+    "value": "120.355",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "TOULOUSE Approche",
+    "value": "123.850",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "TOULOUSE Approche",
+    "value": "124.975",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "TOULOUSE Approche",
+    "value": "125.180",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "TOULOUSE Approche",
+    "value": "129.305",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BLAGNAC Prevol",
+    "value": "121.705",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BLAGNAC Sol",
+    "value": "121.905",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BLAGNAC Tour",
+    "value": "118.105",
+    "hor": "H24"
+   },
+   {
+    "type": "AFIS",
+    "name": "ST MARTIN Information",
+    "value": "121.830",
+    "hor": "0630-1845 MO"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "118.100",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "120.350",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "121.250",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "123.850",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "125.175",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "TOULOUSE Gonio",
+    "value": "129.300",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "BLAGNAC",
+    "value": "123.130",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 32R (I.E",
+    "name": "TD",
+    "value": "108.35",
+    "hor": "H24"
+   }
+  ],
+  "LFBP": [
+   {
+    "type": "FIS",
+    "name": "PYRENEES Information",
+    "value": "126.525",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "PYRENEES Approche",
+    "value": "121.175",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "PYRENEES Approche",
+    "value": "128.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "PAU Sol",
+    "value": "121.755",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "PAU Tour",
+    "value": "124.150",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PAU Gonio",
+    "value": "124.150",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PAU Gonio",
+    "value": "126.525",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PAU Gonio",
+    "value": "128.800",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "PAU",
+    "value": "128.480",
+    "hor": "HO"
+   }
+  ],
+  "LFBR": [
+   {
+    "type": "TWR",
+    "name": "MURET Sol",
+    "value": "121.750",
+    "hor": "HX"
+   },
+   {
+    "type": "TWR",
+    "name": "MURET Tour",
+    "value": "123.200",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MURET Gonio",
+    "value": "123.200",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "MURET",
+    "value": "124.580",
+    "hor": "HO"
+   }
+  ],
+  "LFBS": [
+   {
+    "type": "TWR",
+    "name": "BISCARROSSE Tour",
+    "value": "118.040",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BISCARROSSE",
+    "value": "118.040",
+    "hor": "HX"
+   }
+  ],
+  "LFBT": [
+   {
+    "type": "TWR",
+    "name": "LOURDES Sol",
+    "value": "121.800",
+    "hor": "HX"
+   },
+   {
+    "type": "TWR",
+    "name": "LOURDES Tour",
+    "value": "119.050",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "LOURDES",
+    "value": "125.955",
+    "hor": "HX"
+   }
+  ],
+  "LFBU": [
+   {
+    "type": "AFIS",
+    "name": "ANGOULEME Information",
+    "value": "123.155",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "ANGOULEME Gonio",
+    "value": "123.155",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "ANGOULEME",
+    "value": "130.090",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ANGOULEME",
+    "value": "123.155",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 28 (I.E.",
+    "name": "AM",
+    "value": "109.35",
+    "hor": "H24"
+   }
+  ],
+  "LFBX": [
+   {
+    "type": "AFIS",
+    "name": "PERIGUEUX Information",
+    "value": "118.780",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "PERIGUEUX",
+    "value": "118.780",
+    "hor": "HX"
+   }
+  ],
+  "LFBY": [
+   {
+    "type": "APP",
+    "name": "DAX Approche",
+    "value": "122.050",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "DAX Approche",
+    "value": "335.775",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "DAX Precision",
+    "value": "138.450",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "DAX Sol",
+    "value": "121.775",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "DAX Tour",
+    "value": "336.550",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "DAX Tour",
+    "value": "040.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "DAX Tour",
+    "value": "118.325",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "DAX Information",
+    "value": "140.075",
+    "hor": "HO"
+   }
+  ],
+  "LFBZ": [
+   {
+    "type": "FIS",
+    "name": "BIARRITZ Information",
+    "value": "119.175",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "BIARRITZ Approche",
+    "value": "125.600",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BIARRITZ Sol",
+    "value": "121.950",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BIARRITZ Tour",
+    "value": "118.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BIARRITZ Gonio",
+    "value": "118.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BIARRITZ Gonio",
+    "value": "125.600",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "BIARRITZ",
+    "value": "128.230",
+    "hor": "HO"
+   },
+   {
+    "type": "LOC 27 (I.E.",
+    "name": "BZ",
+    "value": "111.35",
+    "hor": "H24"
+   }
+  ],
+  "LFCC": [
+   {
+    "type": "AFIS",
+    "name": "CAHORS Information",
+    "value": "119.230",
+    "hor": "HO"
+   }
+  ],
+  "LFCI": [
+   {
+    "type": "AFIS",
+    "name": "ALBI Information",
+    "value": "118.955",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ALBI",
+    "value": "118.955",
+    "hor": "HX"
+   }
+  ],
+  "LFCK": [
+   {
+    "type": "AFIS",
+    "name": "CASTRES Information",
+    "value": "118.505",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "CASTRES",
+    "value": "118.505",
+    "hor": "HX"
+   }
+  ],
+  "LFCR": [
+   {
+    "type": "TWR",
+    "name": "RODEZ Tour",
+    "value": "118.125",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "RODEZ Gonio",
+    "value": "118.125",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "RODEZ Gonio",
+    "value": "133.725",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "RODEZ",
+    "value": "129.780",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "RODEZ",
+    "value": "118.125",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 31 (I.E.",
+    "name": "RDE",
+    "value": "110.75",
+    "hor": "H24"
+   }
+  ],
+  "LFCY": [
+   {
+    "type": "AFIS",
+    "name": "ROYAN Information",
+    "value": "118.805",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ROYAN",
+    "value": "118.805",
+    "hor": "HX"
+   }
+  ],
+  "LFDH": [
+   {
+    "type": "AFIS",
+    "name": "AUCH Information",
+    "value": "123.005",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "AUCH",
+    "value": "123.005",
+    "hor": "HX"
+   }
+  ],
+  "LFDJ": [
+   {
+    "type": "AFIS",
+    "name": "PAMIERS Information",
+    "value": "118.180",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "PAMIERS",
+    "value": "118.180",
+    "hor": "HX"
+   }
+  ],
+  "LFDN": [
+   {
+    "type": "AFIS",
+    "name": "ROCHEFORT Information",
+    "value": "119.305",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ROCHEFORT",
+    "value": "119.305",
+    "hor": "HX"
+   }
+  ],
+  "LFEC": [
+   {
+    "type": "AFIS",
+    "name": "OUESSANT Information",
+    "value": "118.105",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "OUESSANT",
+    "value": "118.105",
+    "hor": "HO"
+   }
+  ],
+  "LFES": [
+   {
+    "type": "A/A",
+    "name": "GUISCRIFF",
+    "value": "129.800",
+    "hor": "HX"
+   }
+  ],
+  "LFEV": [
+   {
+    "type": "A/A",
+    "name": "GRAY",
+    "value": "118.840",
+    "hor": "HX"
+   }
+  ],
+  "LFEY": [
+   {
+    "type": "AFIS",
+    "name": "ILE D'YEU Information",
+    "value": "118.905",
+    "hor": "HO"
+   }
+  ],
+  "LFFK": [
+   {
+    "type": "A/A",
+    "name": "FONTENAY",
+    "value": "119.765",
+    "hor": "HX"
+   }
+  ],
+  "LFGA": [
+   {
+    "type": "TWR",
+    "name": "COLMAR Sol",
+    "value": "121.880",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "COLMAR Tour",
+    "value": "119.000",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "COLMAR Information",
+    "value": "119.000",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "COLMAR",
+    "value": "126.135",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "COLMAR",
+    "value": "119.000",
+    "hor": ""
+   }
+  ],
+  "LFGJ": [
+   {
+    "type": "TWR",
+    "name": "DOLE Tour",
+    "value": "130.775",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "DOLE Information",
+    "value": "130.775",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "DOLE",
+    "value": "121.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "DOLE",
+    "value": "130.775",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 05 (I.E.",
+    "name": "DO",
+    "value": "109.35",
+    "hor": "H24"
+   }
+  ],
+  "LFHP": [
+   {
+    "type": "AFIS",
+    "name": "LE PUY Information",
+    "value": "118.005",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LE PUY",
+    "value": "118.005",
+    "hor": "HX"
+   }
+  ],
+  "LFHV": [
+   {
+    "type": "A/A",
+    "name": "TARARE",
+    "value": "118.255",
+    "hor": "HX"
+   }
+  ],
+  "LFHY": [
+   {
+    "type": "AFIS",
+    "name": "MOULINS Information",
+    "value": "125.205",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MOULINS",
+    "value": "125.205",
+    "hor": "HX"
+   }
+  ],
+  "LFJL": [
+   {
+    "type": "APP",
+    "name": "LORRAINE Approche",
+    "value": "119.125",
+    "hor": "HX"
+   },
+   {
+    "type": "APP",
+    "name": "LORRAINE Approche",
+    "value": "127.250",
+    "hor": "HX"
+   },
+   {
+    "type": "TWR",
+    "name": "LORRAINE Sol",
+    "value": "121.705",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LORRAINE Tour",
+    "value": "122.075",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LORRAINE Gonio",
+    "value": "119.125",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "LORRAINE Gonio",
+    "value": "122.075",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LORRAINE Gonio",
+    "value": "127.250",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "LORRAINE",
+    "value": "136.580",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LORRAINE",
+    "value": "122.075",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 22 (III.",
+    "name": "MLY",
+    "value": "111.75",
+    "hor": "H24"
+   }
+  ],
+  "LFJR": [
+   {
+    "type": "AFIS",
+    "name": "ANGERS Information",
+    "value": "124.705",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ANGERS",
+    "value": "124.705",
+    "hor": "HX"
+   }
+  ],
+  "LFJY": [
+   {
+    "type": "A/A",
+    "name": "CHAMBLEY",
+    "value": "120.405",
+    "hor": "HX"
+   }
+  ],
+  "LFKB": [
+   {
+    "type": "FIS",
+    "name": "BASTIA Information",
+    "value": "124.725",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "BASTIA Information",
+    "value": "135.135",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BASTIA Approche",
+    "value": "123.825",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BASTIA Approche",
+    "value": "127.255",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BASTIA Sol",
+    "value": "121.830",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BASTIA Tour",
+    "value": "118.000",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BASTIA Gonio",
+    "value": "118.000",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BASTIA Gonio",
+    "value": "123.825",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "BASTIA",
+    "value": "125.930",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 34 (I.E.",
+    "name": "BAS",
+    "value": "111.35",
+    "hor": "H24"
+   }
+  ],
+  "LFKC": [
+   {
+    "type": "TWR",
+    "name": "CALVI Sol",
+    "value": "121.705",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "CALVI Tour",
+    "value": "123.200",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "CALVI",
+    "value": "131.180",
+    "hor": "H24"
+   }
+  ],
+  "LFKF": [
+   {
+    "type": "TWR",
+    "name": "FIGARI Sol",
+    "value": "121.805",
+    "hor": "HX"
+   },
+   {
+    "type": "TWR",
+    "name": "FIGARI Tour",
+    "value": "120.300",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "FIGARI",
+    "value": "118.730",
+    "hor": "HX"
+   }
+  ],
+  "LFKJ": [
+   {
+    "type": "FIS",
+    "name": "AJACCIO Information",
+    "value": "119.825",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "AJACCIO Approche",
+    "value": "121.050",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "AJACCIO Approche",
+    "value": "127.780",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "AJACCIO Sol",
+    "value": "121.705",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "AJACCIO Tour",
+    "value": "118.075",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "AJACCIO Gonio",
+    "value": "118.075",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "AJACCIO Gonio",
+    "value": "119.825",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "AJACCIO Gonio",
+    "value": "121.050",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "AJACCIO",
+    "value": "126.930",
+    "hor": "H24"
+   }
+  ],
+  "LFKS": [
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "119.900",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "139.150",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "233.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "233.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "248.250",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ZARA Approche",
+    "value": "387.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ZARA Precision",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ZARA Precision",
+    "value": "139.150",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ZARA Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ZARA -precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "118.350",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ZARA Tour",
+    "value": "301.200",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFLA": [
+   {
+    "type": "AFIS",
+    "name": "AUXERRE Information",
+    "value": "129.805",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "AUXERRE Information",
+    "value": "129.805",
+    "hor": ""
+   }
+  ],
+  "LFLB": [
+   {
+    "type": "APP",
+    "name": "CHAMBERY Approche",
+    "value": "121.205",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "CHAMBERY",
+    "value": "127.100",
+    "hor": "HO"
+   }
+  ],
+  "LFLC": [
+   {
+    "type": "FIS",
+    "name": "CLERMONT Information",
+    "value": "119.375",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "CLERMONT Information",
+    "value": "120.500",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "CLERMONT Information",
+    "value": "120.675",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "CLERMONT Information",
+    "value": "122.225",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "CLERMONT Information",
+    "value": "133.725",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "CLERMONT Approche",
+    "value": "119.375",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "CLERMONT Approche",
+    "value": "120.500",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "CLERMONT Approche",
+    "value": "120.675",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "CLERMONT Approche",
+    "value": "122.225",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "CLERMONT Approche",
+    "value": "133.725",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "CLERMONT Sol",
+    "value": "121.950",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "CLERMONT Tour",
+    "value": "118.625",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "CLERMONT Gonio",
+    "value": "118.625",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "CLERMONT Gonio",
+    "value": "122.225",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "CLERMONT",
+    "value": "136.405",
+    "hor": "H24"
+   }
+  ],
+  "LFLD": [
+   {
+    "type": "AFIS",
+    "name": "BOURGES Information",
+    "value": "119.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BOURGES",
+    "value": "119.605",
+    "hor": "HX"
+   }
+  ],
+  "LFLG": [
+   {
+    "type": "TWR",
+    "name": "LE VERSOUD Sol",
+    "value": "121.655",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE VERSOUD Tour",
+    "value": "121.000",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LE VERSOUD",
+    "value": "125.230",
+    "hor": "H24"
+   },
+   {
+    "type": "A/A",
+    "name": "LE VERSOUD",
+    "value": "121.000",
+    "hor": "HX"
+   }
+  ],
+  "LFLH": [
+   {
+    "type": "AFIS",
+    "name": "CHALON Information",
+    "value": "118.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "CHALON",
+    "value": "118.605",
+    "hor": "HX"
+   }
+  ],
+  "LFLL": [
+   {
+    "type": "FIS",
+    "name": "LYON Information",
+    "value": "135.200",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "LYON Information",
+    "value": "135.530",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "LYON Approche",
+    "value": "120.230",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "LYON Approche",
+    "value": "131.315",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "LYON Approche",
+    "value": "132.005",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "LYON Approche",
+    "value": "136.075",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT EX Prevol",
+    "value": "121.655",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT EX Sol",
+    "value": "121.830",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT EX Tour",
+    "value": "120.455",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT EX Tour",
+    "value": "133.150",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT EX Gonio",
+    "value": "120.450",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT EX Gonio",
+    "value": "135.200",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT EX Gonio",
+    "value": "135.530",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT EX Gonio",
+    "value": "136.075",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "SAINT EX",
+    "value": "126.180",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 35L (III",
+    "name": "SAN",
+    "value": "110.75",
+    "hor": "H24"
+   }
+  ],
+  "LFLN": [
+   {
+    "type": "APP",
+    "name": "SAINT YAN Approche",
+    "value": "119.505",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT YAN Approche",
+    "value": "123.405",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT YAN Sol",
+    "value": "121.805",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT YAN Tour",
+    "value": "122.300",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT YAN Gonio",
+    "value": "119.505",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT YAN Gonio",
+    "value": "122.300",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT YAN Gonio",
+    "value": "123.405",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "SAINT YAN",
+    "value": "132.480",
+    "hor": "HO"
+   },
+   {
+    "type": "LOC 33R (I.E",
+    "name": "SN",
+    "value": "111.75",
+    "hor": "H24"
+   }
+  ],
+  "LFLO": [
+   {
+    "type": "AFIS",
+    "name": "ROANNE Information",
+    "value": "120.905",
+    "hor": "HO"
+   }
+  ],
+  "LFLP": [
+   {
+    "type": "TWR",
+    "name": "ANNECY Sol",
+    "value": "121.730",
+    "hor": "HO"
+   }
+  ],
+  "LFLS": [
+   {
+    "type": "TWR",
+    "name": "GRENOBLE Sol",
+    "value": "121.930",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "GRENOBLE",
+    "value": "133.855",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "GRENOBLE",
+    "value": "119.305",
+    "hor": "HX"
+   }
+  ],
+  "LFLU": [
+   {
+    "type": "AFIS",
+    "name": "VALENCE Information",
+    "value": "120.105",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "VALENCE",
+    "value": "120.105",
+    "hor": "HX"
+   }
+  ],
+  "LFLV": [
+   {
+    "type": "AFIS",
+    "name": "VICHY Information",
+    "value": "121.405",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "VICHY",
+    "value": "121.405",
+    "hor": "HX"
+   }
+  ],
+  "LFLW": [
+   {
+    "type": "AFIS",
+    "name": "AURILLAC Information",
+    "value": "118.330",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "AURILLAC",
+    "value": "118.330",
+    "hor": "HX"
+   }
+  ],
+  "LFLX": [
+   {
+    "type": "TWR",
+    "name": "CHATEAUROUX Tour",
+    "value": "125.880",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "CHATEAUROUX Tour",
+    "value": "133.805",
+    "hor": "HX"
+   },
+   {
+    "type": "AFIS",
+    "name": "CHATEAUROUX Information",
+    "value": "125.880",
+    "hor": ""
+   },
+   {
+    "type": "AFIS",
+    "name": "CHATEAUROUX Information",
+    "value": "133.805",
+    "hor": "HX"
+   },
+   {
+    "type": "A/A",
+    "name": "CHATEAUROUX",
+    "value": "125.880",
+    "hor": "HX"
+   }
+  ],
+  "LFLY": [
+   {
+    "type": "TWR",
+    "name": "BRON Sol",
+    "value": "121.705",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BRON Tour",
+    "value": "118.100",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BRON Gonio",
+    "value": "120.450",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BRON Gonio",
+    "value": "135.200",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BRON Gonio",
+    "value": "135.530",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BRON Gonio",
+    "value": "136.075",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "BRON",
+    "value": "128.130",
+    "hor": "HO"
+   }
+  ],
+  "LFMA": [
+   {
+    "type": "TWR",
+    "name": "AIX Sol",
+    "value": "121.605",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AIX Tour",
+    "value": "118.750",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AIX Gonio",
+    "value": "118.750",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "AIX",
+    "value": "136.230",
+    "hor": "H24"
+   }
+  ],
+  "LFMC": [
+   {
+    "type": "APP",
+    "name": "LE LUC Approche",
+    "value": "122.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LE LUC Approche",
+    "value": "141.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LE LUC Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LE LUC Approche",
+    "value": "276.025",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LE LUC Precision",
+    "value": "141.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "LE LUC Radar",
+    "value": "122.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LE LUC Sol",
+    "value": "121.850",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LE LUC Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LE LUC Tour",
+    "value": "123.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LE LUC Tour",
+    "value": "374.525",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LE LUC Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LE LUC Gonio",
+    "value": "122.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LE LUC Gonio",
+    "value": "123.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LE LUC Gonio",
+    "value": "123.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "ATIS",
+    "name": "LE LUC",
+    "value": "128.650",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFMD": [
+   {
+    "type": "TWR",
+    "name": "CANNES Sol",
+    "value": "121.805",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "CANNES Tour",
+    "value": "118.625",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LERINS Tour",
+    "value": "120.780",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "CANNES Gonio",
+    "value": "118.625",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "CANNES",
+    "value": "130.480",
+    "hor": "HO"
+   },
+   {
+    "type": "LOC 35 (I)",
+    "name": "CMD",
+    "value": "110.35",
+    "hor": "H24"
+   }
+  ],
+  "LFMH": [
+   {
+    "type": "TWR",
+    "name": "SAINT ETIENNE Tour",
+    "value": "119.250",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "SAINT ETIENNE Information",
+    "value": "119.250",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "SAINT ETIENNE",
+    "value": "132.805",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "SAINT ETIENNE",
+    "value": "119.250",
+    "hor": "HX"
+   }
+  ],
+  "LFMI": [
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "131.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "281.575",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "359.550",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ISTRES Approche",
+    "value": "373.225",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "RHONE Controle",
+    "value": "119.475",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "RHONE Controle",
+    "value": "280.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ISTRES Precision",
+    "value": "142.675",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ISTRES Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ISTRES Radar",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ISTRES Radar",
+    "value": "359.475",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ISTRES Radar",
+    "value": "398.525",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "CAMARGUE Controle",
+    "value": "127.925",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Sol",
+    "value": "121.850",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Sol",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Sol",
+    "value": "397.050",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Tour",
+    "value": "123.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ISTRES Tour",
+    "value": "377.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "119.475",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "123.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "127.925",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "131.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ISTRES Gonio",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "281.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "359.475",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "359.550",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "373.225",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "377.600",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "ISTRES Gonio",
+    "value": "398.525",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFMK": [
+   {
+    "type": "TWR",
+    "name": "CARCASSONNE Tour",
+    "value": "134.505",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "CARCASSONNE Gonio",
+    "value": "134.505",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "CARCASSONNE",
+    "value": "120.030",
+    "hor": "HX"
+   }
+  ],
+  "LFML": [
+   {
+    "type": "FIS",
+    "name": "PROVENCE Information",
+    "value": "124.350",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "PROVENCE Information",
+    "value": "126.260",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "PROVENCE Information",
+    "value": "131.230",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "PROVENCE Information",
+    "value": "132.300",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "PROVENCE Information",
+    "value": "132.950",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "120.205",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "120.880",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "121.430",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "124.350",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "127.725",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "129.475",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "PROVENCE Approche",
+    "value": "132.300",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "PROVENCE Prevol",
+    "value": "121.730",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "PROVENCE Sol",
+    "value": "121.905",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "PROVENCE Tour",
+    "value": "123.725",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "PROVENCE Tour",
+    "value": "133.100",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "121.430",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "121.500",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "124.350",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "126.260",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "131.230",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "132.300",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "132.950",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "PROVENCE Gonio",
+    "value": "133.100",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "PROVENCE",
+    "value": "125.355",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 31R (I.E",
+    "name": "MPV",
+    "value": "111.15",
+    "hor": "H24"
+   }
+  ],
+  "LFMN": [
+   {
+    "type": "FIS",
+    "name": "NICE Information",
+    "value": "120.850",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "NICE Information",
+    "value": "122.925",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "NICE Information",
+    "value": "124.425",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "120.160",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "120.655",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "124.180",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "125.580",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "128.205",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "130.830",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "NICE Approche",
+    "value": "134.475",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "NICE Prevol",
+    "value": "121.780",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "NICE Sol",
+    "value": "121.705",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "NICE Tour",
+    "value": "118.700",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "NICE Tour",
+    "value": "122.380",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "NICE Tour",
+    "value": "123.150",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "118.700",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "120.850",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "122.380",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "122.925",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "124.180",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "130.830",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "NICE Gonio",
+    "value": "134.475",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "NICE",
+    "value": "129.605",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "NICE",
+    "value": "136.580",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 04L (I.B",
+    "name": "NI",
+    "value": "109.95",
+    "hor": "H24"
+   }
+  ],
+  "LFMO": [
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "118.925",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "138.525",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "248.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "299.775",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ORANGE Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ORANGE Precision",
+    "value": "139.525",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ORANGE Precision",
+    "value": "139.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ORANGE Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "ORANGE Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ORANGE Radar",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ORANGE Radar",
+    "value": "372.225",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "ORANGE Radar",
+    "value": "375.975",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ORANGE Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ORANGE Tour",
+    "value": "128.950",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ORANGE Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ORANGE Tour",
+    "value": "388.775",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFMP": [
+   {
+    "type": "TWR",
+    "name": "PERPIGNAN Sol",
+    "value": "121.780",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "PERPIGNAN Tour",
+    "value": "118.300",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PERPIGNAN Gonio",
+    "value": "118.300",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "PERPIGNAN",
+    "value": "127.880",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "PERPIGNAN",
+    "value": "118.300",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 33 (I.E.",
+    "name": "PL",
+    "value": "111.75",
+    "hor": "H24"
+   }
+  ],
+  "LFMQ": [
+   {
+    "type": "AFIS",
+    "name": "LE CASTELLET Information",
+    "value": "119.005",
+    "hor": "HX"
+   },
+   {
+    "type": "A/A",
+    "name": "LE CASTELLET Information",
+    "value": "119.005",
+    "hor": "HX"
+   }
+  ],
+  "LFMT": [
+   {
+    "type": "FIS",
+    "name": "MONTPELLIER Information",
+    "value": "125.900",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "MONTPELLIER Information",
+    "value": "134.375",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "MONTPELLIER Information",
+    "value": "136.625",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "MONTPELLIER Approche",
+    "value": "120.375",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "MONTPELLIER Approche",
+    "value": "127.280",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "MONTPELLIER Approche",
+    "value": "130.855",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "MONTPELLIER Approche",
+    "value": "131.055",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MONTPELLIER Sol",
+    "value": "121.955",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MONTPELLIER Tour",
+    "value": "118.200",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "MONTPELLIER Tour",
+    "value": "118.775",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "118.200",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "118.775",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "130.855",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "131.055",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "134.375",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "MONTPELLIER Gonio",
+    "value": "136.625",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "MONTPELLIER",
+    "value": "124.130",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 30R (I.E",
+    "name": "FG",
+    "value": "108.55",
+    "hor": "H24"
+   }
+  ],
+  "LFMU": [
+   {
+    "type": "TWR",
+    "name": "BEZIERS Tour",
+    "value": "120.175",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BEZIERS Gonio",
+    "value": "120.175",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "BEZIERS",
+    "value": "127.530",
+    "hor": "H24"
+   },
+   {
+    "type": "A/A",
+    "name": "BEZIERS",
+    "value": "120.175",
+    "hor": ""
+   }
+  ],
+  "LFMV": [
+   {
+    "type": "TWR",
+    "name": "AVIGNON Sol",
+    "value": "121.755",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AVIGNON Tour",
+    "value": "122.600",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVIGNON Gonio",
+    "value": "122.600",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "AVIGNON",
+    "value": "120.830",
+    "hor": "H24"
+   },
+   {
+    "type": "A/A",
+    "name": "AVIGNON",
+    "value": "122.600",
+    "hor": ""
+   }
+  ],
+  "LFMY": [
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "135.150",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "142.175",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "370.700",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SALON Approche",
+    "value": "372.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "SALON Precision",
+    "value": "142.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "SALON Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "SALON Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SALON Approche",
+    "value": "232.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SALON Approche",
+    "value": "356.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SALON Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SALON Tour",
+    "value": "130.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SALON Tour",
+    "value": "232.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SALON Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "130.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "135.150",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "142.175",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SALON Gonio",
+    "value": "142.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "232.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "356.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "370.700",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SALON Gonio",
+    "value": "372.800",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFNB": [
+   {
+    "type": "AFIS",
+    "name": "MENDE Information",
+    "value": "119.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MENDE",
+    "value": "119.605",
+    "hor": "HX"
+   }
+  ],
+  "LFOA": [
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "138.950",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "373.775",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "AVORD Approche",
+    "value": "386.775",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "AVORD Precision",
+    "value": "123.300",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "AVORD Precision",
+    "value": "141.300",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "AVORD Precision",
+    "value": "278.625",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "AVORD Precision",
+    "value": "336.100",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "AVORD Precision",
+    "value": "369.275",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "AVORD Radar",
+    "value": "123.300",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "AVORD Radar",
+    "value": "140.675",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "AVORD Radar",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "AVORD Radar",
+    "value": "278.625",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "AVORD Radar",
+    "value": "369.275",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AVORD Tour",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AVORD Tour",
+    "value": "142.225",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AVORD Tour",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "AVORD Tour",
+    "value": "398.550",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVORD Gonio",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVORD Gonio",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVORD Gonio",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVORD Gonio",
+    "value": "140.675",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "AVORD Gonio",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "278.625",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "369.275",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "373.775",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "386.775",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "AVORD Gonio",
+    "value": "398.550",
+    "hor": "HO"
+   }
+  ],
+  "LFOB": [
+   {
+    "type": "FIS",
+    "name": "BEAUVAIS Information",
+    "value": "119.800",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "BEAUVAIS Approche",
+    "value": "121.400",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "BEAUVAIS Approche",
+    "value": "123.985",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BEAUVAIS Tour",
+    "value": "121.400",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BEAUVAIS Tour",
+    "value": "123.985",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BEAUVAIS Gonio",
+    "value": "121.400",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BEAUVAIS Gonio",
+    "value": "123.985",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "BEAUVAIS",
+    "value": "118.380",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BEAUVAIS",
+    "value": "121.400",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 30 (I.E.",
+    "name": "BI",
+    "value": "109.95",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 12 (III.",
+    "name": "BVT",
+    "value": "111.15",
+    "hor": "H24"
+   }
+  ],
+  "LFOE": [
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "118.125",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "362.200",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "EVREUX Approche",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "EVREUX Radar",
+    "value": "138.050",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "EVREUX Radar",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "EVREUX Radar",
+    "value": "279.150",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "EVREUX Radar",
+    "value": "336.100",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "EVREUX Radar",
+    "value": "359.475",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "EVREUX Tour",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "EVREUX Tour",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "EVREUX Tour",
+    "value": "125.375",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "EVREUX Tour",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "EVREUX Tour",
+    "value": "399.525",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "118.125",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "125.375",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "EVREUX Gonio",
+    "value": "142.450",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "243.000",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "265.900",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "279.150",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "336.100",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "359.475",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "362.200",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "EVREUX Gonio",
+    "value": "399.525",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "EVREUX",
+    "value": "138.225",
+    "hor": "HO"
+   }
+  ],
+  "LFOH": [
+   {
+    "type": "AFIS",
+    "name": "LE HAVRE Information",
+    "value": "135.205",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LE HAVRE",
+    "value": "135.205",
+    "hor": "HX"
+   }
+  ],
+  "LFOJ": [
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "122.700",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "138.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "139.400",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "235.150",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "360.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "374.225",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "BRICY Approche",
+    "value": "398.350",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "BRICY Precision",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "BRICY Precision",
+    "value": "138.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "BRICY Precision",
+    "value": "139.400",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "124.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "BRICY Tour",
+    "value": "378.750",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFOK": [
+   {
+    "type": "TWR",
+    "name": "VATRY Tour",
+    "value": "129.400",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "VATRY Information",
+    "value": "129.400",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "VATRY Gonio",
+    "value": "129.400",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "VATRY",
+    "value": "136.380",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "VATRY",
+    "value": "129.400",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 28 (I.B.",
+    "name": "CVL",
+    "value": "109.55",
+    "hor": "H24"
+   }
+  ],
+  "LFOP": [
+   {
+    "type": "TWR",
+    "name": "ROUEN Tour",
+    "value": "120.200",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "ROUEN Gonio",
+    "value": "118.575",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "ROUEN Gonio",
+    "value": "120.200",
+    "hor": "HX"
+   },
+   {
+    "type": "ATIS",
+    "name": "ROUEN",
+    "value": "120.730",
+    "hor": "HX"
+   },
+   {
+    "type": "A/A",
+    "name": "ROUEN",
+    "value": "120.200",
+    "hor": "HX"
+   }
+  ],
+  "LFOQ": [
+   {
+    "type": "AFIS",
+    "name": "BLOIS Information",
+    "value": "118.455",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BLOIS",
+    "value": "118.455",
+    "hor": "HX"
+   }
+  ],
+  "LFOT": [
+   {
+    "type": "TWR",
+    "name": "TOURS Tour",
+    "value": "124.400",
+    "hor": ""
+   },
+   {
+    "type": "AFIS",
+    "name": "TOURS Information",
+    "value": "124.400",
+    "hor": ""
+   },
+   {
+    "type": "A/A",
+    "name": "TOURS",
+    "value": "124.400",
+    "hor": "HX"
+   }
+  ],
+  "LFOU": [
+   {
+    "type": "AFIS",
+    "name": "CHOLET Information",
+    "value": "120.405",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "CHOLET",
+    "value": "120.405",
+    "hor": "HX"
+   }
+  ],
+  "LFOV": [
+   {
+    "type": "AFIS",
+    "name": "LAVAL Information",
+    "value": "120.805",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LAVAL",
+    "value": "120.805",
+    "hor": "HX"
+   }
+  ],
+  "LFOZ": [
+   {
+    "type": "AFIS",
+    "name": "ST DENIS Information",
+    "value": "122.405",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ST DENIS",
+    "value": "122.405",
+    "hor": "HX"
+   }
+  ],
+  "LFPB": [
+   {
+    "type": "FIS",
+    "name": "LE BOURGET Information",
+    "value": "123.835",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LE BOURGET Approche",
+    "value": "118.805",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE BOURGET Prevol",
+    "value": "121.955",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE BOURGET Sol",
+    "value": "121.905",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE BOURGET Tour",
+    "value": "118.405",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LE BOURGET Tour",
+    "value": "118.930",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LE BOURGET",
+    "value": "120.005",
+    "hor": "HO"
+   },
+   {
+    "type": "LOC 27 (I.E.",
+    "name": "RGE",
+    "value": "110.55",
+    "hor": "H24"
+   }
+  ],
+  "LFPC": [
+   {
+    "type": "TWR",
+    "name": "CREIL Tour",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "CREIL Tour",
+    "value": "123.300",
+    "hor": "HO"
+   }
+  ],
+  "LFPG": [
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "118.155",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "119.855",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "121.155",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "124.355",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "125.830",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "126.430",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "126.580",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "131.205",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "133.380",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "DE GAULLE Approche",
+    "value": "136.280",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Prevol",
+    "value": "121.730",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Prevol",
+    "value": "121.840",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Sol",
+    "value": "121.610",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Sol",
+    "value": "121.780",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Sol",
+    "value": "121.810",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Sol",
+    "value": "121.980",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "118.655",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "119.255",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "119.630",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "120.655",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "120.905",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "123.605",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Tour",
+    "value": "125.330",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "121.580",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "121.640",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "121.680",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "121.880",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "121.930",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "DE GAULLE Trafic",
+    "value": "125.330",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "FEDEX Trafic",
+    "value": "131.605",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "DE GAULLE",
+    "value": "128.230",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "DE GAULLE",
+    "value": "127.130",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 08R (III",
+    "name": "DSE",
+    "value": "108.55",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 26L (III",
+    "name": "DSU",
+    "value": "108.35",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 26R (III",
+    "name": "GAU",
+    "value": "111.95",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 09L (III",
+    "name": "PNE",
+    "value": "109.35",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 27R (III",
+    "name": "PNW",
+    "value": "110.35",
+    "hor": "HX"
+   }
+  ],
+  "LFPM": [
+   {
+    "type": "FIS",
+    "name": "SEINE Information",
+    "value": "120.330",
+    "hor": "HO"
+   },
+   {
+    "type": "FIS",
+    "name": "SEINE Information",
+    "value": "127.815",
+    "hor": "HO"
+   },
+   {
+    "type": "FIS",
+    "name": "SEINE Information",
+    "value": "134.300",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "SEINE Approche",
+    "value": "118.050",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "SEINE Approche",
+    "value": "118.890",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "SEINE Approche",
+    "value": "134.875",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MELUN Tour",
+    "value": "121.105",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "MELUN Information",
+    "value": "121.105",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "MELUN",
+    "value": "128.180",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MELUN",
+    "value": "121.105",
+    "hor": "HX"
+   }
+  ],
+  "LFPN": [
+   {
+    "type": "FIS",
+    "name": "CHEVREUSE Info",
+    "value": "119.305",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "TOUSSUS Sol",
+    "value": "122.130",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "TOUSSUS Tour",
+    "value": "119.305",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "TOUSSUS Tour",
+    "value": "120.755",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "TOUSSUS Gonio",
+    "value": "119.305",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "TOUSSUS Gonio",
+    "value": "120.755",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "TOUSSUS",
+    "value": "127.480",
+    "hor": "HO"
+   },
+   {
+    "type": "VOR",
+    "name": "TSU",
+    "value": "108.25",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 25R (I.E",
+    "name": "TNO",
+    "value": "110.15",
+    "hor": "H24"
+   }
+  ],
+  "LFPO": [
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "118.855",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "120.855",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "123.875",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "124.450",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "127.750",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "ORLY Approche",
+    "value": "128.380",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Prevol",
+    "value": "121.555",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Sol",
+    "value": "121.705",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Sol",
+    "value": "121.815",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Tour",
+    "value": "118.700",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Tour",
+    "value": "120.500",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "ORLY Tour",
+    "value": "135.000",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "118.700",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "118.855",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "121.500",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "123.875",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "124.450",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "127.750",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "ORLY Gonio",
+    "value": "128.380",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "ORLY",
+    "value": "126.505",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "ORLY",
+    "value": "131.355",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "ORLY",
+    "value": "131.510",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 07 (III.",
+    "name": "OLE",
+    "value": "108.15",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 25 (III.",
+    "name": "OLW",
+    "value": "111.75",
+    "hor": "H24"
+   }
+  ],
+  "LFPT": [
+   {
+    "type": "TWR",
+    "name": "PONTOISE Tour",
+    "value": "121.200",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PONTOISE Gonio",
+    "value": "121.200",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "PONTOISE",
+    "value": "124.125",
+    "hor": "HO"
+   }
+  ],
+  "LFPV": [
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "119.425",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "123.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "246.950",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "278.425",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "VILLA Approche",
+    "value": "374.625",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "VILLA Tour",
+    "value": "121.750",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "VILLA Tour",
+    "value": "128.950",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "VILLA Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "VILLA Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "VILLA Tour",
+    "value": "343.175",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "LOC 09 (I)",
+    "name": "VVE",
+    "value": "111.35",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 27 (II)",
+    "name": "VVO",
+    "value": "110.75",
+    "hor": "H24"
+   }
+  ],
+  "LFQA": [
+   {
+    "type": "AFIS",
+    "name": "PRUNAY Information",
+    "value": "134.930",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "PRUNAY",
+    "value": "134.930",
+    "hor": "HO"
+   }
+  ],
+  "LFQB": [
+   {
+    "type": "AFIS",
+    "name": "TROYES Information",
+    "value": "123.730",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "TROYES Gonio",
+    "value": "123.730",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "TROYES",
+    "value": "123.730",
+    "hor": ""
+   }
+  ],
+  "LFQE": [
+   {
+    "type": "APP",
+    "name": "ETAIN Approche",
+    "value": "120.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "ETAIN Approche",
+    "value": "374.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ETAIN Sol",
+    "value": "138.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "ETAIN Tour",
+    "value": "118.950",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ETAIN Gonio",
+    "value": "120.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "ETAIN Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFQG": [
+   {
+    "type": "AFIS",
+    "name": "NEVERS Information",
+    "value": "120.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "NEVERS",
+    "value": "120.605",
+    "hor": "HX"
+   }
+  ],
+  "LFQM": [
+   {
+    "type": "AFIS",
+    "name": "LA VEZE Information",
+    "value": "122.205",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "BESANCON",
+    "value": "122.205",
+    "hor": "HO"
+   }
+  ],
+  "LFQP": [
+   {
+    "type": "FIS",
+    "name": "PHALSBOURG Information",
+    "value": "118.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "PHALSBOURG Approche",
+    "value": "118.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "PHALSBOURG Approche",
+    "value": "376.050",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "PHALSBOURG Precision",
+    "value": "376.050",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "PHALSBOURG Radar",
+    "value": "118.450",
+    "hor": ""
+   },
+   {
+    "type": "SRE",
+    "name": "PHALSBOURG Radar",
+    "value": "376.050",
+    "hor": ""
+   },
+   {
+    "type": "TWR",
+    "name": "PHALSBOURG Sol",
+    "value": "139.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "PHALSBOURG Tour",
+    "value": "129.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "PHALSBOURG Tour",
+    "value": "397.375",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "PHALSBOURG Gonio",
+    "value": "118.450",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PHALSBOURG Gonio",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PHALSBOURG Gonio",
+    "value": "123.500",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "PHALSBOURG Gonio",
+    "value": "129.800",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "PHALSBOURG",
+    "value": "143.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "LOC 24 (I)",
+    "name": "PB",
+    "value": "110.15",
+    "hor": "H24"
+   }
+  ],
+  "LFQQ": [
+   {
+    "type": "FIS",
+    "name": "LILLE Information",
+    "value": "126.480",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "LILLE Information",
+    "value": "129.360",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "LILLE Information",
+    "value": "132.540",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "LILLE Information",
+    "value": "132.610",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "LILLE Information",
+    "value": "134.825",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "120.275",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "122.060",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "125.500",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "126.480",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "129.360",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LILLE Approche",
+    "value": "134.825",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LILLE Sol",
+    "value": "121.855",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LILLE Tour",
+    "value": "118.555",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LILLE Gonio",
+    "value": "118.555",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LILLE Gonio",
+    "value": "126.480",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LILLE Gonio",
+    "value": "129.360",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LILLE Gonio",
+    "value": "134.825",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LILLE",
+    "value": "119.330",
+    "hor": "HO"
+   },
+   {
+    "type": "LOC 26 (III.",
+    "name": "LIL",
+    "value": "110.75",
+    "hor": "H24"
+   }
+  ],
+  "LFQT": [
+   {
+    "type": "TWR",
+    "name": "MERVILLE Sol",
+    "value": "121.680",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "MERVILLE Tour",
+    "value": "119.075",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "MERVILLE Gonio",
+    "value": "119.075",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "MERVILLE",
+    "value": "127.905",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MERVILLE",
+    "value": "119.075",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 22 (I.E.",
+    "name": "MER",
+    "value": "109.35",
+    "hor": "H24"
+   }
+  ],
+  "LFRB": [
+   {
+    "type": "FIS",
+    "name": "IROISE Information",
+    "value": "119.575",
+    "hor": "HO"
+   },
+   {
+    "type": "FIS",
+    "name": "IROISE Information",
+    "value": "135.830",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "IROISE Approche",
+    "value": "125.860",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "BRETAGNE Tour",
+    "value": "120.105",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "BRETAGNE Gonio",
+    "value": "120.105",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "IROISE Gonio",
+    "value": "119.575",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "IROISE Gonio",
+    "value": "125.860",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "IROISE Gonio",
+    "value": "135.830",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "BRETAGNE",
+    "value": "129.355",
+    "hor": "HO"
+   }
+  ],
+  "LFRC": [
+   {
+    "type": "AFIS",
+    "name": "CHERBOURG Information",
+    "value": "119.630",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "CHERBOURG",
+    "value": "119.630",
+    "hor": "HX"
+   }
+  ],
+  "LFRD": [
+   {
+    "type": "TWR",
+    "name": "DINARD Tour",
+    "value": "120.155",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "DINARD Gonio",
+    "value": "120.155",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "DINARD",
+    "value": "124.580",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "DINARD",
+    "value": "120.155",
+    "hor": "HX"
+   }
+  ],
+  "LFRG": [
+   {
+    "type": "TWR",
+    "name": "DEAUVILLE Sol",
+    "value": "118.305",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "DEAUVILLE Tour",
+    "value": "118.305",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "DEAUVILLE Gonio",
+    "value": "118.305",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "DEAUVILLE",
+    "value": "119.180",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "DEAUVILLE",
+    "value": "118.305",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 30 (I.E.",
+    "name": "DV",
+    "value": "111.55",
+    "hor": "H24"
+   }
+  ],
+  "LFRH": [
+   {
+    "type": "APP",
+    "name": "LORIENT Approche",
+    "value": "122.100",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LORIENT Approche",
+    "value": "122.300",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LORIENT Approche",
+    "value": "122.700",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LORIENT Approche",
+    "value": "123.000",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LORIENT Approche",
+    "value": "231.875",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "LORIENT Precision",
+    "value": "118.175",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "LORIENT Precision",
+    "value": "328.550",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "LORIENT Radar",
+    "value": "362.300",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LORIENT Sol",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LORIENT Sol",
+    "value": "387.600",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LORIENT Tour",
+    "value": "122.700",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LORIENT Tour",
+    "value": "281.550",
+    "hor": "HO"
+   },
+   {
+    "type": "AFIS",
+    "name": "LORIENT Info",
+    "value": "122.700",
+    "hor": "HX"
+   },
+   {
+    "type": "VDF",
+    "name": "LORIENT Gonio",
+    "value": "123.300",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LORIENT Gonio",
+    "value": "269.200",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LORIENT",
+    "value": "129.125",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 25 (II)",
+    "name": "BH",
+    "value": "108.15",
+    "hor": "H24"
+   }
+  ],
+  "LFRI": [
+   {
+    "type": "AFIS",
+    "name": "LA ROCHE Information",
+    "value": "119.905",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LA ROCHE",
+    "value": "119.905",
+    "hor": "HO"
+   }
+  ],
+  "LFRJ": [
+   {
+    "type": "APP",
+    "name": "LANDI Approche",
+    "value": "122.400",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "LANDI Approche",
+    "value": "357.025",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "LANDI Precision",
+    "value": "118.800",
+    "hor": "HO"
+   },
+   {
+    "type": "PAR",
+    "name": "LANDI Precision",
+    "value": "259.700",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "LANDI Radar",
+    "value": "120.900",
+    "hor": "HO"
+   },
+   {
+    "type": "SRE",
+    "name": "LANDI Radar",
+    "value": "377.225",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LANDI Tour",
+    "value": "119.200",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LANDI Tour",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LANDI Tour",
+    "value": "233.750",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "LANDI Tour",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LANDI Gonio",
+    "value": "118.800",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LANDI Gonio",
+    "value": "119.200",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LANDI Gonio",
+    "value": "119.700",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LANDI Gonio",
+    "value": "120.900",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "LANDI Gonio",
+    "value": "122.400",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LANDI Gonio",
+    "value": "233.750",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LANDI Gonio",
+    "value": "257.800",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LANDI Gonio",
+    "value": "259.700",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LANDI Gonio",
+    "value": "357.025",
+    "hor": "HO"
+   },
+   {
+    "type": "UDF",
+    "name": "LANDI Gonio",
+    "value": "377.225",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "LANDI",
+    "value": "142.225",
+    "hor": "HO"
+   }
+  ],
+  "LFRK": [
+   {
+    "type": "TWR",
+    "name": "CAEN Sol",
+    "value": "121.790",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "CAEN Tour",
+    "value": "134.530",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "CAEN Gonio",
+    "value": "134.530",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "CAEN",
+    "value": "123.080",
+    "hor": "H24"
+   },
+   {
+    "type": "A/A",
+    "name": "CAEN",
+    "value": "134.530",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 30 (I.E.",
+    "name": "CN",
+    "value": "110.95",
+    "hor": "H24"
+   }
+  ],
+  "LFRL": [
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "119.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "120.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "275.275",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC Approche",
+    "value": "378.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LANVEOC-approche",
+    "value": "122.100",
+    "hor": "HORS ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LANVEOC Precision",
+    "value": "119.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LANVEOC Precision",
+    "value": "343.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "LANVEOC Radar",
+    "value": "120.600",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "LANVEOC Radar",
+    "value": "275.275",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LANVEOC Sol",
+    "value": "121.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LANVEOC Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LANVEOC Tour",
+    "value": "123.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LANVEOC Tour",
+    "value": "378.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LANVEOC Gonio",
+    "value": "119.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LANVEOC Gonio",
+    "value": "275.275",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "LANVEOC Gonio",
+    "value": "343.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "ATIS",
+    "name": "LANVEOC",
+    "value": "118.840",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "ATIS",
+    "name": "LANVEOC",
+    "value": "143.475",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFRM": [
+   {
+    "type": "AFIS",
+    "name": "LE MANS Information",
+    "value": "125.905",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LE MANS",
+    "value": "125.905",
+    "hor": "HX"
+   }
+  ],
+  "LFRN": [
+   {
+    "type": "FIS",
+    "name": "RENNES Information",
+    "value": "120.350",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "RENNES Information",
+    "value": "126.950",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "RENNES Information",
+    "value": "134.000",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "RENNES Information",
+    "value": "134.200",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "RENNES Approche",
+    "value": "120.350",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "RENNES Approche",
+    "value": "126.950",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "RENNES Approche",
+    "value": "134.000",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "RENNES Approche",
+    "value": "134.200",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "RENNES Sol",
+    "value": "121.730",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "RENNES Tour",
+    "value": "120.505",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "RENNES Gonio",
+    "value": "120.505",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "RENNES Gonio",
+    "value": "126.950",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "RENNES Gonio",
+    "value": "134.000",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "RENNES",
+    "value": "136.405",
+    "hor": "H24"
+   }
+  ],
+  "LFRO": [
+   {
+    "type": "AFIS",
+    "name": "LANNION Information",
+    "value": "118.405",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "LANNION",
+    "value": "118.405",
+    "hor": "HO"
+   }
+  ],
+  "LFRQ": [
+   {
+    "type": "TWR",
+    "name": "QUIMPER Tour",
+    "value": "118.625",
+    "hor": ""
+   },
+   {
+    "type": "A/A",
+    "name": "QUIMPER",
+    "value": "118.625",
+    "hor": ""
+   }
+  ],
+  "LFRS": [
+   {
+    "type": "FIS",
+    "name": "NANTES Information",
+    "value": "122.800",
+    "hor": "HO"
+   },
+   {
+    "type": "FIS",
+    "name": "NANTES Information",
+    "value": "130.275",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "119.400",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "119.535",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "120.130",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "121.215",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "124.250",
+    "hor": "HO"
+   },
+   {
+    "type": "APP",
+    "name": "NANTES Approche",
+    "value": "124.430",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "NANTES Sol",
+    "value": "121.655",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "NANTES Tour",
+    "value": "118.655",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "118.655",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "120.130",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "121.500",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "122.800",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "124.250",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "124.430",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "NANTES Gonio",
+    "value": "130.275",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "NANTES",
+    "value": "126.930",
+    "hor": "HO"
+   }
+  ],
+  "LFRT": [
+   {
+    "type": "AFIS",
+    "name": "SAINT BRIEUC Information",
+    "value": "118.455",
+    "hor": "HX"
+   },
+   {
+    "type": "A/A",
+    "name": "SAINT BRIEUC",
+    "value": "118.455",
+    "hor": "HX"
+   }
+  ],
+  "LFRU": [
+   {
+    "type": "AFIS",
+    "name": "MORLAIX Information",
+    "value": "118.505",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MORLAIX",
+    "value": "118.505",
+    "hor": "HX"
+   }
+  ],
+  "LFRV": [
+   {
+    "type": "AFIS",
+    "name": "VANNES Information",
+    "value": "122.605",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "VANNES",
+    "value": "122.605",
+    "hor": "HX"
+   }
+  ],
+  "LFRZ": [
+   {
+    "type": "TWR",
+    "name": "SAINT NAZAIRE Tour",
+    "value": "118.950",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "SAINT NAZAIRE",
+    "value": "118.950",
+    "hor": "HO"
+   }
+  ],
+  "LFSB": [
+   {
+    "type": "FIS",
+    "name": "BALE Information",
+    "value": "129.250",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "BALE Information",
+    "value": "134.680",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Approche",
+    "value": "125.160",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Approche",
+    "value": "127.285",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Approche",
+    "value": "128.910",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Approche",
+    "value": "129.250",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Approche",
+    "value": "133.510",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Controle",
+    "value": "125.415",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Controle",
+    "value": "126.990",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "BALE Controle",
+    "value": "129.250",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BALE Prevol",
+    "value": "121.955",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BALE Sol",
+    "value": "121.605",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "BALE Tour",
+    "value": "129.250",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BALE Gonio",
+    "value": "128.910",
+    "hor": "H24"
+   },
+   {
+    "type": "VDF",
+    "name": "BALE Gonio",
+    "value": "133.510",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "BALE",
+    "value": "127.880",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 33 (I.E.",
+    "name": "BLU",
+    "value": "109.35",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 15 (III.",
+    "name": "MH",
+    "value": "111.55",
+    "hor": "H24"
+   }
+  ],
+  "LFSD": [
+   {
+    "type": "AFIS",
+    "name": "DIJON Information",
+    "value": "118.330",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "DIJON",
+    "value": "118.330",
+    "hor": ""
+   }
+  ],
+  "LFSG": [
+   {
+    "type": "AFIS",
+    "name": "EPINAL Information",
+    "value": "120.205",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "EPINAL",
+    "value": "120.205",
+    "hor": "HX"
+   }
+  ],
+  "LFSI": [
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "134.775",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "342.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "SAINT DIZIER Approche",
+    "value": "388.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "SAINT DIZIER Precision",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "140.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "335.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "355.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "SAINT DIZIER Radar",
+    "value": "362.975",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT DIZIER Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT DIZIER Tour",
+    "value": "140.175",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT DIZIER Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT DIZIER Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "SAINT DIZIER Tour",
+    "value": "374.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "134.775",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "138.350",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "335.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "342.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "355.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "362.975",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "374.875",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "SAINT DIZIER Gonio",
+    "value": "388.800",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFSL": [
+   {
+    "type": "TWR",
+    "name": "BRIVE Tour",
+    "value": "121.130",
+    "hor": "HO (voir/see"
+   },
+   {
+    "type": "AFIS",
+    "name": "BRIVE Information",
+    "value": "121.130",
+    "hor": "HX (voir/see"
+   },
+   {
+    "type": "A/A",
+    "name": "BRIVE",
+    "value": "121.130",
+    "hor": "HX"
+   },
+   {
+    "type": "LOC 29 (I.E.",
+    "name": "BVC",
+    "value": "109.95",
+    "hor": "H24"
+   }
+  ],
+  "LFSM": [
+   {
+    "type": "AFIS",
+    "name": "MONTBELIARD Information",
+    "value": "132.030",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "MONBELLIARD",
+    "value": "132.030",
+    "hor": "HX"
+   }
+  ],
+  "LFSN": [
+   {
+    "type": "AFIS",
+    "name": "NANCY Information",
+    "value": "119.605",
+    "hor": "HO"
+   }
+  ],
+  "LFSO": [
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "127.250",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "139.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "142.150",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "259.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "267.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "292.125",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "292.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "315.025",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "336.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "OCHEY Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "OCHEY Sol",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "OCHEY Sol",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "OCHEY Tour",
+    "value": "130.275",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "OCHEY TOUR",
+    "value": "344.025",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "OCHEY Gonio",
+    "value": "127.250",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "OCHEY Gonio",
+    "value": "130.275",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "OCHEY Gonio",
+    "value": "139.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "OCHEY Gonio",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFST": [
+   {
+    "type": "FIS",
+    "name": "STRASBOURG Information",
+    "value": "119.450",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "STRASBOURG Information",
+    "value": "119.580",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "STRASBOURG Information",
+    "value": "132.215",
+    "hor": "H24"
+   },
+   {
+    "type": "FIS",
+    "name": "STRASBOURG Information",
+    "value": "136.135",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "118.185",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "119.580",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "120.410",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "132.215",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "133.100",
+    "hor": "H24"
+   },
+   {
+    "type": "APP",
+    "name": "STRASBOURG Approche",
+    "value": "134.575",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "STRASBOURG Sol",
+    "value": "121.805",
+    "hor": "H24"
+   },
+   {
+    "type": "TWR",
+    "name": "STRASBOURG Tour",
+    "value": "119.250",
+    "hor": "H24"
+   },
+   {
+    "type": "ATIS",
+    "name": "STRASBOURG",
+    "value": "126.930",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 05 (I.E.",
+    "name": "ENT",
+    "value": "108.55",
+    "hor": "H24"
+   },
+   {
+    "type": "LOC 23 (III.",
+    "name": "STZ",
+    "value": "109.55",
+    "hor": "H24"
+   }
+  ],
+  "LFSX": [
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "129.925",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "142.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "240.450",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "282.025",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "298.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "338.725",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "344.175",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "LUXEUIL Approche",
+    "value": "362.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LUXEUIL App",
+    "value": "139.850",
+    "hor": "HORS ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LUXEUIL Precision",
+    "value": "142.525",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LUXEUIL Precision",
+    "value": "265.900",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "LUXEUIL Precision",
+    "value": "336.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "122.100",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "244.350",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "LUXEUIL Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFTH": [
+   {
+    "type": "APP",
+    "name": "TOULON Approche",
+    "value": "126.325",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "TOULON Approche",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "TOULON Approche",
+    "value": "339.250",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "TOULON Approche",
+    "value": "378.075",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "APP",
+    "name": "TOULON Transit",
+    "value": "118.825",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "TOULON Precision",
+    "value": "123.300",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "TOULON Precision",
+    "value": "125.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "PAR",
+    "name": "TOULON Precision",
+    "value": "232.525",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "TOULON Radar",
+    "value": "125.200",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "SRE",
+    "name": "TOULON Radar",
+    "value": "342.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "121.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "121.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "257.800",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "TWR",
+    "name": "HYERES Tour",
+    "value": "343.325",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "HYERES Gonio",
+    "value": "118.825",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "HYERES Gonio",
+    "value": "121.500",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "VDF",
+    "name": "HYERES Gonio",
+    "value": "126.325",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "HYERES Gonio",
+    "value": "243.000",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "HYERES Gonio",
+    "value": "339.250",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "UDF",
+    "name": "HYERES Gonio",
+    "value": "342.575",
+    "hor": "HOR ATS"
+   },
+   {
+    "type": "ATIS",
+    "name": "HYERES",
+    "value": "129.650",
+    "hor": "HOR ATS"
+   }
+  ],
+  "LFTW": [
+   {
+    "type": "TWR",
+    "name": "GARONS Sol",
+    "value": "121.800",
+    "hor": "HO"
+   },
+   {
+    "type": "TWR",
+    "name": "GARONS Tour",
+    "value": "123.200",
+    "hor": "HO"
+   },
+   {
+    "type": "VDF",
+    "name": "GARONS Gonio",
+    "value": "123.200",
+    "hor": "HO"
+   },
+   {
+    "type": "ATIS",
+    "name": "GARONS",
+    "value": "129.355",
+    "hor": "HO"
+   },
+   {
+    "type": "A/A",
+    "name": "GARONS",
+    "value": "123.200",
+    "hor": "HO"
+   }
+  ],
+  "LFTZ": [
+   {
+    "type": "AFIS",
+    "name": "LA MOLE Information",
+    "value": "118.130",
+    "hor": "HO"
+   }
+  ]
+ }
+}

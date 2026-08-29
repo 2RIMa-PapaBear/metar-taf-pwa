@@ -1,0 +1,99 @@
+/* ================================================================
+ * STYLES DE LA BOUSSOLE DU VENT
+ * Seules les classes/animations réellement utilisées par le rendu
+ * SVG inline (engine.js) sont conservées ici.
+ * ================================================================ */
+
+/* Variables CSS pour la palette de couleurs du vent.
+ * Source de vérité unique — référencée par getWindColorBySpeed() (engine.js). */
+:root {
+    --wind-calm: #94A3B8;
+    --wind-light: #4ADE80;
+    --wind-moderate: #FBBF24;
+    --wind-strong: #F97316;
+    --wind-dangerous: #EF4444;
+    --wind-glow: 8px;
+}
+
+/* ========== ANIMATION DE LA FLÈCHE DU VENT ========== */
+
+/**
+ * Animation d'apparition de la flèche du vent
+ * Pulse lissé avec elastic bounce
+ */
+@keyframes windArrowPulseIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(var(--wind-angle, 180deg));
+        filter: blur(2px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.08) rotate(var(--wind-angle, 180deg));
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(var(--wind-angle, 180deg));
+    }
+}
+
+/* ========== COMPOSANTS UTILISÉS ========== */
+
+/**
+ * Flèche du vent : transitions fluides lors du changement de direction/vitesse.
+ */
+.wind-arrow {
+    transition:
+        transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+        filter 0.3s ease,
+        opacity 0.3s ease;
+    transform-origin: center;
+    will-change: transform;
+}
+
+/* ========== BULLES DES PISTES (RUNWAYS) ========== */
+
+/**
+ * Bulle de piste active/sélectionnée
+ */
+.rwy-bubble {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(4px);
+}
+
+.rwy-bubble:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.rwy-bubble.active {
+    font-weight: 900;
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+}
+
+/* ========== ACCESSIBILITÉ ========== */
+
+/**
+ * Réduction des animations pour utilisateurs sensibles
+ */
+@media (prefers-reduced-motion: reduce) {
+    .wind-arrow {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .rwy-bubble {
+        transition: none !important;
+    }
+}
+
+/**
+ * Mode contraste élevé
+ */
+@media (prefers-contrast: more) {
+    .rwy-bubble {
+        border-width: 2px;
+    }
+}

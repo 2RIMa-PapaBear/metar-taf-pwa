@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual - METAR/TAF Visualizer</title>
+    <style>
+        :root {
+            --primary: #0288D1;
+            --text: #333;
+            --bg: #f9fafb;
+            --panel: #ffffff;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--panel);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h2 {
+            color: #00695C;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2E7D32;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #0288D1 0%, #026AA7 100%);
+            color: #ffffff;
+            padding: 10px 18px 10px 14px;
+            text-decoration: none;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 14px rgba(2, 136, 209, 0.35);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 136, 209, 0.45);
+            filter: brightness(1.08);
+        }
+        .btn-back:active {
+            transform: translateY(0);
+        }
+        .btn-back svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink:0;
+            transition: transform 0.18s ease;
+        }
+        .btn-back:hover svg {
+            transform: translateX(-3px);
+        }
+        .btn-floating-toc {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary);
+            color: #ffffff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 1000;
+        }
+        .btn-floating-toc:hover {
+            background-color: #00695C;
+            transform: scale(1.05);
+        }
+        .toc {
+            background: #f0f7ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        @media print {
+            .btn-back { display: none; }
+            .btn-floating-toc { display: none; }
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            table { font-size: 0.9em; }
+        }
+
+        /* ============================================================
+         * MOCKUPS — Faithful reproduction of the real banners
+         * ============================================================ */
+        .mockup { margin: 24px 0; }
+        .mockup-caption {
+            text-align: center;
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .mockup-stage {
+            background: #020617;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #F8FAFC;
+        }
+
+        /* --- GO / NO-GO banner --- */
+        .mck-gonogo {
+            border-radius: 10px;
+            border: 1px solid;
+            border-left-width: 5px;
+            padding: 16px 20px;
+        }
+        .mck-gonogo-header { display: flex; align-items: center; gap: 14px; }
+        .mck-gonogo-icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; border: 3px solid;
+        }
+        .mck-gonogo-verdict { font-size: 22px; font-weight: 900; letter-spacing: 1px; line-height: 1.1; }
+        .mck-gonogo-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+        .mck-gonogo-cat {
+            text-align: center; padding: 6px 14px;
+            background: rgba(0,0,0,0.35); border-radius: 8px; margin-left: auto;
+        }
+        .mck-gonogo-cat-lbl { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; }
+        .mck-gonogo-cat-val { font-size: 18px; font-weight: 800; }
+        .mck-reasons { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .mck-reason {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 11px; border-radius: 6px; font-size: 12.5px;
+        }
+        .mck-reason-icon { font-size: 16px; flex-shrink: 0; }
+        .mck-go   { border-color: #10B981; background: rgba(16,185,129,0.08); }
+        .mck-go .mck-gonogo-icon { background: rgba(16,185,129,0.13); border-color: #10B981; color: #10B981; }
+        .mck-go .mck-gonogo-verdict, .mck-go .mck-gonogo-cat-val { color: #10B981; }
+        .mck-caution { border-color: #F59E0B; background: rgba(245,158,11,0.08); }
+        .mck-caution .mck-gonogo-icon { background: rgba(245,158,11,0.13); border-color: #F59E0B; color: #F59E0B; }
+        .mck-caution .mck-gonogo-verdict, .mck-caution .mck-gonogo-cat-val { color: #F59E0B; }
+        .mck-nogo { border-color: #EF4444; background: rgba(239,68,68,0.08); }
+        .mck-nogo .mck-gonogo-icon { background: rgba(239,68,68,0.13); border-color: #EF4444; color: #EF4444; }
+        .mck-nogo .mck-gonogo-verdict, .mck-nogo .mck-gonogo-cat-val { color: #EF4444; }
+        .mck-r-danger { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+        .mck-r-caution { background: rgba(245,158,11,0.1); color: #FCD34D; }
+        .mck-r-ok { background: rgba(16,185,129,0.1); color: #6EE7B7; }
+
+        /* --- Daylight window banner --- */
+        .mck-window {
+            border-radius: 10px; border: 1px solid; border-left-width: 4px;
+            padding: 14px 18px;
+        }
+        .mck-window-content { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .mck-w-icon {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; border: 2px solid; flex-shrink: 0;
+        }
+        .mck-w-status { font-weight: 800; font-size: 13px; letter-spacing: 0.5px; }
+        .mck-w-detail { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+        .mck-w-times { display: flex; gap: 16px; margin-left: auto; flex-wrap: wrap; }
+        .mck-w-time { text-align: center; }
+        .mck-w-time-lbl { color: #94A3B8; text-transform: uppercase; font-size: 9px; letter-spacing: 1px; }
+        .mck-w-time-val { font-family: 'Courier New', monospace; font-weight: 700; color: #F8FAFC; font-size: 14px; }
+        .mck-w-open { border-color: #10B981; background: rgba(16,185,129,0.12); }
+        .mck-w-open .mck-w-icon { background: rgba(16,185,129,0.13); border-color: #10B981; }
+        .mck-w-open .mck-w-status { color: #10B981; }
+        .mck-w-closing { border-color: #F59E0B; background: rgba(245,158,11,0.12); }
+        .mck-w-closing .mck-w-icon { background: rgba(245,158,11,0.13); border-color: #F59E0B; }
+        .mck-w-closing .mck-w-status { color: #F59E0B; }
+        .mck-w-night { border-color: #EF4444; background: rgba(239,68,68,0.12); }
+        .mck-w-night .mck-w-icon { background: rgba(239,68,68,0.13); border-color: #EF4444; }
+        .mck-w-night .mck-w-status { color: #EF4444; }
+
+        /* --- Regional map (schematic) --- */
+        .mck-map {
+            border-radius: 8px; overflow: hidden; border: 1px solid #1E293B;
+            position: relative; height: 220px;
+            background:
+                linear-gradient(135deg, #0a1525 0%, #0d1830 100%);
+        }
+        .mck-map-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .mck-map-route {
+            position: absolute; top: 30%; left: 15%; width: 60%; height: 0;
+            border-top: 2.5px dashed #FBBF24; transform: rotate(18deg); transform-origin: left center;
+        }
+        .mck-map-pin {
+            position: absolute; transform: translate(-50%, -50%);
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        .mck-map-pin-lg { width: 22px; height: 22px; border-width: 3px; }
+        .mck-pin-vfr { background: #4ADE80; }
+        .mck-pin-mvfr { background: #38BDF8; }
+        .mck-pin-ifr { background: #F87171; }
+        .mck-pin-lifr { background: #D946EF; }
+        .mck-pin-current { background: #FBBF24; }
+        .mck-map-label {
+            position: absolute; transform: translate(-50%, 12px);
+            font-size: 9px; color: #94A3B8; font-family: monospace; white-space: nowrap;
+        }
+        .mck-map-radar {
+            position: absolute; top: 55%; left: 45%;
+            width: 90px; height: 60px; border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(96,165,250,0.25), rgba(74,222,128,0.2) 50%, transparent 70%);
+            filter: blur(2px);
+        }
+        .mck-map-legend {
+            display: flex; gap: 14px; flex-wrap: wrap;
+            padding: 8px 4px 0; font-size: 11px; color: #94A3B8;
+        }
+        .mck-ml-item { display: flex; align-items: center; gap: 5px; }
+        .mck-ml-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back to app</a>
+        <h1>📖 USER MANUAL — METAR/TAF Visualizer</h1>
+<h2>Complete Guide for VFR and IFR Pilots</h2>
+<hr />
+<h2 id="toc">📑 TABLE OF CONTENTS</h2>
+<ol>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#interface">Interface and Features</a></li>
+<li><a href="#decision">Decision Support</a></li>
+<li><a href="#situational">Situational Awareness</a></li>
+<li><a href="#navigation">Cross-Country Navigation</a></li>
+<li><a href="#frequencies">Frequencies &amp; Airfield Info</a></li>
+<li><a href="#comfort">Comfort &amp; Customization</a></li>
+<li><a href="#metar-decoding">METAR Decoding</a></li>
+<li><a href="#taf-decoding">TAF Decoding</a></li>
+<li><a href="#vfr-minima">VFR Minima (VMC)</a></li>
+<li><a href="#examples">Practical Examples</a></li>
+<li><a href="#glossary">Aviation Glossary</a></li>
+<li><a href="#tips">Usage Tips</a></li>
+</ol>
+<hr />
+
+<!-- ====================== QUICK START ====================== -->
+<h2 id="quick-start">🚀 QUICK START</h2>
+<h3>First Use</h3>
+<ol>
+<li>Enter an <strong>ICAO code</strong> (e.g. <code>KJFK</code>) or an <strong>airfield name</strong> (e.g. <code>New York</code>) in the search bar.</li>
+<li>Click <strong>"METAR"</strong> (current observation) or <strong>"TAF"</strong> (forecast).</li>
+<li>The chart and all widgets draw automatically: dashboard (wind, flight category, GO/NO-GO), flight window, regional map, takeoff performance, frequencies.</li>
+</ol>
+<div class="success">
+<p><strong>Tip</strong>: You can also paste a raw METAR or TAF message directly into the editor area. The tool will decode and display it.</p>
+</div>
+
+<h3>Arrival Cursor</h3>
+<p>Click and drag on the chart to set your <strong>planned arrival time</strong> (UTC). All TAF forecasts recalculate at that instant. Double-click to reset.</p>
+
+<!-- ====================== INTERFACE ====================== -->
+<h2 id="interface">🎨 INTERFACE AND FEATURES</h2>
+
+<h3>Search and Autocomplete</h3>
+<ul>
+<li><strong>Smart search</strong>: type an ICAO code (<code>KLAX</code>) or a city/airfield name (<code>Boston</code>, <code>Logan</code>).</li>
+<li><strong>Autocomplete</strong> across <strong>17,000+ airports</strong> worldwide.</li>
+<li><strong>Nearest airport</strong>: if an airfield has no METAR/TAF, the tool automatically shows the nearest one (with a warning).</li>
+</ul>
+
+<h3>Raw Message Editor</h3>
+<p>The editor area displays the raw METAR/TAF message with <strong>syntax highlighting</strong>. You can edit it manually — the display updates in real time.</p>
+
+<h3>Dashboard (3 cells)</h3>
+<p>Below the search bar, three cells appear automatically:</p>
+<table>
+<thead><tr><th>Cell</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><strong>🌬️ Wind Compass</strong></td><td>Wind rose with average wind, gusts, direction. Automatic best-runway selection. Click a runway bubble to force a choice.</td></tr>
+<tr><td><strong>🏷️ Flight Category</strong></td><td>VFR / MVFR / IFR / LIFR badge computed from ceiling and visibility.</td></tr>
+<tr><td><strong>🟢 GO / NO-GO</strong></td><td>Synthetic flight decision verdict (see "Decision Support").</td></tr>
+</tbody>
+</table>
+
+<h3>Favorites and History</h3>
+<ul>
+<li><strong>Favorites</strong> (left column): add your frequent airports with the star icon.</li>
+<li><strong>History</strong> (right column): your recent searches for quick access.</li>
+</ul>
+
+<h3>Header Buttons</h3>
+<table>
+<thead><tr><th>Button</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>🇫🇷 / 🇬🇧</td><td>Toggle French / English language</td></tr>
+<tr><td>📖 Manual</td><td>Opens this manual</td></tr>
+<tr><td>🌙 Night mode</td><td>Red filter preserving night vision</td></tr>
+<tr><td>🟦🟧 Local / Navigation</td><td>Toggle between local flight and cross-country navigation</td></tr>
+<tr><td>⬜ Express briefing</td><td>Cockpit view (verdict, wind, window in large format)</td></tr>
+<tr><td>🔗 Share</td><td>Generates a briefing link / QR code</td></tr>
+<tr><td>🔔 Watchdog</td><td>Automatic favorite monitoring with notifications</td></tr>
+</tbody>
+</table>
+
+<h3>My Aircraft Fleet</h3>
+<p>You rarely fly a single type of aircraft. <strong>Fleet management</strong> lets you register your aircraft, each with its own reference distances from the Pilot Operating Handbook (POH):</p>
+<ul>
+<li><strong>Adding an aircraft</strong>: click the "My fleet" button (plane icon, in the takeoff widget). Enter the name, registration, type and ground roll / 50 ft obstacle distances.</li>
+<li><strong>Autocomplete</strong>: as you type the name/model, the tool automatically suggests the most common aircraft (Cessna, Piper, Robin, Diamond, Cirrus…) with their reference distances pre-filled. <em>Always verify against your aircraft's POH.</em></li>
+<li><strong>Active aircraft</strong>: one aircraft is selected as active for performance calculations. Switch with a single click.</li>
+<li><strong>Safety margin</strong>: each aircraft has its own margin (%) applied to the calculated distances.</li>
+<li><strong>Persistence</strong>: your fleet is stored in your browser.</li>
+</ul>
+
+<!-- ====================== DECISION SUPPORT ====================== -->
+<h2 id="decision">🟢 DECISION SUPPORT</h2>
+
+<h3>GO / NO-GO Banner</h3>
+<p>The flagship feature: a banner that <strong>crosses all available data</strong> and displays a verdict at a glance.</p>
+<table>
+<thead><tr><th>Verdict</th><th>Color</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><strong>GO</strong></td><td>🟢 Green</td><td>All parameters are green — you can fly safely</td></tr>
+<tr><td><strong>CAUTION</strong></td><td>🟠 Orange</td><td>Flying possible but stay alert — one or more parameters are marginal</td></tr>
+<tr><td><strong>NO-GO</strong></td><td>🔴 Red</td><td>Flight not recommended or prohibited — a critical parameter is exceeded</td></tr>
+</tbody>
+</table>
+<p><strong>Criteria automatically evaluated</strong>:</p>
+<ol>
+<li>Aeronautical night</li>
+<li>IFR / LIFR conditions (ceiling and visibility)</li>
+<li>Personal minima danger alerts (red) → NO-GO</li>
+<li>MVFR conditions → CAUTION</li>
+<li>Personal minima warning alerts (orange) → CAUTION</li>
+<li>High density altitude (degraded performance)</li>
+<li>Crosswind (based on active runway)</li>
+<li>Falling QNH trend (imminent deterioration)</li>
+<li>Active SIGMET / AIRMET in the area</li>
+</ol>
+<div class="success"><p><strong>Transparency</strong>: the verdict always lists all reasons. No opaque decisions.</p></div>
+<p><strong>⚙️ button in the GO / NO-GO header</strong>: opens the configuration panel for your <strong>personal VFR minima</strong> (ceiling, visibility, wind, gusts, temperature, QNH) — see below.</p>
+
+<h3>Density Altitude Calculator</h3>
+<p><strong>Density altitude</strong> is the altitude at which the standard atmosphere (ISA) would have the same density as the actual air. This is what determines your aircraft's real performance: climb rate, takeoff distance, landing distance.</p>
+<p>Computed from the field elevation, QNH and actual outside air temperature (OAT).</p>
+
+<h3>QNH Trend (3 h)</h3>
+<p>The tool retrieves METAR history to compute the <strong>3-hour pressure trend</strong>. A rapid drop (&gt; 2 hPa/h) indicates imminent deterioration and feeds the GO / NO-GO banner.</p>
+
+<h3>Takeoff Performance Widget</h3>
+<p>Estimates your <strong>corrected takeoff distances</strong> (ground roll + 50 ft obstacle) based on density altitude, surface type and your active aircraft. Compares the result to the <strong>available runway length</strong> with a visual margin bar.</p>
+<ul>
+<li>Runway length detected automatically (editable manually).</li>
+<li>Applies your personal safety margin.</li>
+<li>Alert if the calculated distance exceeds the available runway.</li>
+</ul>
+
+<h3>Personal VFR Minima</h3>
+<p>The <strong>⚙️</strong> button in the GO / NO-GO header opens the configuration of your personal thresholds:</p>
+<ul>
+<li>Ceiling, visibility, wind, gusts (warning + danger threshold)</li>
+<li>Temperature (high + low) and QNH (high + low)</li>
+<li>Individual enable/disable for each parameter</li>
+<li>Saved in your browser, automatically restored</li>
+</ul>
+
+<!-- ====================== SITUATIONAL AWARENESS ====================== -->
+<h2 id="situational">🗺️ SITUATIONAL AWARENESS</h2>
+
+<h3>Day VFR Flight Window</h3>
+<p>Banner displaying <strong>sunrise and sunset times</strong> (UTC and local), flight window status (open / closing soon / night) and a <strong>countdown</strong> before nightfall. Updates live every minute.</p>
+<table>
+<thead><tr><th>Status</th><th>Color</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Window open</td><td>🟢 Green</td><td>You are in full daylight VFR</td></tr>
+<tr><td>Closing soon</td><td>🟠 Orange</td><td>Night is approaching (less than 30 min before sunset)</td></tr>
+<tr><td>Aeronautical night</td><td>🔴 Red</td><td>Night flight — qualifications required</td></tr>
+</tbody>
+</table>
+
+<h3>Interactive Regional Map</h3>
+<p>Open the "Regional map" panel to display:</p>
+<table>
+<thead><tr><th>Layer</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>Base map</td><td>Satellite (Esri), map, dark or terrain — via the "Satellite" selector in the toolbar</td></tr>
+<tr><td>🟦 Radar</td><td>Real-time precipitation (RainViewer) — <strong>off by default</strong>; play/pause button and time slider once enabled</td></tr>
+<tr><td>🟡 Current airfield</td><td>Yellow center marker; runway outlines colored by surface (green = grass, gray = concrete, ochre = dirt)</td></tr>
+<tr><td>Nearby airfields</td><td>Up to 25 surrounding fields with VFR/MVFR/IFR/LIFR colored markers</td></tr>
+<tr><td>🛩️ PIREPs</td><td>Pilot reports (turbulence, icing) in the area</td></tr>
+<tr><td>Airspaces</td><td>Official <strong>French SIA</strong> base (AIRAC XML) first, then openAIP — CTR, TMA, SIV, ATZ, R·P·D areas… per-family sub-toggles in the “Airspaces” menu; click a zone to highlight it and read sector, altitudes and frequency (off by default)</td></tr>
+<tr><td>📍 Radio beacons &amp; VFR points</td><td>VOR, NDB and VFR reporting points (openAIP, weekly update) — chart-style symbols, toggled one by one in the “Airspaces” menu; usable as flight-plan waypoints</td></tr>
+<tr><td>⚠️ Obstacles</td><td>Official <strong>SIA</strong> base (AIXM export, updated each AIRAC cycle): ~13,800 obstacles across France and overseas — wind turbines, pylons, masts, water towers, chimneys… — one icon per type; click for height, top altitude and <strong>lighting</strong> (shown from regional zoom, off by default)</td></tr>
+<tr><td>SIGMET / AIRMET</td><td>Polygons of active hazardous phenomena (off by default)</td></tr>
+</tbody>
+</table>
+<p><strong>Toolbar</strong> (single line): Radar · play + clock · Airspaces · SIGMET · Satellite · Airfield · + Waypoint. The clock slider adapts to the window width; radar, airspaces and SIGMET only switch on when you ask — nothing displays without your click.</p>
+<p><strong>Clicking a nearby airfield</strong>: the popup shows its decoded METAR (wind, visibility, ceiling, T/Td, QNH) and offers three actions — <strong>Load this airport</strong> (changes the observed airfield; in Navigation mode it becomes <strong>"Set as departure"</strong> and recomputes the plan), <strong>Set as destination</strong> and <strong>+ Waypoint</strong> (Navigation mode). Airfields without METAR offer the same actions.</p>
+<p><strong>Value</strong>: if nearby fields drop to MVFR/IFR, beware — the weather is closing in.</p>
+<p><strong>"Airfield" button</strong>: zooms directly to the current airfield to see runway details.</p>
+
+<h3>SIGMET / AIRMET</h3>
+<p>Detection of active <strong>SIGMETs</strong> (hazardous phenomena: thunderstorms, severe icing, turbulence) and <strong>AIRMETs</strong> (moderate) near your airfield. Feeds directly into the GO / NO-GO banner.</p>
+
+<h3>Icing Level</h3>
+<p>Retrieves the <strong>freezing level</strong> (0°C isotherm) from Open-Meteo and evaluates icing risk if clouds extend above it.</p>
+
+<!-- ====================== NAVIGATION ====================== -->
+<h2 id="navigation">✈️ CROSS-COUNTRY NAVIGATION</h2>
+
+<h3>Local / Navigation Mode</h3>
+<p>The toggle button <strong>🟦 Local / 🟧 Navigation</strong> adapts the display:</p>
+<table>
+<thead><tr><th>Mode</th><th>Display</th></tr></thead>
+<tbody>
+<tr><td>🟦 <strong>Local</strong></td><td>Real-time METAR observation, wind/active runway, density altitude, day window, imminent deterioration</td></tr>
+<tr><td>🟧 <strong>Navigation</strong></td><td>TAF forecast at arrival time (ETA), viable alternates, en-route weather</td></tr>
+</tbody>
+</table>
+<p>When you switch to Navigation mode, the <strong>"Departure → Destination" bar</strong> appears below the header, the regional map opens and the cursor lands in the Destination field — everything is ready to plan your flight.</p>
+
+<h3>Alternates Comparator</h3>
+<p>In Navigation mode, the tool automatically lists <strong>diversion airfields</strong> around your destination, with their flight category, visibility, ceiling and wind — sorted by viability for a quick decision.</p>
+
+<h3>Departure → Destination Bar</h3>
+<p>The Destination field accepts an <strong>ICAO code</strong> (LFPO) or an <strong>airfield / city name</strong> ("Poitiers"): the list proposes airfields with their <strong>distance from your departure</strong>, closest first. The selected airfield's name appears under the bar — a safeguard against typos. Changing the destination <strong>resets the flight plan</strong>: waypoints of the previous route are removed (markers you dropped on the map remain available).</p>
+
+<h3>Flight Planner</h3>
+<p>As soon as a valid destination is entered, the "Flight plan" panel recomputes on every change:</p>
+<ul>
+<li><strong>Great-circle distance</strong> and true/magnetic course (automatic declination)</li>
+<li><strong>Surface and cruise wind</strong> (Open-Meteo)</li>
+<li><strong>Ground speed and estimated time</strong> per leg and cumulated</li>
+<li><strong>Estimated fuel + legal reserves</strong> (day/night VFR)</li>
+</ul>
+
+<h3>Waypoints and Markers</h3>
+<p>Five ways to add a leg:</p>
+<ul>
+<li><strong>Airfield popup</strong> on the map: "+ Waypoint" button;</li>
+<li>the <strong>"+ Waypoint" button</strong> in the map toolbar, then click where you want it;</li>
+<li><strong>right-click</strong> anywhere on the map;</li>
+<li>the plan's <strong>"Waypoints" field</strong>: ICAO codes or <strong>waypoint names</strong>, space-separated — VOR, NDB and VFR reporting points added to the plan appear under their real name (e.g. BNE, LOR, E2), technical codes stay hidden;</li>
+<li>clicking a previously dropped marker → "+ Plan".</li>
+</ul>
+<p>Every addition is <strong>inserted at the best position</strong>: the tool tests all slots and keeps the shortest total route — an intermediate stop automatically slips in <em>before</em> a farther leg. The order of already-entered waypoints is always preserved.</p>
+<p><strong>Free markers</strong>: a point dropped away from any known airfield defaults to <strong>its coordinates</strong> (e.g. 4851N 00221W). Name it at creation, or later via the <strong>pencil</strong> in the leg list or by clicking the marker (Rename). A point dropped near a known airfield simply becomes that leg, named after the airfield.</p>
+<p><strong>Managing legs</strong>: the plan's leg list shows number, code and name, with a <strong>pencil</strong> (rename markers) and a <strong>cross</strong> to remove a leg. On the map, clicking a leg point also offers "Remove from plan" — and "Rename" for markers. Departure, arrival and legs carry their <strong>ICAO code as a label</strong> (green / red / amber); markers carry their name.</p>
+
+<h3>Saving and Importing a Plan</h3>
+<p>The folder button in the "Departure → Destination" bar offers <strong>Save (JSON)</strong> — a 100% faithful native format (named markers, altitude, TAS, fuel burn, night flight) — plus <strong>GPX export</strong> (universal GPS: SkyDemon, Garmin…) and <strong>KML</strong> (Google Earth), then <strong>Import a plan</strong> (.json, .gpx, .kml). The save folder is chosen on first use and remembered. On import, any point carrying a known ICAO code becomes that airfield; others become named free markers, and the file's order is preserved.</p>
+
+<h3>Route Weather</h3>
+<p>Displays flight-category markers for airfields along your route, to anticipate possible en-route deterioration.</p>
+
+<h3>Elevation Profile</h3>
+<p>Samples the <strong>terrain elevation profile</strong> along the route to verify compliance with VFR clearance rules (500 ft / 1000 ft). <strong>Airspaces crossed</strong> are shown too: on screen, hover the altitude band to read the sector and its frequency; on the PDF nav log, each crossing is bounded by vertical lines (same blue as the map) with the <strong>sector name and frequency</strong> written vertically between the bounds.</p>
+
+<!-- ====================== FREQUENCIES ====================== -->
+<h2 id="frequencies">📡 FREQUENCIES &amp; AIRFIELD INFO</h2>
+
+<h3>Radio Frequencies Widget</h3>
+<p>For each airfield enriched via OpenAIP, a panel displays the available <strong>radio frequencies</strong>: Tower, Ground, ATIS, Approach, etc.</p>
+
+<h3>Decoded ATIS</h3>
+<p>When the airfield publishes an <strong>ATIS</strong> (Automatic Terminal Information Service), the decoded message appears in the frequencies widget.</p>
+
+<h3>Official VAC Links</h3>
+<p>A button redirects to the country's <strong>official AIP portal</strong> (FAA for the USA, NATS for the UK, DFS for Germany…) to consult the visual approach chart (VAC).</p>
+
+<!-- ====================== COMFORT ====================== -->
+<h2 id="comfort">🌙 COMFORT &amp; CUSTOMIZATION</h2>
+
+<h3>Night Vision Mode</h3>
+<p>The 🌙 button activates a <strong>red filter</strong> across the entire interface, preserving rhodopsin (night vision). Ideal before a night flight or in a dimmed briefing room.</p>
+
+<h3>Express Briefing (Cockpit View)</h3>
+<p>The ⬜ button collapses the interface into a single centered column showing only the essentials in large format: GO/NO-GO verdict, flight category, wind/active runway, flight window. Designed for <strong>quick reading at 2 m</strong>.</p>
+
+<h3>Audio Read-Aloud</h3>
+<p>The 🔊 button reads the METAR aloud (browser speech synthesis), ATIS-style.</p>
+
+<h3>Printable Nav Log</h3>
+<p>In the "Flight plan" panel, the <strong>"Print nav log"</strong> button generates the A5 log (3-4 pages: nav log, navigation computations, performance &amp; terrain, weight &amp; balance if the aircraft is configured). A <strong>verification modal</strong> lists the automatically computed values to check before any in-flight use; once confirmed, the PDF <strong>opens in a browser tab</strong> — the viewer's Print button is one click away (fallback: direct download if the tab is blocked).</p>
+
+<h3>Share by Link</h3>
+<p>The 🔗 button generates a <strong>permalink</strong> containing the airfield, raw message and arrival time. A QR code lets you open it on mobile.</p>
+
+<h3>Favorites Watchdog</h3>
+<p>The 🔁 button activates <strong>background monitoring</strong> of your favorite airfields. Every 15 min (configurable), the tool recomputes each favorite's flight category and sends a <strong>browser notification</strong> if a field degrades to CAUTION or NO-GO. The tab must stay open.</p>
+
+<hr />
+
+<h2>🔍 METAR DECODING</h2>
+<h3>General structure</h3>
+<pre><code>METAR LFPG 060730Z 34015G25KT 9999 FEW020 SCT040 BKN080 13/09 Q1011 NOSIG
+</code></pre>
+<p>Breakdown :</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td><code>METAR</code></td>
+<td>Observation message</td>
+</tr>
+<tr>
+<td><strong>ICAO</strong></td>
+<td><code>LFPG</code></td>
+<td>Airport code (Paris CDG)</td>
+</tr>
+<tr>
+<td><strong>Date/time</strong></td>
+<td><code>060730Z</code></td>
+<td>06th of the month at 07:30 UTC</td>
+</tr>
+<tr>
+<td><strong>Wind</strong></td>
+<td><code>34015G25KT</code></td>
+<td>340° / 15kt gusts 25kt</td>
+</tr>
+<tr>
+<td><strong>Visibility</strong></td>
+<td><code>9999</code></td>
+<td>≥10km (excellent)</td>
+</tr>
+<tr>
+<td><strong>Clouds</strong></td>
+<td><code>FEW020 SCT040 BKN080</code></td>
+<td>Details below</td>
+</tr>
+<tr>
+<td><strong>Temperature</strong></td>
+<td><code>13/09</code></td>
+<td>13°C / Td 9°C</td>
+</tr>
+<tr>
+<td><strong>QNH</strong></td>
+<td><code>Q1011</code></td>
+<td>1011 hPa</td>
+</tr>
+<tr>
+<td><strong>Trend</strong></td>
+<td><code>NOSIG</code></td>
+<td>No significant change</td>
+</tr>
+</tbody>
+</table>
+<h3>Wind details</h3>
+<p><strong>Format</strong> : <code>DDDFFGffKT</code> or <code>DDDFFKTdddVddd</code></p>
+<p><strong>Examples</strong> :</p>
+<pre><code>34015G25KT
+│││││││││└─ Unit: Knots (kt)
+│││││└└└──── Gusts: 25 kt
+││└└└─────── Speed: 15 kt
+└└────────── Direction: 340° (Northwest)
+
+00000KT
+└─────────── Calm wind (0 kt)
+
+VRB03KT
+│││││└─────── Unit: kt
+││└└└─────── Speed: 3 kt
+└└────────── VaRiaBle (&lt; 6 kt, variable direction)
+
+27012KT 240V300
+│││││││ │││││││
+│││││││ └└└└└└─ Variable direction between 240° and 300°
+││└└└────────── Speed: 12 kt
+└└────────────── Mean direction: 270°
+</code></pre>
+<p><strong>Useful conversions</strong> :
+- 1 kt (knot) = 1.852 km/h
+- 10 kt ≈ 18 km/h
+- 15 kt ≈ 28 km/h
+- 20 kt ≈ 37 km/h</p>
+<h3>Visibility details</h3>
+<p><strong>Format</strong> : <code>VVVV</code> (in meters)</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>9999</code></td>
+<td>≥ 10 km (CAVOK possible)</td>
+</tr>
+<tr>
+<td><code>8000</code></td>
+<td>8 km</td>
+</tr>
+<tr>
+<td><code>5000</code></td>
+<td>5 km</td>
+</tr>
+<tr>
+<td><code>1500</code></td>
+<td>1500 m</td>
+</tr>
+<tr>
+<td><code>0800</code></td>
+<td>800 m</td>
+</tr>
+<tr>
+<td><code>0400</code></td>
+<td>400 m</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visibility in statute miles (USA)</strong> :</p>
+<pre><code>5SM  = 5 miles (≈ 8 km)
+10SM = 10 miles (≈ 16 km)
+</code></pre>
+<p><strong>Directional visibility</strong> :</p>
+<pre><code>3000NE
+││││└└─ Direction: Northeast
+└└└└─── Visibility: 3000m in this direction
+</code></pre>
+<h3>Present weather (current conditions)</h3>
+<p><strong>Intensity</strong> :
+- <code>-</code> Light
+- <code></code> Moderate (no symbol)
+- <code>+</code> Heavy</p>
+<p><strong>Descriptors</strong> :
+- <code>MI</code> : Shallow
+- <code>BC</code> : Patches
+- <code>PR</code> : Partial
+- <code>DR</code> : Low drifting
+- <code>BL</code> : Blowing
+- <code>SH</code> : Showers
+- <code>TS</code> : Thunderstorm
+- <code>FZ</code> : Freezing</p>
+<p><strong>Phenomena</strong> :
+- <code>DZ</code> : Drizzle
+- <code>RA</code> : Rain
+- <code>SN</code> : Snow
+- <code>SG</code> : Snow grains
+- <code>GR</code> : Hail
+- <code>FG</code> : Fog, vis &lt; 1000m
+- <code>BR</code> : Mist, vis 1000-5000m
+- <code>HZ</code> : Haze
+- <code>FU</code> : Smoke
+- <code>VA</code> : Volcanic ash
+- <code>DU</code> : Dust
+- <code>SA</code> : Sand
+- <code>SQ</code> : Squalls</p>
+<p><strong>Examples</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RA</code></td>
+<td>Moderate rain</td>
+</tr>
+<tr>
+<td><code>-RA</code></td>
+<td>Light rain</td>
+</tr>
+<tr>
+<td><code>+RA</code></td>
+<td>Heavy rain</td>
+</tr>
+<tr>
+<td><code>SHRA</code></td>
+<td>Rain showers</td>
+</tr>
+<tr>
+<td><code>TSRA</code></td>
+<td>Thunderstorm with rain</td>
+</tr>
+<tr>
+<td><code>+TSRA</code></td>
+<td>Severe thunderstorm with heavy rain</td>
+</tr>
+<tr>
+<td><code>-RASN</code></td>
+<td>Light rain and snow mixed</td>
+</tr>
+<tr>
+<td><code>FZFG</code></td>
+<td>Freezing fog</td>
+</tr>
+<tr>
+<td><code>VCSH</code></td>
+<td>Showers in the vicinity (ViCinity)</td>
+</tr>
+<tr>
+<td><code>VCFG</code></td>
+<td>Fog in the vicinity</td>
+</tr>
+</tbody>
+</table>
+<h3>Cloud cover</h3>
+<p><strong>Format</strong> : <code>NNNhhh</code> or <code>NNNhhh[CB/TCU]</code></p>
+<p><strong>Coverage (NNN)</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Coverage</th>
+<th>Oktas</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SKC</code> / <code>CLR</code></td>
+<td>Clear sky</td>
+<td>0</td>
+<td>No clouds (SKC = Sky Clear)</td>
+</tr>
+<tr>
+<td><code>FEW</code></td>
+<td>Few</td>
+<td>1-2</td>
+<td>Few = A few clouds (≤ 2/8)</td>
+</tr>
+<tr>
+<td><code>SCT</code></td>
+<td>Scattered</td>
+<td>3-4</td>
+<td>SCaTtered = Scattered (3-4/8)</td>
+</tr>
+<tr>
+<td><code>BKN</code></td>
+<td>Broken</td>
+<td>5-7</td>
+<td>BroKeN = Broken (5-7/8)</td>
+</tr>
+<tr>
+<td><code>OVC</code></td>
+<td>Overcast</td>
+<td>8</td>
+<td>OVerCast = Overcast (8/8)</td>
+</tr>
+<tr>
+<td><code>VV</code></td>
+<td>Sky obscured</td>
+<td>-</td>
+<td>Vertical Visibility (fog)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Height (hhh)</strong> : in hundreds of feet</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Height</th>
+<th>Meters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>005</code></td>
+<td>500 ft</td>
+<td>~150 m</td>
+</tr>
+<tr>
+<td><code>010</code></td>
+<td>1000 ft</td>
+<td>~300 m</td>
+</tr>
+<tr>
+<td><code>020</code></td>
+<td>2000 ft</td>
+<td>~600 m</td>
+</tr>
+<tr>
+<td><code>040</code></td>
+<td>4000 ft</td>
+<td>~1200 m</td>
+</tr>
+<tr>
+<td><code>080</code></td>
+<td>8000 ft</td>
+<td>~2400 m</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cloud types</strong> :
+- <code>CB</code> : Cumulonimbus (thunderstorm)
+- <code>TCU</code> : Towering Cumulus</p>
+<p><strong>Examples</strong> :</p>
+<pre><code>FEW020
+│││└└└─ 2000 ft (~600m)
+└└└──── Few clouds (1-2/8)
+
+SCT040 BKN080
+││││││ ││││││
+││││││ │││└└└─ 8000 ft
+││││││ └└└──── Broken (5-7/8) = ceiling
+│││└└└──────── 4000 ft
+└└└──────────── Scattered (3-4/8)
+
+OVC012CB
+│││└└└└└─ Cumulonimbus (thunderstorm)
+│││└└└─── 1200 ft (~360m) - LOW ceiling!
+└└└────── Overcast (8/8)
+
+VV002
+│││││└─ 200 ft vertical visibility
+└└└──── Sky obscured (thick fog)
+</code></pre>
+<h3>CAVOK</h3>
+<p><strong>CAVOK</strong> = Ceiling And Visibility OK</p>
+<p>Replaces visibility + weather + clouds when <strong>ALL</strong> of these conditions are met:
+1. Visibility ≥ 10 km
+2. No clouds below 5000 ft (1500m)
+3. No CB (cumulonimbus)
+4. No significant weather (rain, thunderstorm, fog, etc.)</p>
+<p><strong>Example</strong> :</p>
+<pre><code>METAR LFPG 060730Z 34015KT CAVOK 13/09 Q1011 NOSIG
+                            └─────┘
+                     Equivalent to: 9999 NSC (No Significant Cloud)
+</code></pre>
+<h3>Temperature and dew point</h3>
+<p><strong>Format</strong> : <code>TT/Td</code> or <code>M0T/M0d</code></p>
+<p><strong>Examples</strong> :</p>
+<pre><code>13/09
+││ └└─ Dew point: 9°C
+└└──── Temperature: 13°C
+Spread: 4°C → Fog risk if spread &lt; 3°C
+
+M02/M05
+│││  │││
+│││  └└└─ Td = -5°C
+│└└─────── Temp = -2°C
+└────────── M = Minus (negative)
+
+25/18
+││ └└─ Td = 18°C
+└└──── Temp = 25°C
+Spread: 7°C → Heavy/humid air, thunderstorm risk
+</code></pre>
+<p><strong>Interpretation of T - Td spread</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Spread</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 1°C</td>
+<td>Imminent fog</td>
+</tr>
+<tr>
+<td>1-3°C</td>
+<td>Fog/low stratus risk</td>
+</tr>
+<tr>
+<td>3-5°C</td>
+<td>High humidity</td>
+</tr>
+<tr>
+<td>&gt; 5°C</td>
+<td>Relatively dry air</td>
+</tr>
+</tbody>
+</table>
+<h3>QNH (pressure)</h3>
+<p><strong>Format</strong> : <code>Qpppp</code> (in hPa) or <code>Aihih</code> (in inHg, USA)</p>
+<p><strong>Examples</strong> :</p>
+<pre><code>Q1013
+│││││└─ 1013 hPa (standard pressure)
+└──────── Q = QNH in hPa
+
+Q0995
+│││││└─ 995 hPa (low pressure)
+
+Q1030
+│││││└─ 1030 hPa (high pressure)
+
+A2992
+│││││└─ 29.92 inHg (USA, standard pressure)
+└──────── A = Altimeter setting
+</code></pre>
+<p><strong>Reference</strong> :
+- <strong>Standard pressure</strong> : 1013.25 hPa = 29.92 inHg
+- <strong>High pressure</strong> : &gt; 1020 hPa (high / anticyclone)
+- <strong>Low pressure</strong> : &lt; 1000 hPa (low / depression)</p>
+<h3>Trend</h3>
+<p><strong>Codes</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NOSIG</code></td>
+<td>NO SIGnificant change (no change)</td>
+</tr>
+<tr>
+<td><code>BECMG</code></td>
+<td>BECoMinG (permanent change)</td>
+</tr>
+<tr>
+<td><code>TEMPO</code></td>
+<td>TEMPOrary (temporary change)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples</strong> :</p>
+<pre><code>NOSIG
+└──── No change in the next 2 hours
+
+BECMG 0810 BKN015
+│││││ ││││ │││││└─ Broken at 1500 ft
+│││││ ││││ └└└└└── BKN015 will become permanent
+│││││ └└└└──────── Between 08h and 10h UTC
+└└└└└───────────── Permanent change
+
+TEMPO 0912 SHRA
+│││││ ││││ ││││└─ Rain showers
+│││││ ││││ └└└└── Temporarily
+│││││ └└└└──────── Between 09h and 12h UTC
+└└└└└───────────── Temporary change (&lt; 1h at a time)
+</code></pre>
+<hr />
+<h2>📅 TAF DECODING</h2>
+<h3>General structure</h3>
+<p><strong>TAF</strong> = Terminal Aerodrome Forecast (aerodrome forecast)</p>
+<pre><code>TAF LFPG 060500Z 0606/0712 27015KT 9999 SCT040
+     BECMG 0609/0611 BKN020
+     TEMPO 0615/0618 4000 SHRA BKN012 SCT020CB
+     BECMG 0702/0704 34010KT 8000 BKN015
+</code></pre>
+<p><strong>Breakdown</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td><code>TAF</code></td>
+<td>Forecast</td>
+</tr>
+<tr>
+<td><strong>ICAO</strong></td>
+<td><code>LFPG</code></td>
+<td>Airport</td>
+</tr>
+<tr>
+<td><strong>Issuance</strong></td>
+<td><code>060500Z</code></td>
+<td>Issued on the 06th at 05:00 UTC</td>
+</tr>
+<tr>
+<td><strong>Validity</strong></td>
+<td><code>0606/0712</code></td>
+<td>From the 06th at 06h to the 07th at 12h UTC (30h)</td>
+</tr>
+<tr>
+<td><strong>Base conditions</strong></td>
+<td><code>27015KT 9999 SCT040</code></td>
+<td>Valid for the entire period except for changes</td>
+</tr>
+</tbody>
+</table>
+<h3>Change groups</h3>
+<p><strong>BECMG</strong> (BECoMinG) : Permanent change</p>
+<pre><code>BECMG 0609/0611 BKN020
+│││││ ││││││││ │││││└─ New BKN clouds at 2000 ft
+│││││ │││││└└└─ Until day 06 11h UTC
+│││││ └└└└────── From day 06 09h UTC
+└└└└└────────── Gradual change over this period
+</code></pre>
+<p>The change becomes <strong>permanent</strong> after the end of the period.</p>
+<p><strong>TEMPO</strong> (TEMPOrary) : Temporary change</p>
+<pre><code>TEMPO 0615/0618 4000 SHRA BKN012
+│││││ ││││││││ ││││ ││││ │││││└─ BKN clouds at 1200 ft
+│││││ ││││││││ ││││ ││││ └└└└└── Rain showers
+│││││ ││││││││ ││││ └└└└──────── Visibility 4000m
+│││││ │││││└└└──────────────── Until day 06 18h UTC
+│││││ └└└└────────────────────── From day 06 15h UTC
+└└└└└────────────────────────── Temporary conditions (&lt; 1h at a time)
+</code></pre>
+<p>Conditions return to <strong>normal</strong> afterwards.</p>
+<p><strong>PROB30/40</strong> : Probability of change</p>
+<pre><code>PROB40 0620/0624 2000 +TSRA BKN008CB
+│││││││││││││││ ││││ │││││ ││││││└─ CB at 800 ft
+│││││││││││││││ ││││ │││││ └└└└└└── Severe thunderstorm with rain
+│││││││││││││││ ││││ └└└└──────── Visibility 2000m
+│││││││││││││││ └└└└────────────── Until day 06 24h UTC (midnight)
+│││││││││││└└└──────────────────── From day 06 20h UTC
+└└└└└└────────────────────────── 40% probability
+</code></pre>
+<p><strong>FM</strong> (FroM) : Abrupt change at a specific time</p>
+<pre><code>FM061500 34020G35KT 3000 SHRA BKN010
+││││││││ ││││││││││ ││││ ││││ │││││└─ BKN clouds at 1000 ft
+││││││││ ││││││││││ ││││ ││││ └└└└└── Showers
+││││││││ ││││││││││ ││││ └└└└──────── Visibility 3000m
+││││││││ ││││││││││ └└└└────────────── Wind 340° 20kt G35kt
+││││││││ └└└└└└─────────────────────── Gusts 35 kt
+└└└└└└└└──────────────────────────────── From day 06 at 15:00 UTC sharp
+</code></pre>
+<h3>Complete TAF example with commentary</h3>
+<pre><code>TAF LFPG 060500Z 0606/0712 27015KT 9999 SCT040
+     BECMG 0609/0611 BKN020
+     TEMPO 0615/0618 4000 SHRA BKN012 SCT020CB
+     BECMG 0702/0704 34010KT 8000 BKN015
+</code></pre>
+<p><strong>Translation</strong> :</p>
+<p><strong>Day 06 06h → Day 06 09h</strong> : Wind 270° 15kt, vis ≥10km, scattered clouds 4000 ft<br />
+→ ✅ <strong>Excellent VFR</strong></p>
+<p><strong>Day 06 09h → Day 06 11h</strong> : Gradual change toward broken clouds 2000 ft<br />
+→ ⚠️ <strong>Marginal VFR</strong> (ceiling lowering)</p>
+<p><strong>Day 06 11h → Day 06 15h</strong> : BKN clouds 2000 ft (maintained)<br />
+→ ⚠️ <strong>Marginal VFR</strong></p>
+<p><strong>Day 06 15h → Day 06 18h</strong> : Temporarily: vis 4000m, showers, BKN 1200 ft, CB 2000 ft<br />
+→ ❌ <strong>IFR</strong> (ceiling &lt; 1500 ft + vis &lt; 5km + thunderstorms)</p>
+<p><strong>Day 06 18h → Day 07 02h</strong> : Return to BKN 2000 ft (no showers)<br />
+→ ⚠️ <strong>Marginal VFR</strong></p>
+<p><strong>Day 07 02h → Day 07 04h</strong> : Change: wind 340° 10kt, vis 8km, BKN 1500 ft<br />
+→ ❌ <strong>IFR</strong> (ceiling &lt; 1500 ft)</p>
+<p><strong>Day 07 04h → Day 07 12h</strong> : These conditions maintained<br />
+→ ❌ <strong>IFR</strong></p>
+<hr />
+<h2>✈️ VFR MINIMA (VMC)</h2>
+<h3>VMC conditions in controlled airspace</h3>
+<p><strong>VMC</strong> = Visual Meteorological Conditions (weather conditions for visual flight)</p>
+<h4>Classes A, B, C, D, E (≥ FL100 / 3000m AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>≥ 8 km</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (horizontal)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (vertical)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h4>Classes A, B, C, D, E (&lt; FL100 / 3000m AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (horizontal)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (vertical)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h4>Class G (&lt; 900m / 3000ft AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Cloud distance</strong></td>
+<td>Clear of clouds and in sight of the ground</td>
+</tr>
+<tr>
+<td><strong>Ceiling</strong></td>
+<td>No regulatory minimum*</td>
+</tr>
+</tbody>
+</table>
+<p>*But use common sense: stay high enough to glide in case of engine failure!</p>
+<h4>Class G (&gt; 900m / 3000ft AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (horizontal)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Cloud distance (vertical)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h3>Special VFR (SVFR)</h3>
+<p><strong>Conditions</strong> :
+- ATC clearance mandatory
+- In control zone (CTR) only
+- Visibility ≥ 1500 m (sometimes 800 m at night if qualified)
+- Clear of clouds
+- In sight of the ground</p>
+<p><strong>Typical use</strong> :
+- Departure/arrival at an aerodrome in degraded weather conditions
+- Transit through a CTR with weather below VMC</p>
+<h3>Recommended VFR minimums</h3>
+<p>Beyond the regulatory minimums, here are the <strong>practical thresholds</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Conditions</th>
+<th>Visibility</th>
+<th>Ceiling</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Comfortable VFR</strong></td>
+<td>≥ 10 km</td>
+<td>≥ 3000 ft</td>
+<td>Ideal for navigation</td>
+</tr>
+<tr>
+<td><strong>Marginal VFR</strong></td>
+<td>5-8 km</td>
+<td>1500-3000 ft</td>
+<td>Navigation possible but stay alert</td>
+</tr>
+<tr>
+<td><strong>Limit VFR</strong></td>
+<td>5 km</td>
+<td>1500 ft</td>
+<td>Regulatory minimums, little margin</td>
+</tr>
+<tr>
+<td><strong>SVFR required</strong></td>
+<td>1.5-5 km</td>
+<td>&lt; 1500 ft</td>
+<td>ATC clearance mandatory</td>
+</tr>
+<tr>
+<td><strong>IFR</strong></td>
+<td>&lt; 5 km</td>
+<td>&lt; 1500 ft</td>
+<td>IFR flight required</td>
+</tr>
+</tbody>
+</table>
+<h3>Night VFR flight rules</h3>
+<p><strong>In France (night VFR allowed with qualification)</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Ceiling</strong></td>
+<td>≥ 1500 ft</td>
+</tr>
+<tr>
+<td><strong>Qualified pilot</strong></td>
+<td>Night VFR qualification required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important</strong> : Night VFR is <strong>NOT allowed</strong> in all European countries!</p>
+<hr />
+<h2>💡 PRACTICAL EXAMPLES</h2>
+<h3>Example 1 : Excellent VFR (CAVOK)</h3>
+<pre><code>METAR LFPG 061200Z 27010KT CAVOK 18/08 Q1020 NOSIG
+</code></pre>
+<p><strong>Analysis</strong> :
+- ✅ Visibility ≥ 10 km
+- ✅ No clouds &lt; 5000 ft
+- ✅ No significant weather
+- ✅ Light/moderate wind (10 kt)
+- ✅ Stable pressure (1020 hPa - high pressure)</p>
+<p><strong>Verdict</strong> : 🟩 <strong>EXCELLENT VFR</strong> - Ideal for a navigation flight</p>
+<hr />
+<h3>Example 2 : Marginal VFR (low ceiling)</h3>
+<pre><code>METAR LFPO 061200Z 34012KT 9999 SCT012 BKN025 11/09 Q1008
+</code></pre>
+<p><strong>Analysis</strong> :
+- ✅ Excellent visibility (≥10 km)
+- ⚠️ Ceiling at 2500 ft (BKN025)
+- ⚠️ Scattered clouds from 1200 ft
+- ⚠️ Small T-Td spread (2°C) → high humidity
+- ⚠️ Falling pressure (1008 hPa)</p>
+<p><strong>Verdict</strong> : 🟨 <strong>MARGINAL VFR</strong> - Local flight OK, navigate with caution</p>
+<hr />
+<h3>Example 3 : IFR (reduced visibility)</h3>
+<pre><code>METAR LFRV 061200Z 00000KT 3000 BR SCT004 BKN010 10/09 Q1011
+</code></pre>
+<p><strong>Analysis</strong> :
+- ❌ Visibility 3000m (&lt; 5 km)
+- ❌ Ceiling 1000 ft (BKN010)
+- ❌ Scattered clouds from 400 ft
+- 🌫️ Mist (BR)
+- ⚠️ Calm wind + T-Td spread 1°C → fog possible</p>
+<p><strong>Verdict</strong> : 🟧 <strong>IFR</strong> - VFR flight prohibited, fly IFR or wait for improvement</p>
+<hr />
+<h3>Example 4 : Severe IFR (thunderstorm)</h3>
+<pre><code>METAR LFPO 061200Z 27025G40KT 2000 +TSRA BKN008 SCT015CB 15/13 Q0998
+</code></pre>
+<p><strong>Analysis</strong> :
+- ❌ Visibility 2000m (very reduced)
+- ❌ Ceiling 800 ft (very low)
+- ⛈️ Severe thunderstorm with heavy rain (+TSRA)
+- 🌩️ Cumulonimbus (CB)
+- 💨 Strong wind with gusts (25G40 kt)
+- 📉 Pressure falling rapidly (998 hPa - low pressure)</p>
+<p><strong>Verdict</strong> : 🟥 <strong>SEVERE IFR + DANGEROUS CONDITIONS</strong><br />
+→ Flight not recommended even under IFR (windshear, turbulence, lightning)</p>
+<hr />
+<h3>Example 5 : TAF with evolution</h3>
+<pre><code>TAF LFPG 061200Z 0612/0718 27015KT 9999 SCT040
+     BECMG 0615/0617 BKN020
+     TEMPO 0618/0624 5000 SHRA BKN012
+     BECMG 0703/0705 34010KT CAVOK
+</code></pre>
+<p><strong>Chronological analysis</strong> :</p>
+<p><strong>Day 06 12h → Day 06 15h</strong> :
+- Wind 270° 15kt
+- Vis ≥ 10 km
+- Scattered clouds 4000 ft
+- 🟩 <strong>EXCELLENT VFR</strong></p>
+<p><strong>Day 06 15h → Day 06 17h</strong> (BECMG) :
+- Gradual transition to broken clouds 2000 ft
+- 🟨 <strong>MARGINAL VFR</strong> at the end of the period</p>
+<p><strong>Day 06 17h → Day 06 18h</strong> :
+- BKN clouds 2000 ft
+- 🟨 <strong>MARGINAL VFR</strong></p>
+<p><strong>Day 06 18h → Day 07 00h</strong> (TEMPO) :
+- Temporarily: vis 5km, showers, BKN 1200 ft
+- 🟧 <strong>Temporary IFR</strong> (&lt; 1h at a time)
+- Between showers: return to marginal VFR</p>
+<p><strong>Day 07 00h → Day 07 03h</strong> :
+- BKN 2000 ft (without showers)
+- 🟨 <strong>MARGINAL VFR</strong></p>
+<p><strong>Day 07 03h → Day 07 05h</strong> (BECMG) :
+- Gradual transition toward CAVOK
+- Wind veers to 340° 10kt
+- 🟩 <strong>EXCELLENT VFR</strong> at the end of the period</p>
+<p><strong>Day 07 05h → Day 07 18h</strong> :
+- CAVOK maintained
+- 🟩 <strong>EXCELLENT VFR</strong></p>
+<p><strong>Flight decision</strong> :
+- ✅ Departure before 15h or after 05h: excellent
+- ⚠️ 15h-18h: marginal, plan a backup plan
+- ❌ 18h-03h: temporary IFR, VFR flight not recommended</p>
+<hr />
+<h2>📖 AVIATION GLOSSARY</h2>
+<h3>Weather terms</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AMSL</strong></td>
+<td>Above Mean Sea Level</td>
+</tr>
+<tr>
+<td><strong>ASDA</strong></td>
+<td>Accelerate-Stop Distance Available</td>
+</tr>
+<tr>
+<td><strong>CAVOK</strong></td>
+<td>Ceiling And Visibility OK (vis ≥10km, no clouds &lt;5000ft, no significant weather)</td>
+</tr>
+<tr>
+<td><strong>CB</strong></td>
+<td>Cumulonimbus (thunderstorm cloud)</td>
+</tr>
+<tr>
+<td><strong>CTR</strong></td>
+<td>Control Zone</td>
+</tr>
+<tr>
+<td><strong>FL</strong></td>
+<td>Flight Level</td>
+</tr>
+<tr>
+<td><strong>IMC</strong></td>
+<td>Instrument Meteorological Conditions (IFR weather conditions)</td>
+</tr>
+<tr>
+<td><strong>METAR</strong></td>
+<td>METeorological Aerodrome Report (observation)</td>
+</tr>
+<tr>
+<td><strong>NOSIG</strong></td>
+<td>NO SIGnificant change (no change)</td>
+</tr>
+<tr>
+<td><strong>QNH</strong></td>
+<td>Atmospheric pressure at sea level (altimeter setting)</td>
+</tr>
+<tr>
+<td><strong>SVFR</strong></td>
+<td>Special VFR (special VFR in a CTR)</td>
+</tr>
+<tr>
+<td><strong>TAF</strong></td>
+<td>Terminal Aerodrome Forecast (forecast)</td>
+</tr>
+<tr>
+<td><strong>TCU</strong></td>
+<td>Towering Cumulus</td>
+</tr>
+<tr>
+<td><strong>UTC</strong></td>
+<td>Universal Time Coordinated</td>
+</tr>
+<tr>
+<td><strong>VMC</strong></td>
+<td>Visual Meteorological Conditions (VFR weather conditions)</td>
+</tr>
+</tbody>
+</table>
+<h3>Cloud abbreviations</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>English</th>
+<th>French</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SKC</strong></td>
+<td>Sky Clear</td>
+<td>Ciel clair</td>
+<td>0/8</td>
+</tr>
+<tr>
+<td><strong>FEW</strong></td>
+<td>Few</td>
+<td>Peu de nuages</td>
+<td>1-2/8</td>
+</tr>
+<tr>
+<td><strong>SCT</strong></td>
+<td>Scattered</td>
+<td>Épars</td>
+<td>3-4/8</td>
+</tr>
+<tr>
+<td><strong>BKN</strong></td>
+<td>Broken</td>
+<td>Fragmenté</td>
+<td>5-7/8</td>
+</tr>
+<tr>
+<td><strong>OVC</strong></td>
+<td>Overcast</td>
+<td>Couvert</td>
+<td>8/8</td>
+</tr>
+<tr>
+<td><strong>NSC</strong></td>
+<td>No Significant Cloud</td>
+<td>Pas de nuages significatifs</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>VV</strong></td>
+<td>Vertical Visibility</td>
+<td>Visibilité verticale</td>
+<td>Sky obscured</td>
+</tr>
+</tbody>
+</table>
+<h3>Useful conversions</h3>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Formula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Knots → km/h</strong></td>
+<td>kt × 1.852</td>
+<td>10 kt = 18.5 km/h</td>
+</tr>
+<tr>
+<td><strong>km/h → Knots</strong></td>
+<td>km/h ÷ 1.852</td>
+<td>20 km/h ≈ 11 kt</td>
+</tr>
+<tr>
+<td><strong>Feet → Meters</strong></td>
+<td>ft × 0.3048</td>
+<td>1000 ft = 305 m</td>
+</tr>
+<tr>
+<td><strong>Meters → Feet</strong></td>
+<td>m × 3.281</td>
+<td>300 m ≈ 1000 ft</td>
+</tr>
+<tr>
+<td><strong>°F → °C</strong></td>
+<td>(°F - 32) × 5/9</td>
+<td>86°F = 30°C</td>
+</tr>
+<tr>
+<td><strong>°C → °F</strong></td>
+<td>°C × 9/5 + 32</td>
+<td>20°C = 68°F</td>
+</tr>
+<tr>
+<td><strong>inHg → hPa</strong></td>
+<td>inHg × 33.8639</td>
+<td>29.92 inHg = 1013 hPa</td>
+</tr>
+<tr>
+<td><strong>hPa → inHg</strong></td>
+<td>hPa ÷ 33.8639</td>
+<td>1013 hPa = 29.92 inHg</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>💡 USAGE TIPS</h2>
+<h3>Before the flight</h3>
+<ol>
+<li><strong>Check several sources</strong> :</li>
+<li>METAR of the departure aerodrome</li>
+<li>METAR of the arrival aerodrome</li>
+<li>TAF of both aerodromes</li>
+<li>METAR of the alternate aerodromes</li>
+<li>
+<p>Weather charts (TEMSI, WINTEM)</p>
+</li>
+<li>
+<p><strong>Analyze the evolution</strong> :</p>
+</li>
+<li>Compare METAR and TAF</li>
+<li>Check the trend (NOSIG, BECMG, TEMPO)</li>
+<li>
+<p>Identify the critical time (IFR/VFR transition)</p>
+</li>
+<li>
+<p><strong>Calculate your margins</strong> :</p>
+</li>
+<li>If conditions close to minimums → plan an alternate</li>
+<li>If trend is degrading → depart early or cancel</li>
+<li>If TEMPO/PROB → plan arrival outside the critical period</li>
+</ol>
+<h3>During the flight</h3>
+<ol>
+<li><strong>Update regularly</strong> :</li>
+<li>ATIS (Automatic Terminal Information Service)</li>
+<li>New METAR every 30 min</li>
+<li>
+<p>Radio contacts with the stations</p>
+</li>
+<li>
+<p><strong>Be cautious</strong> :</p>
+</li>
+<li>If conditions degrade → turn back or divert</li>
+<li>Never enter clouds in VFR</li>
+<li>Keep a safety margin (fuel, visibility, ceiling)</li>
+</ol>
+<h3>Chart interpretation</h3>
+<p><strong>Colored bands</strong> :
+- 🟢 <strong>VFR (Green)</strong> : Comfortable flight
+- 🔵 <strong>MVFR (Blue)</strong> : Increased vigilance, plan a backup plan
+- 🔴 <strong>IFR (Red)</strong> : IFR conditions, VFR flight impossible
+- 🟣 <strong>LIFR (Magenta)</strong> : Very poor conditions</p>
+<p><strong>Solar curve</strong> :
+- Sunrise/sunset visible on the chart
+- Plan to avoid flying at dusk (reduced visibility)
+- Night VFR: check qualification and minimums</p>
+<h3>Tool limitations</h3>
+<p><strong>What the tool does</strong> :
+- ✅ Displays weather conditions and their time evolution graphically
+- ✅ Automatically parses METAR/TAF and computes the flight category
+- ✅ <strong>Synthetic GO / NO-GO verdict</strong> crossing all parameters
+- ✅ Computes <strong>density altitude</strong> (real aircraft performance)
+- ✅ Analyzes <strong>QNH pressure trend</strong> (deterioration detection)
+- ✅ Displays active <strong>SIGMET/AIRMET</strong>
+- ✅ Computes the <strong>day VFR flight window</strong> and alerts on aero night
+- ✅ <strong>Regional map</strong>: precipitation radar + nearby categories + PIREPs
+- ✅ <strong>Alternates comparator</strong> and route weather (Navigation mode)
+- ✅ <strong>Flight planner</strong>: courses, times, fuel, terrain — with waypoints inserted at the shortest route and named markers dropped at the pointer
+- ✅ Generates a <strong>printable A5 nav log</strong> (opened in a tab, ready to print)</p>
+<p><strong>What the tool does NOT do (yet)</strong> :
+- ❌ Does not replace the official weather briefing
+- ❌ Does not make decisions for you (the verdict is an aid, not an order)
+- ❌ Does not yet integrate NOTAMs (coming soon)
+- ❌ SIGMET/AIRMET mainly cover the United States for now</p>
+<p><strong>The final decision</strong> remains that of the <strong>pilot in command</strong>!</p>
+<hr />
+<h2>📞 ADDITIONAL RESOURCES</h2>
+<h3>Aviation weather websites (France)</h3>
+<ul>
+<li><strong>Météo France Aviation</strong> : https://aviation.meteo.fr</li>
+<li><strong>SIA (Aeronautical Information Service)</strong> : https://www.sia.aviation-civile.gouv.fr</li>
+<li><strong>OLIVIA</strong> : Pre-flight weather briefing (paid)</li>
+</ul>
+<h3>Aviation weather websites (International)</h3>
+<ul>
+<li><strong>Aviation Weather Center (USA)</strong> : https://www.aviationweather.gov</li>
+<li><strong>NOAA</strong> : https://www.weather.gov</li>
+<li><strong>Windy</strong> : https://www.windy.com (interactive maps)</li>
+</ul>
+<h3>Mobile applications</h3>
+<ul>
+<li><strong>Mach7</strong> (France)</li>
+<li><strong>Windy</strong> (international)</li>
+<li><strong>ForeFlight</strong> (paid, very comprehensive)</li>
+<li><strong>SkyDemon</strong> (paid, navigation + weather)</li>
+</ul>
+<h3>Training</h3>
+<ul>
+<li>VFR navigation course (PPL license)</li>
+<li>Aeronautical meteorology training</li>
+<li>IFR course (for advanced understanding)</li>
+</ul>
+<hr />
+<h2>⚠️ LEGAL DISCLAIMER</h2>
+<p>This application is a <strong>decision-support tool</strong> only.</p>
+<p><strong>It does NOT replace in any way</strong> :
+- An official weather briefing
+- The consultation of NOTAMs
+- The complete analysis of flight conditions
+- The judgment of the pilot in command</p>
+<p><strong>The pilot remains solely responsible</strong> for the safety of the flight and the decisions made.</p>
+<p>In case of doubt: <strong>stay on the ground</strong> or consult an instructor.</p>
+<hr />
+<p><strong>Version</strong> : 2.0<br />
+<strong>Date</strong> : July 2026<br />
+<strong>Author</strong> : PapaBear</p>
+<p><strong>Safe flying and blue skies! ✈️☀️</strong></p>
+        <a href="index.html" class="btn-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back to application</a>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toc = document.querySelector('ol'); 
+    if (!toc) return;
+
+    const headings = Array.from(document.querySelectorAll('h2, h3'));
+    
+    toc.querySelectorAll('li a').forEach((link, i) => {
+        const text = link.textContent.trim().toLowerCase();
+        // Ignore the parenthetical suffix (e.g. "(New)") for matching.
+        const matchKey = text.split('(')[0].trim();
+
+        const target = headings.find(h => h.textContent.toLowerCase().includes(matchKey));
+        
+        if (target) {
+            const sectionId = 'chapitre-' + i;
+            target.id = sectionId;
+            
+            link.href = '#' + sectionId;
+            link.style.color = 'var(--primary)';
+            link.style.textDecoration = 'none';
+            link.style.fontWeight = '500';
+        }
+    });
+
+    document.documentElement.style.scrollBehavior = 'smooth';
+});
+</script>
+<a href="#toc" class="btn-floating-toc" title="Back to table of contents">⬆️ TOC</a>
+</body>
+</html>

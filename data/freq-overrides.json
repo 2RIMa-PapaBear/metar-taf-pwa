@@ -1,0 +1,5 @@
+{
+  "_doc": "Corrections manuelles des fréquences radio — PRIORITÉ MAXIMALE sur toutes les sources. airports : { \"OACI\": [{\"type\":\"AFIS\",\"name\":\"VANNES Information\",\"value\":\"123.500\"}] } remplace toute la liste du terrain. services : { \"RENNES INFORMATION\": \"134.000\" } corrige une fréquence de SIV/organisme par indicatif. Les fréquences des terrains français viennent de l'eAIP officiel du SIA (data/freq-sia.json, cycle AIRAC 28 j) ; celles des SIV restent openAIP (non publiées dans l'eAIP) et se corrigent ici.",
+  "airports": {},
+  "services": {}
+}
