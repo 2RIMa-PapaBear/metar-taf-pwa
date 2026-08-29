@@ -1164,9 +1164,12 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
     const yT = yTopSection + 4, CH = 128, yB = yT + CH;
     const plotW = xR - xL;
 
-    // Échelle Y : englobe le terrain + l'altitude de croisière (comme le web).
+    // Échelle Y : englobe le terrain + l'altitude de croisière (comme le web)
+    // avec une RÉSERVE au-dessus de la croisière (+600 ft) : les cadres de
+    // zones au plafond tronqué par l'échelle restent séparés de la ligne
+    // de croisière et de son libellé (sinon 200 ft ≈ 4 pt : collés).
     let yMin = Math.min(pr.minFt, pr.cruiseAltFt) - 200;
-    let yMax = Math.max(pr.maxFt, pr.cruiseAltFt) + 200;
+    let yMax = Math.max(pr.maxFt, pr.cruiseAltFt) + 600;
     if (yMax - yMin < 500) yMax = yMin + 500;
     const xOf = f => xL + f * plotW;
     const yOf = e => yT + (1 - (e - yMin) / (yMax - yMin)) * CH;
@@ -1189,6 +1192,116 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         doc.line(xL, gy, xR, gy);
         _setInk(doc, MUTED);
         doc.text(`${Math.round(elev)} ft`, xL - 4, gy + 2.2, { align: 'right' });
+    }
+
+    // CADRES d'altitude des zones traversées NON-SIV (CTA, TMA, CTR, R/D/P…)
+    // — même langage que la version site : rectangle sur la bande
+    // plancher→plafond de la zone pour chaque tronçon traversé, fond bleu
+    // pâle, bord haut pointillé si le plafond dépasse l'échelle,
+    // séparateurs pointillés entre secteurs d'un même organisme, et nom +
+    // fréquence (en dessous) écrits À L'HORIZONTALE dans le cadre, par
+    // secteur. Dessiné SOUS le terrain (comme le canvas elevation-chart).
+    // Les SIV gardent leur traitement historique (limites verticales +
+    // étiquettes verticales, plus bas dans la fonction).
+    const _zones = Array.isArray(pr.routeAirspaces) ? pr.routeAirspaces : null;
+    const _isSiv = (g) => /^SIV\b/i.test(g.segs?.[0]?.zone || g.name || '');
+    // Index des fréquences disponibles par tronçon (groupes SIV/FIS avec
+    // fréquence) : un cadre TMA/CTA/CTR sans fréquence propre emprunte
+    // celle du secteur sous-jacent sur le même tronçon — les frontières
+    // de secteurs APP/FIS/SIV coïncident géographiquement avec celles des
+    // TMA (vérifié RENNES : même bascule à 34,7 %).
+    const _freqByIdx = [];
+    if (_zones) for (const g of _zones) {
+        if (!g.freq) continue;
+        for (const [fa, fb] of g.ranges) _freqByIdx.push({ fa, fb, freq: g.freq });
+    }
+    const _borrowFreq = (fa, fb) => {
+        let best = 0, freq = null;
+        for (const e of _freqByIdx) {
+            const ov = Math.min(fb, e.fb) - Math.max(fa, e.fa);
+            if (ov > best) { best = ov; freq = e.freq; }
+        }
+        return freq;
+    };
+    const _boxLabels = [];   // dessinées après tous les cadres (anti-collision)
+    if (_zones?.length) {
+        for (const g of _zones) {
+            if (_isSiv(g)) continue;
+            const clamped = g.up > yMax;
+            const byT = Math.max(yOf(Math.min(g.up, yMax)), yT);
+            const byB = Math.min(Math.max(yOf(g.lo), yT), yB);
+            if (byB - byT < 3) continue;
+            for (const [fa, fb] of g.ranges) {
+                const x0 = Math.max(xOf(fa), xL), x1 = Math.min(xOf(fb), xR);
+                if (x1 - x0 < 2) continue;
+                doc.setFillColor(232, 246, 253);
+                doc.rect(x0, byT, x1 - x0, byB - byT, 'F');
+                doc.setDrawColor(...SIV_MAP_LN); doc.setLineWidth(0.7);
+                doc.rect(x0, byT, x1 - x0, byB - byT, 'S');
+                if (clamped) {   // plafond au-dessus de l'échelle : bord haut pointillé
+                    doc.setLineDashPattern([3, 2], 0); doc.setLineWidth(0.7);
+                    doc.line(x0 + 1, byT, x1 - 1, byT);
+                    doc.setLineDashPattern([], 0);
+                }
+                // Séparateurs entre secteurs du même organisme (ex. RENNES 2/4).
+                for (let i = 1; i < g.segs.length; i++) {
+                    const sx = xOf((g.segs[i - 1].fb + g.segs[i].fa) / 2);
+                    if (sx <= x0 || sx >= x1) continue;
+                    doc.setLineDashPattern([2.5, 2], 0); doc.setLineWidth(0.5);
+                    doc.setDrawColor(...SIV_MAP_LN);
+                    doc.line(sx, byT + 1, sx, byB - 1);
+                    doc.setLineDashPattern([], 0);
+                }
+                // Étiquette par SECTEUR : nom (gras) puis fréquence dessous,
+                // horizontales, centrées dans le cadre — collectées puis
+                // dessinées après tous les cadres avec anti-collision.
+                const twoLines = byB - byT >= 11;
+                const cy = (byT + byB) / 2;
+                for (const s of g.segs) {
+                    const zone = (s.zone && s.zone.toUpperCase() !== g.name.toUpperCase())
+                        ? s.zone : g.name.replace(/ INFO$/, '');
+                    if (!zone) continue;
+                    const bx0 = Math.max(xOf(s.fa), x0), bx1 = Math.min(xOf(s.fb), x1);
+                    if (bx1 - bx0 < 2) continue;
+                    // Fréquence radio sous le nom : celle de la zone, sinon
+                    // (TMA/CTA/CTR uniquement) celle du secteur sous-jacent.
+                    // Uniquement si le cadre est assez haut pour deux lignes.
+                    const freq = !twoLines ? null
+                        : (g.freq || (/^(TMA|CTA|CTR)\b/i.test(zone) ? _borrowFreq(s.fa, s.fb) : null));
+                    _boxLabels.push({
+                        label: zone.replace(/\s+partie\s+/i, ' '),
+                        freq: freq || null,
+                        cx: (bx0 + bx1) / 2,
+                        boxW: bx1 - bx0,
+                        cy: byB - byT >= 11 ? cy - 1.5 : cy + 2,
+                    });
+                }
+            }
+        }
+        // Anti-collision horizontale : le nom peut déborder du cadre — la
+        // limite voisin ne s'applique qu'entre étiquettes de la MÊME ligne
+        // (±9 pt) ; sur des lignes différentes (bandes d'altitude
+        // distinctes) seule la largeur du graphe borne. Un tronçon de
+        // 30 pt ne contient pas « TMA RENNES 2 » à taille lisible.
+        _boxLabels.sort((a, b) => a.cx - b.cx);
+        const sameLine = (a, b) => a && b && Math.abs(a.cy - b.cy) < 9;
+        for (let i = 0; i < _boxLabels.length; i++) {
+            const b = _boxLabels[i];
+            const bndR = Math.max(6, xR - 4 - b.cx);
+            const bndL = Math.max(6, 2 * (b.cx - xL + 3));   // léger débord gauche toléré
+            const gapL = sameLine(b, _boxLabels[i - 1]) ? b.cx - _boxLabels[i - 1].cx - 4 : bndR;
+            const gapR = sameLine(b, _boxLabels[i + 1]) ? _boxLabels[i + 1].cx - b.cx - 4 : bndR;
+            const allowed = Math.max(b.boxW - 2, Math.min(gapL, gapR, bndL, bndR));
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(6);
+            const name = doc.getTextWidth(b.label) > allowed ? _trunc(doc, b.label, allowed) : b.label;
+            _setInk(doc, SIV_TX);
+            doc.text(name, Math.min(b.cx, xR - 4), b.cy, { align: 'center' });
+            if (b.freq) {
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(5.5);
+                const fq = doc.getTextWidth(b.freq) > allowed ? _trunc(doc, b.freq, allowed) : b.freq;
+                doc.text(fq, Math.min(b.cx, xR - 4), b.cy + 5, { align: 'center' });
+            }
+        }
     }
 
     // Aire sous la courbe (polygone fermé vers le bas du graphe).
@@ -1251,14 +1364,16 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         }
     }
 
-    // Ligne altitude de croisière (pointillée bleue) + label au-dessus.
+    // Ligne altitude de croisière (pointillée bleue) + label au-dessus, à
+    // DROITE (à gauche il entre en collision avec les étiquettes des cadres
+    // de zones du premier tronçon, ex. « R 146 A »).
     if (cruiseDrawn) {
         doc.setDrawColor(...BLUE); doc.setLineWidth(1.2);
         doc.setLineDashPattern([6, 4], 0);
         doc.line(xL, yc, xR, yc);
         doc.setLineDashPattern([], 0);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7); _setInk(doc, BLUE);
-        doc.text(`${Math.round(pr.cruiseAltFt)} ft`, xL + 4, yc - 4);
+        doc.text(`${Math.round(pr.cruiseAltFt)} ft`, xR - 4, yc - 4, { align: 'right' });
     }
 
     // Labels départ / arrivée, sous la ligne de croisière (comme les waypoints).
@@ -1280,12 +1395,15 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         prevEdge = Math.max(prevEdge, lEdge + l.w);
     }
 
-    // Zones aériennes traversées (SIV…) : LIMITES en traits verticaux pleins
-    // fins, bleu identique à la carte (#38BDF8), à chaque entrée/sortie de
-    // zone ; nom du secteur + fréquence en VERTICAL, centrés entre les
-    // limites et centrés en hauteur dans le graphe.
-    const zones = Array.isArray(pr.routeAirspaces) ? pr.routeAirspaces : null;
-    if (zones?.length) {
+    // Zones SIV traversées : LIMITES en traits verticaux pleins fins, bleu
+    // identique à la carte (#38BDF8), à chaque entrée/sortie de zone ; nom
+    // du secteur + fréquence en VERTICAL, centrés entre les limites et
+    // centrés en hauteur dans le graphe. (Les autres familles — CTA, TMA,
+    // CTR, R/D/P… — sont dessinées plus haut en CADRES d'altitude
+    // horizontaux, comme la version site.)
+    const zones = (Array.isArray(pr.routeAirspaces) ? pr.routeAirspaces : [])
+        .filter(g => /^SIV\b/i.test(g.segs?.[0]?.zone || g.name || ''));
+    if (zones.length) {
         // Limites : débuts/fins de traversée (ranges fusionnés), doublons
         // proches écartés (zones imbriquées qui partagent un bord).
         const bxs = [];
