@@ -328,14 +328,24 @@ export function _rdpKey(name) {
     return m ? m[1] + m[2] : null;
 }
 
-/** Écarte les zones openAIP déjà couvertes par la base SIA : par nom exact,
- *  ou par désignateur R/D/P (LF-R278 ≡ R 278). Les items SIA passent tel
- *  quels. Exporté pour les tests. */
+/** Écarte les zones openAIP déjà couvertes par la base SIA : par nom exact
+ *  (ou normalisé — « SIV RENNES SUD partie A » ≡ « SIV RENNES SUD A », le
+ *  mot « partie » vient du NomPartie XML ; les noms à trait d'union comme
+ *  « SARREBRUCK-PARTIE FRANCE » ne sont pas touchés), ou par désignateur
+ *  R/D/P (LF-R278 ≡ R 278). Les items SIA passent tel quel. Exporté pour
+ *  les tests. */
 export function _dropOpenAipDuplicates(items, sia) {
-    const siaNames = new Set(sia.map(z => String(z.name || '').toUpperCase()));
+    const norm = (n) => String(n || '').toUpperCase()
+        .replace(/\s+PARTIE\s+(?=[A-Z0-9.]+$)/, ' ').replace(/\s+/g, ' ').trim();
+    const siaNames = new Set();
+    for (const z of sia) {
+        const n = String(z.name || '').toUpperCase();
+        siaNames.add(n);
+        siaNames.add(norm(z.name));
+    }
     const siaRdp = new Set(sia.map(z => _rdpKey(z.name)).filter(Boolean));
     return items.filter(z => sia.includes(z)
-        || !(siaNames.has(String(z.name || '').toUpperCase()) || siaRdp.has(_rdpKey(z.name))));
+        || !(siaNames.has(String(z.name || '').toUpperCase()) || siaNames.has(norm(z.name)) || siaRdp.has(_rdpKey(z.name))));
 }
 
 async function _loadCellsGrid(minLat, minLon, maxLat, maxLon) {
