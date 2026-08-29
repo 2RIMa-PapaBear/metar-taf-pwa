@@ -1,5 +1,5 @@
 /* ================================================================
- * FREQ SIA — fréquences radio officielles (SIA eAIP France) + overrides
+ * FREQ SIA — fréquences radio officielles (SIA) + overrides
  * ================================================================
  *
  * Priorité d'affichage des fréquences :
@@ -7,7 +7,11 @@
  *      l'utilisateur les édite directement) ;
  *   2. data/freq-sia.json — extrait de l'eAIP officiel du SIA (AD 2.17/
  *      2.18, cycle AIRAC 28 j, régénéré par scripts/fetch-freq-sia.mjs) ;
- *   3. openAIP — pour les terrains hors France métropole et repli.
+ *   3. data/freq-aa-sia.json — AFIS + A/A du XML_SIA (227 A/A + 68 AFIS :
+ *      complète l'eAIP pour les petits terrains sans page AD-2 — Ploërmel,
+ *      Avranches, Lessay, Quiberon… — régénéré par fetch-sia-airac.mjs),
+ *      FUSIONNÉE à l'eAIP par terrain (déduplication par fréquence) ;
+ *   4. openAIP — pour les terrains hors France métropole et repli.
  *
  * Les SIV/secteurs ne figurent pas dans l'eAIP (ils sont sur les cartes
  * VAC) : leurs fréquences restent openAIP, corrigibles via la clé
@@ -16,6 +20,7 @@
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000;
 let _sia = null;            // { airac, airports: {OACI: [{type,name,value,hor}]} }
+let _siaAa = null;          // idem, AFIS + A/A du XML_SIA
 let _overrides = null;      // { airports: {OACI: [...]}, services: {NOM: "fréq"} }
 let _loading = null;
 
@@ -65,7 +70,7 @@ async function _idbPut(key, data) {
     } catch {   }
 }
 
-/** Charge (une fois) SIA + overrides. */
+/** Charge (une fois) SIA (eAIP + XML AFIS/A-A) + overrides. */
 export function loadFreqSources() {
     _loading ??= (async () => {
         // Les overrides sont minuscules : toujours revalidés.
@@ -73,13 +78,19 @@ export function loadFreqSources() {
             const res = await fetch('data/freq-overrides.json', { cache: 'no-cache' });
             if (res.ok) _overrides = await res.json();
         } catch {   }
-        _sia = await _fetchJsonCached('data/freq-sia.json', 'sia');
+        const [sia, aa] = await Promise.all([
+            _fetchJsonCached('data/freq-sia.json', 'freq', 'sia'),
+            _fetchJsonCached('data/freq-aa-sia.json', 'freq', 'sia-aa'),
+        ]);
+        _sia = sia;
+        _siaAa = aa;
     })();
     return _loading;
 }
 
 /** Fréquences d'un terrain, forme du widget ({freq, name, type, primary}).
- *  SIA/offres priorité : overrides > SIA (LF**) > openAIP.
+ *  Priorité : overrides > SIA eAIP ⊕ SIA XML (AFIS/A-A fusionnés,
+ *  dédupliqués par fréquence) > openAIP.
  *  Retourne aussi la source ('overrides' | 'sia' | 'openaip'). */
 export function getAirportFreqs(icao, openaipFreqs) {
     const code = String(icao || '').toUpperCase();
@@ -91,8 +102,16 @@ export function getAirportFreqs(icao, openaipFreqs) {
         })) };
     }
     const sia = _sia?.airports?.[code];
-    if (Array.isArray(sia) && sia.length) {
-        return { source: 'sia', freqs: sia.map(f => ({
+    const aa = _siaAa?.airports?.[code];
+    if ((Array.isArray(sia) && sia.length) || (Array.isArray(aa) && aa.length)) {
+        // Fusion : eAIP d'abord (TWR/AFIS/ATIS…), AFIS/A-A du XML en
+        // complément, doublons de fréquence écartés (AFIS et A/A portent
+        // souvent la même valeur).
+        const merged = [...(sia || [])];
+        for (const f of aa || []) {
+            if (!merged.some(x => x.value === f.value)) merged.push(f);
+        }
+        return { source: 'sia', freqs: merged.map(f => ({
             freq: parseFloat(f.value), name: f.name || '', type: f.type || '',
             primary: /^(TWR|AFIS|APP)$/i.test(f.type || ''),
         })) };
@@ -111,4 +130,4 @@ export function getServiceFreq(serviceName) {
 export function getSiaAirac() { return _sia?.airac || null; }
 
 /** Test only. */
-export function _setSources(sia, overrides) { _sia = sia; _overrides = overrides; }
+export function _setSources(sia, overrides, siaAa) { _sia = sia; _overrides = overrides; _siaAa = siaAa; }

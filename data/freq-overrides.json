@@ -1,9 +1,5 @@
 {
   "_doc": "Corrections manuelles des fréquences radio — PRIORITÉ MAXIMALE sur toutes les sources. airports : { \"OACI\": [{\"type\":\"AFIS\",\"name\":\"VANNES Information\",\"value\":\"123.500\"}] } remplace toute la liste du terrain. services : { \"RENNES INFORMATION\": \"134.000\" } corrige une fréquence de SIV/organisme par indicatif. Les fréquences des terrains français viennent de l'eAIP officiel du SIA (data/freq-sia.json, cycle AIRAC 28 j) ; celles des SIV restent openAIP (non publiées dans l'eAIP) et se corrigent ici.",
-  "airports": {
-    "LFRP": [{ "type": "AFIS", "name": "PLOERMEL Information", "value": "118.255" }],
-    "LFRW": [{ "type": "AFIS", "name": "AVRANCHES Information", "value": "119.785" }],
-    "LFOM": [{ "type": "AFIS", "name": "LESSAY Information", "value": "128.930" }]
-  },
+  "airports": {},
   "services": {}
 }

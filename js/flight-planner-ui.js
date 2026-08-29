@@ -32,10 +32,25 @@ function _getMainFreq(icao) {
 function _legMainFreq(icao) {
     const { source, freqs } = getAirportFreqs(icao, getAirportByICAO(icao)?.frequencies || []);
     if (freqs.length) {
-        // Ordre de préférence : tour/AFIS du terrain, puis approche, puis FIS.
-        const prio = ['TWR', 'AFIS', 'APP', 'FIS', 'ATIS'];
+        // Ordre de préférence : tour/AFIS du terrain, puis approche, FIS,
+        // ATIS, et enfin A/A (air-air : seul service de nombreux petits
+        // terrains — Ploërmel, LFEV…).
+        const prio = ['TWR', 'AFIS', 'APP', 'FIS', 'ATIS', 'A/A'];
         for (const t of prio) {
-            const f = freqs.find(x => x.type === t);
+            let f = freqs.find(x => x.type === t);
+            // Plusieurs A/A publiées (ex. LFOM : « SAINT LAURENT » 123.500
+            // ET « LESSAY » 128.930) : celle au nom du terrain d'abord,
+            // sinon une valeur différente de la standard 123.500.
+            if (t === 'A/A') {
+                const cands = freqs.filter(x => x.type === t);
+                if (cands.length > 1) {
+                    const apt = getAirportByICAO(icao);
+                    const word = (apt?.name || '').split(/[\s-]/)[0]?.toUpperCase();
+                    f = cands.find(x => word && (x.name || '').toUpperCase().includes(word))
+                        || cands.find(x => Math.abs((x.freq || 0) - 123.5) > 0.001)
+                        || cands[0];
+                }
+            }
             if (f) return f;
         }
         return freqs[0];
