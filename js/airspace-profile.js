@@ -155,6 +155,9 @@ export function computeRouteAirspaces(points, items, opts) {
     const byKey = new Map();
     for (const as of items) {
         if (ADMIN_NAME_RE.test(String(as.name || as.designator || '').toUpperCase())) continue;
+        // FIR/UIR/secteurs ACC openAIP dont le nom ne dit pas « FIR »
+        // (ex. « LRBB », « POLARIS ACC ») — filtrés aussi sur la carte.
+        if (!as._sia && (as.type === 10 || as.type === 11 || as.type === 27)) continue;
         const lo = limitToFt(as.lowerLimit ?? as.lower) ?? 0;
         const up = limitToFt(as.upperLimit ?? as.upper);
         if (up == null || up <= 0) continue;            // plafond inconnu : on ignore

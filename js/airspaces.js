@@ -16,44 +16,66 @@ const MIN_ZOOM = 4;
 
 const MAX_BASE_FT = 5000;
 
+// Numérotation openAIP BRUTE (cellules data/airspaces/cells/) — vérifiée
+// sur le corpus servi : RMZ CHERBOURG=6, TMZ SEINE=5, ZARAGOZA ATZ=13,
+// MATZ britanniques (WITTERING…)=14, MOA US=25, CTA australiennes=26…
 const TYPE_MAP = {
     0:  'OTHER',
-    1:  'DROP',
+    1:  'RESTRICTED',
     2:  'DANGER',
     3:  'PROHIBITED',
     4:  'CTR',
-    5:  'TMA',
-    6:  'ATZ',
+    5:  'TMZ',
+    6:  'RMZ',
     7:  'TMA',
-    8:  'TMA',
-    9:  'TMA',
-    10: 'TMA',
-    11: 'TMZ',
-    12: 'RMZ',
+    8:  'TMA',        // TRA
+    9:  'TMA',        // TSA
+    10: 'OTHER',      // FIR — zone administrative, filtrée au rendu
+    11: 'OTHER',      // UIR — idem
+    12: 'OTHER',      // ADIZ
     13: 'ATZ',
-    14: 'GLIDER',
-    15: 'RESTRICTED',
+    14: 'ATZ',        // MATZ (Military ATZ, RU : WITTERING, SHAWBURY…)
+    15: 'GLIDER',
     16: 'DANGER',
     17: 'PROHIBITED',
-    18: 'RESTRICTED',
+    18: 'RESTRICTED', // Warning areas US (W-506…)
     19: 'RESTRICTED',
     20: 'RESTRICTED',
     21: 'RESTRICTED',
     22: 'RESTRICTED',
-    23: 'RESTRICTED',
-    24: 'GLIDER',
-    25: 'GLIDER',
-    26: 'GLIDER',
-    27: 'GLIDER',
-    28: 'ACRO',
-    29: 'DROP',
+    23: 'ATZ',        // TIZ
+    24: 'ATZ',        // TIA
+    25: 'RESTRICTED', // MOA US
+    26: 'CTA',
+    27: 'OTHER',      // secteurs ACC — filtrés au rendu
+    28: 'DROP',       // zones de largage (DZ, PAL…)
+    29: 'RESTRICTED', // parcs / réserves naturelles
     30: 'OTHER',
     31: 'OTHER',
     32: 'OTHER',
-    33: 'SIV',     // France : « SIV SEINE », « SIV CHEVREUSE »…
-    34: 'CTA',     // LTA
+    33: 'SIV',        // SIV France + FIZ (même code openAIP et SIA)
+    34: 'CTA',
     35: 'OTHER',
-    36: 'OTHER',
+    36: 'CTR',        // MCTR
+};
+
+// Numérotation PRIVÉE de la base SIA (scripts/fetch-sia-airac.mjs TYPE_NUM)
+// — elle COLLISIONNE avec openAIP (5=TMA ici vs TMZ là, 6=ATZ vs RMZ,
+// 14=planeurs vs MATZ…) d'où un décodage source-aware : les items SIA sont
+// marqués _sia au chargement, les items openAIP non.
+const SIA_TYPE_MAP = {
+    4:  'CTR',
+    5:  'TMA',
+    34: 'CTA',       // LTA
+    33: 'SIV',       // France : « SIV SEINE », « SIV CHEVREUSE »…
+    6:  'ATZ',
+    3:  'PROHIBITED',
+    15: 'RESTRICTED',
+    2:  'DANGER',
+    1:  'DROP',       // Pje (parachutage)
+    14: 'GLIDER',    // Vol / TrPla / TrPVL / TrVL
+    11: 'TMZ',
+    12: 'RMZ',
 };
 
 const ICAO_CLASS_MAP = {
@@ -246,15 +268,19 @@ let _siaPending = null;
 async function _loadSiaItems() {
     if (_siaItems) return _siaItems;
     _siaPending ??= (async () => {
+        // Marqueur de source : indispensable au décodage (numérotations SIA
+        // et openAIP incompatibles). Appliqué aussi au cache IndexedDB
+        // existant, posé avant la correction de TYPE_MAP.
+        const stamp = (arr) => { for (const it of arr) it._sia = true; return arr; };
         const cached = await _idbGet('sia:airspaces');
-        if (cached?.data && Date.now() - cached.ts < CELL_TTL_MS) { _siaItems = cached.data; return _siaItems; }
+        if (cached?.data && Date.now() - cached.ts < CELL_TTL_MS) { _siaItems = stamp(cached.data); return _siaItems; }
         try {
             const res = await fetch(`data/sia-airspaces.json?t=${cached?.ts || 0}`, { signal: AbortSignal.timeout(15000) });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const d = await res.json();
-            _siaItems = d.items.map(_expandFileItem);
+            _siaItems = stamp(d.items.map(_expandFileItem));
             _idbPut('sia:airspaces', _siaItems);
-        } catch { _siaItems = cached?.data || []; }
+        } catch { _siaItems = stamp(cached?.data || []); }
         return _siaItems;
     })();
     return _siaPending;
@@ -437,10 +463,13 @@ function _decodeAirspace(as) {
     return { kind: typeName, classLetter };
 }
 
-function _decodeType(as) {
+export function _decodeType(as) {
 
-    if (typeof as.type === 'number' && TYPE_MAP[as.type]) {
-        return TYPE_MAP[as.type];
+    // Base SIA et cellules openAIP ne numérotent PAS les types pareil :
+    // on décode selon la source (marqueur _sia posé au chargement).
+    const map = as._sia ? SIA_TYPE_MAP : TYPE_MAP;
+    if (typeof as.type === 'number' && map[as.type]) {
+        return map[as.type];
     }
 
     const t = String(as.type || '').toUpperCase();
@@ -630,6 +659,10 @@ export function createAirspaceController(map) {
             // tracées comme de grands cadres orange : inutiles en VFR —
             // on ne les dessine pas du tout.
             if (/\bFIR\b|\bUIR\b|\bLTA\b/.test(String(as.name || as.designator || '').toUpperCase())) return;
+            // Pareil, par numéro openAIP : FIR (10), UIR (11) et secteurs
+            // ACC (27) dont le nom ne contient pas toujours « FIR »
+            // (ex. « LRBB », « POLARIS ACC »).
+            if (!as._sia && (as.type === 10 || as.type === 11 || as.type === 27)) return;
 
             const kind = _decodeAirspace(as);
             if (!activeGroups.has(_KIND_TO_GROUP[kind.kind] || 'autres')) return;
