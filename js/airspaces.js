@@ -272,14 +272,17 @@ async function _loadSiaItems() {
         // et openAIP incompatibles). Appliqué aussi au cache IndexedDB
         // existant, posé avant la correction de TYPE_MAP.
         const stamp = (arr) => { for (const it of arr) it._sia = true; return arr; };
-        const cached = await _idbGet('sia:airspaces');
+        // v2 : la base du 29/08 corrige la géométrie (contours densifiés
+        // SIA — cercles cwa rendus en triangles avant) — nouveau clé = les
+        // clients re-téléchargent sans attendre le TTL de 7 j.
+        const cached = await _idbGet('sia:airspaces:v2');
         if (cached?.data && Date.now() - cached.ts < CELL_TTL_MS) { _siaItems = stamp(cached.data); return _siaItems; }
         try {
             const res = await fetch(`data/sia-airspaces.json?t=${cached?.ts || 0}`, { signal: AbortSignal.timeout(15000) });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const d = await res.json();
             _siaItems = stamp(d.items.map(_expandFileItem));
-            _idbPut('sia:airspaces', _siaItems);
+            _idbPut('sia:airspaces:v2', _siaItems);
         } catch { _siaItems = stamp(cached?.data || []); }
         return _siaItems;
     })();
