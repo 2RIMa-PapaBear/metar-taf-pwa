@@ -11,6 +11,7 @@ import { getEnRouteAlternates } from './alternates.js';
 import { renderElevationChart, clearElevationChart } from './elevation-chart.js';
 import { fetchAirportByIcao } from './openaip.js';
 import { loadFreqSources, getAirportFreqs } from './freq-sia.js';
+import { getSiaAirfield } from './sia-data.js';
 
 const LS_PERF_PREFIX = 'ac-perf-';
 
@@ -319,7 +320,8 @@ async function _generateNavLogPdfInto(tab) {
     if (qnh != null && oat != null) {
         const t = evaluateTakeoffFromRaw(fromIcao, {
             raw: metarRaw, qnh, oat,
-            elevationFt: getAirportByICAO(fromIcao)?.elevation ?? null,
+            // Élévation OFFICIELLE SIA (France) en priorité, sinon openAIP.
+            elevationFt: getSiaAirfield(fromIcao)?.elevFt ?? getAirportByICAO(fromIcao)?.elevation ?? null,
         });
         if (t) {
             const surf = getActiveRunwaySurfaceInfo(fromIcao);

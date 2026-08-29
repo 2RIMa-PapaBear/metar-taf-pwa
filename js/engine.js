@@ -7,6 +7,7 @@ import { I18N, PALETTE, UNIFIED_RED, REGEX_BLOCKS_PATTERN, sunCacheGet, sunCache
 import { state } from './core.js';
 import { parseVisiToMeters, getCeiling, getFlightCategory, getWeatherIcon, inferStartYear, traduireCode, findActiveValueAtHour, surfaceLabel, SOFT_SURFACES } from './core.js';
 import { getDeclinationForIcao } from './magvar.js';
+import { siaRunwayFor, siaSurfaceCode } from './sia-data.js';
 
 /**
  * Couleur de la flèche du vent, basée UNIQUEMENT sur la vitesse.
@@ -688,19 +689,24 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
     // widgets qui l'affichent (Performance décollage…). null sans données.
     state.activeRunwayName = bestRwy?.name || null;
 
-    // Revêtement de la piste active (si l'objet terrain est passé par l'appelant).
+    // Revêtement de la piste active : OFFICIEL SIA en priorité (France),
+    // sinon openAIP (si l'objet terrain est passé par l'appelant).
+    let surfCode = null;
+    if (bestRwy) {
+        const siaRw = siaRunwayFor(state.requestedIcao || state.lastParsed?.code, bestRwy.name);
+        surfCode = (siaRw && siaSurfaceCode(siaRw.surf))
+            || (apt && apt.runwaySurfaces ? (apt.runwaySurfaces[bestRwy.name] || apt.surface) : null)
+            || null;
+    }
     let surfHtml = '';
-    if (bestRwy && apt && apt.runwaySurfaces) {
-        const surfCode = apt.runwaySurfaces[bestRwy.name] || apt.surface;
-        if (surfCode) {
-            const surfText = surfaceLabel(surfCode, state.lang);
-            const isSoft = SOFT_SURFACES.has(surfCode);
-            const surfColor = isSoft ? '#FBBF24' : '#94A3B8';
-            surfHtml = `<div style="font-size:10px; color:${surfColor}; margin-top:6px; display:flex; align-items:center; gap:4px; justify-content:center;">
-                ${isSoft ? `<i data-lucide="alert-triangle" style="width:11px;height:11px;"></i>` : `<i data-lucide="layers" style="width:11px;height:11px;"></i>`}
-                <span>${surfText}</span>
-            </div>`;
-        }
+    if (bestRwy && surfCode) {
+        const surfText = surfaceLabel(surfCode, state.lang);
+        const isSoft = SOFT_SURFACES.has(surfCode);
+        const surfColor = isSoft ? '#FBBF24' : '#94A3B8';
+        surfHtml = `<div style="font-size:10px; color:${surfColor}; margin-top:6px; display:flex; align-items:center; gap:4px; justify-content:center;">
+            ${isSoft ? `<i data-lucide="alert-triangle" style="width:11px;height:11px;"></i>` : `<i data-lucide="layers" style="width:11px;height:11px;"></i>`}
+            <span>${surfText}</span>
+        </div>`;
     }
 
     const ticksSvg = Array.from({ length: 36 }, (_, i) => {

@@ -34,6 +34,12 @@ import { fetchAirportByIcao } from './openaip.js';
 import { initPlanIo } from './flight-plan-io.js';
 import { loadFreqSources, getSiaAirac } from './freq-sia.js';
 import { config, applyLocalOverride } from './config.js';
+import { loadSiaAux } from './sia-data.js';
+
+// Données auxiliaires officielles SIA (pistes, déclinaison, élévation) :
+// chargement non-bloquant au boot — les getters servent null tant qu'il
+// n'est pas fini, les consommateurs replient sur openAIP.
+loadSiaAux();
 
 const lastFetchTime = {};
 

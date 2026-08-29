@@ -27,6 +27,8 @@
  * - getRunwayThresholds(icao) : retourne les seuils d'un terrain depuis le Map.
  * ================================================================ */
 
+import { siaThresholds } from './sia-data.js';
+
 const CSV_URL = 'https://davidmegginson.github.io/ourairports-data/runways.csv';
 const IDB_NAME = 'meteo-taf-cache';
 const IDB_VERSION = 1;
@@ -203,6 +205,10 @@ export async function loadRunwaysCsv() {
  */
 export async function getRunwayThresholds(icao) {
     if (!icao) return [];
+    // Seuils OFFICIELS SIA en priorité (France) : même source que les
+    // cartes, avec altitudes — et pas de téléchargement CSV du tout.
+    const sia = siaThresholds(icao);
+    if (sia.length > 0) return sia;
     const map = await loadRunwaysCsv();
     if (!map) return [];
     return map.get(icao.toUpperCase()) || [];

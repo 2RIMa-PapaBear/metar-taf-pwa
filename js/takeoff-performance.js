@@ -46,6 +46,7 @@ import { getAirportByICAO } from './ui-module.js';
 import { getActiveAircraft } from './aircraft-fleet.js';
 import { selectBestRunway } from './engine.js';
 import { getRunwaySurface, isSoftSurface, surfaceLabel, runwayBelongsToAirport } from './runway-surface.js';
+import { siaRunwayLengthFt } from './sia-data.js';
 
 // Distance de référence C172 (ft), au niveau de la mer / ISA.
 const DEFAULT_GROUND_ROLL = 830;
@@ -65,10 +66,11 @@ function ftToM(ft) { return Math.round(ft * FT_TO_M); }
  * actuellement sélectionnée dans la rose des vents.
  *
  * Priorité :
- *   1. Saisie manuelle du pilote (localStorage, par terrain) — surclasse tout.
- *   2. Piste active de la rose des vents (state.forcedRunway résolu via
- *      selectBestRunway) → longueur spécifique de CE numéro de piste.
- *   3. Piste la plus longue du terrain (fallback).
+ *   1. Piste SIA officielle (France) contenant la piste active de la rose
+ *      des vents, sinon la piste principale du terrain (longueur déclarée
+ *      en mètres convertie en pieds).
+ *   2. Piste active de la rose des vents → longueur openAIP spécifique.
+ *   3. Piste la plus longue du terrain (fallback openAIP).
  *
  * @param {string} icao
  * @returns {number|null} Longueur en pieds, ou null si inconnue.
@@ -77,18 +79,23 @@ export function getRunwayLength(icao) {
     if (!icao) return null;
 
     const apt = getAirportByICAO(icao);
+
+    // 1. Officiel SIA (France) : piste active si connue, sinon principale.
+    const activeRwyName = apt ? _getActiveRunwayName(apt) : null;
+    const siaLen = siaRunwayLengthFt(icao, activeRwyName || undefined);
+    if (siaLen) return siaLen;
+
     if (!apt) return null;
 
-    // 1. Piste active de la rose des vents : si le pilote a cliqué une piste
+    // 2. Piste active de la rose des vents : si le pilote a cliqué une piste
     //    (state.forcedRunway = "08L-26R") ou si une piste est suggérée par le
     //    vent, on cherche la longueur de CE numéro de piste.
-    const activeRwyName = _getActiveRunwayName(apt);
     if (activeRwyName && apt.runwayLengths) {
         const len = apt.runwayLengths[activeRwyName];
         if (typeof len === 'number' && len > 0) return len;
     }
 
-    // 2. Fallback : piste la plus longue du terrain.
+    // 3. Fallback : piste la plus longue du terrain.
     if (typeof apt.longestRunway === 'number' && apt.longestRunway > 0) {
         return apt.longestRunway;
     }

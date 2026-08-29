@@ -73,9 +73,13 @@ export function parseRadioPoints(json) {
         const it = { ident, lat, lon, freq: Number.isFinite(freq) ? freq : null, type };
         (classifyNavaid(freq, unit) === 'NDB' ? ndb : vor).push(it);
     }
-    for (const [name, lat, lon, cc] of json.vrps) {
+    // VRP : [name, lat, lon, cc] openAIP monde + [name, lat, lon, 'FR', desc]
+    // officiels SIA (5ᵉ élément = description, ex. « VRP-Cavaillon (Pont
+    // TGV sur la Durance) »).
+    for (const v of json.vrps) {
+        const [name, lat, lon, cc, desc] = v;
         if (!name || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-        vrp.push({ name: String(name), lat, lon, cc: cc || '' });
+        vrp.push({ name: String(name), lat, lon, cc: cc || '', desc: desc || null, sia: cc === 'FR' && !!desc });
     }
     return { vor, ndb, vrp, generatedAt: json.generatedAt || '', counts: json.counts || {} };
 }

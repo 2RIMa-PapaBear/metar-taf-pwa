@@ -123,7 +123,10 @@ export function createRadioPointsController(map, deps = {}) {
         const parts = [];
         if (kind === 'vrp') {
             parts.push(`<div class="fw-title"><strong>${_esc(it.name)}</strong></div>`);
-            parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${fr ? 'Point de repère VFR' : 'VFR reporting point'}${it.cc ? ' · ' + _esc(it.cc) : ''}</div>`);
+            // Description OFFICIELLE SIA (« VRP-Cavaillon (Pont TGV sur la
+            // Durance) ») quand le point vient de la base SIA (France).
+            if (it.desc) parts.push(`<div style="font-size:11px;margin-top:2px;">${_esc(it.desc)}</div>`);
+            parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${fr ? 'Point de repère VFR' : 'VFR reporting point'}${it.cc ? ' · ' + _esc(it.cc) : ''}${it.sia ? ' · SIA' : ''}</div>`);
         } else {
             parts.push(`<div class="fw-title"><strong style="color:${COLORS[kind]};">${_esc(it.ident)}</strong></div>`);
             parts.push(`<div style="font-size:11px;color:var(--text-muted,#94A3B8);">${kind === 'vor' ? 'VOR' + (fr ? ' · DME colocalisé le cas échéant' : ' · co-located DME if any') : 'NDB'}</div>`);

@@ -15,6 +15,7 @@
 import { state, surfaceLabel as _surfaceLabel, SOFT_SURFACES } from './core.js';
 import { getAirportByICAO } from './ui-module.js';
 import { selectBestRunway } from './engine.js';
+import { siaRunwayFor, siaSurfaceCode } from './sia-data.js';
 
 // Réexporte les helpers de traduction depuis core (point d'entrée unique).
 export const surfaceLabel = _surfaceLabel;
@@ -39,6 +40,16 @@ export function isSoftSurface(code) {
  */
 export function getRunwaySurface(icao, rwyName) {
     const apt = getAirportByICAO(icao);
+
+    // Revêtement OFFICIEL SIA en priorité (France) — texte exact du SIA
+    // (« revêtue », « macadam », « herbe »…) traduit en code standard.
+    const activeName = rwyName || (apt ? _resolveActiveRunwayName(apt) : null);
+    const siaRw = siaRunwayFor(icao, activeName);
+    if (siaRw && siaRw.surf) {
+        const code = siaSurfaceCode(siaRw.surf);
+        if (code) return code;
+    }
+
     if (!apt) return null;
 
     // Si un numéro de piste est fourni, on l'utilise directement.

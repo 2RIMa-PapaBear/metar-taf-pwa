@@ -1,4 +1,5 @@
 import { memoGet } from './core.js';
+import { getOfficialDeclination } from './sia-data.js';
 
 const _sessionCache = new Map();
 
@@ -28,6 +29,16 @@ export function getDeclinationForIcao(icao) {
 
     if (_sessionCache.has(key)) return _sessionCache.get(key);
 
+    // Déclinaison OFFICIELLE SIA (France, AdMagVar millésimé — ex. 0,24°
+    // 2025) en priorité sur le modèle WMM2020 ; null tant que sia-data
+    // n'est pas chargé ou hors France.
+    const sia = getOfficialDeclination(key);
+    if (typeof sia === 'number') {
+        _sessionCache.set(key, sia);
+        _writeLs(icao, sia);
+        return sia;
+    }
+
     const lsCache = _readLs();
     if (typeof lsCache[key] === 'number') {
         _sessionCache.set(key, lsCache[key]);
@@ -44,6 +55,13 @@ export async function getDeclinationForIcaoAsync(icao) {
     if (!icao) return 0;
     const key = icao.toUpperCase();
     if (_sessionCache.has(key)) return _sessionCache.get(key);
+
+    const sia = getOfficialDeclination(key);
+    if (typeof sia === 'number') {
+        _sessionCache.set(key, sia);
+        _writeLs(icao, sia);
+        return sia;
+    }
 
     const lsCache = _readLs();
     if (typeof lsCache[key] === 'number') {
