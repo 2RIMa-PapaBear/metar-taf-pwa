@@ -60,7 +60,8 @@ function _mapSurface(mainComposite) {
 
 function _mToFt(m) { return Math.round(m * FT_PER_M); }
 
-function _mapAirport(aip) {
+/** Mapping d'un item openAIP brut → forme interne. Exporté pour les tests. */
+export function _mapAirport(aip) {
     const [lon, lat] = aip.geometry?.coordinates || [null, null];
     const elevM = aip.elevation?.value;
     const elevFt = typeof elevM === 'number' ? _mToFt(elevM) : null;
@@ -120,7 +121,13 @@ function _mapAirport(aip) {
         .map(f => ({
             freq: parseFloat(f.value),
             name: f.name || '',
-            type: FREQ_TYPE_LABELS[f.type] ?? 'COM',
+            type: FREQ_TYPE_LABELS[f.type] === 'UNK'
+                // openAIP tape « UNK » (type 16) sur beaucoup de fréquences
+                // A/A ; leur nom les désigne (« A/A », « AIR/AIR ») → vraie
+                // étiquette à l'affichage (détail des waypoints, widget).
+                && /\bA\s*\/\s*A\b|AIR[\s\/-]?AIR/i.test(f.name || '')
+                ? 'A/A'
+                : (FREQ_TYPE_LABELS[f.type] ?? 'COM'),
             primary: !!f.primary,
         }))
         .filter(f => !isNaN(f.freq))
