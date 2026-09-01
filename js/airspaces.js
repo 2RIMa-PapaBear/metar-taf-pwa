@@ -104,6 +104,10 @@ const AIRSPACE_STYLE = {
     'G':    { color: '#94A3B8', fill: 'rgba(148,163,184,0.04)', weight: 0.8, label: 'G' },
     RMZ:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'RMZ' },
     TMZ:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'TMZ' },
+    // ZRT : zones réglementées TEMPORAIRES françaises (noms openAIP « ZRT … »,
+    // absentes du XML SIA) — même violet que RMZ/TMZ, la famille où le pilote
+    // les cherche (demande 02/09) ; le libellé du popup les distingue.
+    ZRT:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'ZRT' },
     'GLIDER': { color: '#4ADE80', fill: 'rgba(74,222,128,0.08)', weight: 1, label: 'Planel' },
     'DROP': { color: '#94A3B8', fill: 'rgba(148,163,184,0.08)', weight: 1, label: 'Parachut.' },
     'RESTRICTED': { color: '#EF4444', fill: 'rgba(239,68,68,0.18)', weight: 2, label: 'Réglementée' },
@@ -121,7 +125,7 @@ export const AIRSPACE_GROUPS = {
     siv:    { kinds: ['SIV'], label: 'SIV', en: 'SIV', color: '#38BDF8' },
     atz:    { kinds: ['ATZ'], label: 'ATZ', en: 'ATZ', color: '#FBBF24' },
     rpd:    { kinds: ['RESTRICTED', 'PROHIBITED', 'DANGER', 'DROP'], label: 'Zones R · P · D', en: 'R · P · D areas', color: '#DC2626' },
-    tmz:    { kinds: ['TMZ', 'RMZ'], label: 'TMZ / RMZ', en: 'TMZ / RMZ', color: '#A855F7' },
+    tmz:    { kinds: ['TMZ', 'RMZ', 'ZRT'], label: 'TMZ / RMZ / ZRT', en: 'TMZ / RMZ / ZRT', color: '#A855F7' },
     autres: { kinds: ['GLIDER', 'ACRO', 'OTHER'], label: 'Planeurs & autres', en: 'Glider & others', color: '#4ADE80' },
 };
 const _KIND_TO_GROUP = (() => {
@@ -504,6 +508,10 @@ export function _decodeType(as) {
     // on décode selon la source (marqueur _sia posé au chargement).
     const map = as._sia ? SIA_TYPE_MAP : TYPE_MAP;
     if (typeof as.type === 'number' && map[as.type]) {
+        // ZRT françaises (openAIP les tape RESTRICTED, le SIA ne les publie
+        // pas) : requalifiées par NOM en kind propre → famille TMZ/RMZ/ZRT.
+        if (map[as.type] === 'RESTRICTED'
+            && /^ZRT\b/i.test(String(as.name || as.designator || '').trim())) return 'ZRT';
         return map[as.type];
     }
 
@@ -525,6 +533,7 @@ export function _decodeType(as) {
     if (/\bATZ\b/.test(name)) return 'ATZ';
     if (/\bRMZ\b/.test(name)) return 'RMZ';
     if (/\bTMZ\b/.test(name)) return 'TMZ';
+    if (/^ZRT\b/.test(name)) return 'ZRT';
     if (/RESTRICT|REGUL|RTBA|R\d{2,}/.test(name)) return 'RESTRICTED';
     if (/DANGER/.test(name)) return 'DANGER';
     if (/PROHIB/.test(name)) return 'PROHIBITED';
