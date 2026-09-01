@@ -120,10 +120,16 @@ export function resetRouteFit() {
     _lastFitKey = null;
 }
 
-// Effacement de la route (retour au vol local) : le prochain tracé recadrera.
-// (Garde-fou DOM : le module est aussi importé par les tests Node.)
+// Effacement de la route (retour au vol local) : supprime polyline, marqueurs
+// et étiquettes de la carte (pas seulement le recadrage), puis reset du fit
+// pour que le prochain tracé recadre. (Garde-fou DOM : le module est aussi
+// importé par les tests Node.)
 if (typeof document !== 'undefined') {
-    document.addEventListener('clear-route', resetRouteFit);
+    document.addEventListener('clear-route', () => {
+        if (_lastMap) _clearRoute(_lastMap);
+        _lastRoutePoints = [];
+        resetRouteFit();
+    });
 }
 
 async function _loadCorridorMetars(map, fromLat, fromLon, toLat, toLon, fromIcao, toIcao, opts = {}) {

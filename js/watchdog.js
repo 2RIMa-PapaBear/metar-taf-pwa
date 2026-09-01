@@ -143,8 +143,8 @@ async function _check() {
             }
             _lastStates.set(icao, newState);
 
-            // Met à jour le badge visuel sur le favori.
-            _updateFavoriteBadge(icao, newState);
+            // Met à jour l'olive météo sur le favori.
+            _updateFavoriteBadge(icao, newState, isFr);
         }
 
         // Notifie si dégradations.
@@ -192,25 +192,43 @@ function _isWorse(newState, oldState) {
 }
 
 /**
- * Met à jour le badge visuel sur un favori dans la liste.
+ * Met à jour l'olive météo d'un favori dans la liste (une seule par ligne,
+ * posée DEVANT le code OACI dans un emplacement réservé — plus rien n'est
+ * écrasé par manque de place).
  */
-function _updateFavoriteBadge(icao, state) {
+function _updateFavoriteBadge(icao, weatherState, isFr = true) {
     const favList = document.getElementById('favorites-list');
     if (!favList) return;
     const item = favList.querySelector(`[data-icao="${icao.toUpperCase()}"]`);
     if (!item) return;
 
     const colors = { 'GO': '#10B981', 'CAUTION': '#F59E0B', 'NO-GO': '#EF4444' };
+    const short = { 'GO': 'GO', 'CAUTION': 'CAUT', 'NO-GO': 'NO-GO' };
     let badge = item.querySelector('.fav-status-badge');
     if (!badge) {
+        // Repli (DOM ancien ou tiers) : recrée l'olive devant le code OACI.
         badge = document.createElement('span');
         badge.className = 'fav-status-badge';
-        item.appendChild(badge);
+        const code = item.querySelector('.history-icao');
+        if (code) code.parentElement.insertBefore(badge, code);
+        else item.appendChild(badge);
     }
-    badge.style.background = colors[state] + '33';
-    badge.style.color = colors[state];
-    badge.style.borderColor = colors[state];
-    badge.textContent = state;
+    badge.style.background = colors[weatherState] + '33';
+    badge.style.color = colors[weatherState];
+    badge.style.borderColor = colors[weatherState];
+    badge.textContent = short[weatherState] || weatherState;
+    badge.title = isFr
+        ? { 'GO': 'Météo favorable', 'CAUTION': 'Météo en dégradation — prudence', 'NO-GO': 'Météo défavorable — NO-GO' }[weatherState] || weatherState
+        : { 'GO': 'Good weather', 'CAUTION': 'Degrading weather — caution', 'NO-GO': 'Unfavorable weather — NO-GO' }[weatherState] || weatherState;
+}
+
+/**
+ * Ré-applique les derniers états connus sur les olives des favoris — appelé
+ * après un re-rendu de la liste (updateFavoritesUI recrée le DOM vide).
+ */
+export function applyFavoriteBadges() {
+    const isFr = state.lang === 'fr';
+    for (const [icao, st] of _lastStates) _updateFavoriteBadge(icao, st, isFr);
 }
 
 /**

@@ -177,6 +177,17 @@ async function _initOrRefresh() {
 
         _initLayerControls();
 
+        // Rejoue les repères libres reçus avant l'init (import d'un plan avec
+        // panneau carte jamais ouvert) : leurs codes ZZxx sont annoncés,
+        // puis la route est retracée complète.
+        if (_pendingFreeWps.length) {
+            const pending = _pendingFreeWps.splice(0);
+            for (const w of pending) {
+                _createFreeWaypoint(w.lat, w.lon, String(w.name || 'WPT').slice(0, 24));
+            }
+            window.dispatchEvent(new CustomEvent('route-changed'));
+        }
+
         _runwayLayer = L.layerGroup().addTo(_map);
         _map.on('zoomend', _updateRunwayVisibility);
 
@@ -697,13 +708,19 @@ if (typeof document !== 'undefined') {
         const wp = _freeWaypoints.get(icao);
         if (wp) _openFreeWpEditor(L.latLng(wp.lat, wp.lon), icao);
     });
+}
 
-    // Import d'un plan (flight-plan-io.js) : recrée un repère libre nommé
-    // à ses coordonnées (l'auto-ajout au plan suit, puis l'import reposera
-    // la liste des étapes dans l'ordre du fichier).
+// Restauration de repères libres (import d'un plan, flight-plan-io.js) :
+// écouteur AU NIVEAU MODULE — il existe dès le chargement de l'app. Avant la
+// 1re init de la carte (panneau jamais ouvert), les points sont mis en file
+// d'attente puis rejoués à l'init ; sinon un plan importé perdait ses
+// repères libres et son tracé était incomplet.
+const _pendingFreeWps = [];
+if (typeof document !== 'undefined') {
     document.addEventListener('restore-free-waypoint', (e) => {
         const { lat, lon, name } = e.detail || {};
-        if (typeof lat !== 'number' || typeof lon !== 'number' || !_map) return;
+        if (typeof lat !== 'number' || typeof lon !== 'number') return;
+        if (!_map) { _pendingFreeWps.push({ lat, lon, name }); return; }
         _createFreeWaypoint(lat, lon, String(name || 'WPT').slice(0, 24));
     });
 }

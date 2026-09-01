@@ -22,7 +22,7 @@
 
 import { state, memoGet } from './core.js';
 import { getAirportByICAO } from './ui-module.js';
-import { parseWaypointsField } from './flight-planner-ui.js';
+import { parseWaypointsField, formatWaypointsField } from './flight-planner-ui.js';
 
 const DB_NAME = 'mt-plan-io';
 const DIR_STORE = 'handles';
@@ -270,6 +270,11 @@ function _setDestination(icao) {
     const apt = getAirportByICAO(icao);
     const toNameEl = document.getElementById('route-to-name');
     if (toNameEl) toNameEl.textContent = apt?.name || '';
+    // Passe par le chemin OFFICIEL d'une saisie clavier : l'écouteur 'input'
+    // (app.js) appelle handleDestinationChange — nom du terrain, route sur la
+    // carte, planificateur et profil suivent. Sans lui, le champ était rempli
+    // mais le tracé n'était jamais redessiné (bug « import sans tracé »).
+    toInput.dispatchEvent(new Event('input'));
 }
 
 // Point importé : code OACI connu → terrain, sinon repère libre nommé
@@ -284,10 +289,16 @@ function _resolvePoint(p) {
     return null;   // le code ZZxx sera lu depuis le registre au moment de poser la liste
 }
 
-// Restore un plan (points + réglages). Les étapes sont posées EN BLOC dans
-// le champ Waypoints dès que le planner est rendu — dans l'ordre EXACT du
-// fichier (les repères libres s'auto-ajoutent entre-temps par insertion
-// intelligente, la pose finale écrase avec l'ordre d'origine).
+// Extrémité GPX/KML : code OACI connu, sinon le repère libre VENANT d'être
+// créé (son code ZZxx est annoncé de façon synchrone par l'événement).
+function _resolveEndpoint(p) {
+    return _resolvePoint(p) || _createdCodes[_createdCodes.length - 1] || null;
+}
+
+// Restore un plan (points + réglages). La séquence d'étapes est posée EN BLOC
+// dans state.route (LA source du tracé carte et du plan multi-étapes) puis
+// synchronisée dans le champ Waypoints dès que le planner est rendu —
+// l'ordre du fichier prime sur l'insertion intelligente.
 let _createdCodes = [];
 if (typeof document !== 'undefined') {
     document.addEventListener('free-waypoint-created', (e) => {
@@ -301,48 +312,70 @@ export function restorePlan(planOrPoints, settings = null) {
     if (points) {
         // GPX/KML : conversion points → plan (1er = départ, dernier = dest).
         if (points.length < 2) return false;
-        const dep = _resolvePoint(points[0]);
-        const dest = _resolvePoint(points[points.length - 1]);
+        _createdCodes = [];
+        const dep = _resolveEndpoint(points[0]);
+        const dest = _resolveEndpoint(points[points.length - 1]);
         if (!dep || !dest) return false;
-        plan = { dep, dest, wps: points.slice(1, -1).map(p => _resolvePoint(p)) };
+        plan = { dep, dest, wps: points.slice(1, -1) };
     }
     if (!plan?.dep || !plan?.dest) return false;
     _createdCodes = [];
 
-    _setDeparture(plan.dep);
-    _setDestination(plan.dest);
-
-    // Séquence d'étapes : codes directs OU repères libres (objets JSON ou
-    // points GPX/KML hors base) — créés via 'restore-free-waypoint', leurs
-    // codes arrivant dans l'ordre via 'free-waypoint-created'.
-    const seq = (plan.wps || []).map(w => {
-        if (typeof w === 'string') return w;
+    // Repères libres d'abord : chaque dispatch crée le marqueur et annonce
+    // son code ZZxx dans l'ordre (événement synchrone 'free-waypoint-created'
+    // — ou file d'attente de la carte si elle n'est pas encore initialisée).
+    for (const w of (plan.wps || [])) {
         if (w && typeof w.lat === 'number' && typeof w.lon === 'number') {
             document.dispatchEvent(new CustomEvent('restore-free-waypoint', {
                 detail: { lat: w.lat, lon: w.lon, name: String(w.name || 'WPT').slice(0, 24) },
             }));
         }
-        return null;
-    });
-    const inject = (tries) => {
-        const wpInput = document.getElementById('fp-waypoints');
-        if (!wpInput) {
-            if (tries > 0) setTimeout(() => inject(tries - 1), 800);
-            return;
-        }
+    }
+
+    _setDeparture(plan.dep);
+
+    // Séquence complète DANS L'ORDRE DU FICHIER — posée AVANT _setDestination :
+    // le 'input' qu'il émet rend immédiatement le planificateur (qui lit
+    // state.route pour la séquence multi-étapes), puis RÉIMPOSÉE après car
+    // handleDestinationChange la vide sur un changement de destination.
+    const buildSeq = () => {
         let ci = 0;
-        const ordered = seq.map(s => s !== null ? s : (_createdCodes[ci++] ?? null)).filter(Boolean);
-        if (ordered.length) {
-            wpInput.value = [...new Set(ordered)].join(' ');
-            wpInput.dispatchEvent(new Event('change'));
-        }
-        // Réglages de calcul (JSON natif uniquement).
+        const codes = (plan.wps || [])
+            .map(w => typeof w === 'string' ? w : (_createdCodes[ci++] ?? null))
+            .filter(Boolean);
+        return [plan.dep, ...codes, plan.dest];
+    };
+    state.route = buildSeq();
+    _setDestination(plan.dest);
+    state.route = buildSeq();
+
+    // Trace la route immédiatement si la carte est affichée (sinon elle sera
+    // tracée à l'ouverture du panneau, qui lit state.route).
+    window.dispatchEvent(new CustomEvent('route-changed'));
+
+    // Réglages de calcul (JSON natif) + synchronisation du champ Waypoints :
+    // appliqués dès que le planificateur rendu correspond à CE plan (il est
+    // recréé quand la météo du départ arrive, horloge réseau incontrôlable —
+    // d'où le poll), puis 'change' déclenche le recalcul officiel (recalc
+    // relit le champ, re-rend le plan et notifie la carte).
+    const applySettings = (tries) => {
+        const fp = document.getElementById('flight-planner-panel');
+        const wpInput = document.getElementById('fp-waypoints');
+        const retry = () => { if (tries > 0) setTimeout(() => applySettings(tries - 1), 800); };
+        if (!fp || !wpInput) { retry(); return; }
+        const head = fp.querySelector('.fp-route')?.textContent || '';
+        if (!head.includes(plan.dep) || !head.includes(plan.dest)) { retry(); return; }
+
+        const ordered = buildSeq().slice(1, -1);
+        state.route = buildSeq();
+        wpInput.value = formatWaypointsField([...new Set(ordered)]);
         if (settings?.cruiseAltFt != null) { const el = document.getElementById('fp-cruise-alt'); if (el) el.value = settings.cruiseAltFt; }
         if (settings?.tasKt != null) { const el = document.getElementById('fp-tas'); if (el) el.value = settings.tasKt; }
         if (settings?.burnLph != null) { const el = document.getElementById('fp-burn'); if (el) el.value = settings.burnLph; }
-        if (settings?.night === true) { const el = document.getElementById('fp-night'); if (el) { el.checked = true; el.dispatchEvent(new Event('change')); } }
+        if (settings?.night === true) { const el = document.getElementById('fp-night'); if (el) el.checked = true; }
+        wpInput.dispatchEvent(new Event('change'));
     };
-    setTimeout(() => inject(12), 2000);
+    setTimeout(() => applySettings(20), 1500);
     return true;
 }
 

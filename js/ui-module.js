@@ -5,6 +5,7 @@ import { dessinerGraphique, updateWindCompass, calculateFlightCategoryRobust, pa
 import { displayWeatherAlerts } from './weather.js';
 import { updateDecryptedWidgets, showDecryptedWidgets } from './widgets.js';
 import { idbGetAirports, idbPutAirports, AIRPORTS_DB_VERSION } from './db.js';
+import { applyFavoriteBadges } from './watchdog.js';
 
 let AIRPORTS = [];
 
@@ -337,8 +338,9 @@ export function updateFavoritesUI(onSelect) {
             <div class="fav-remove-btn fav-remove" data-icao="${escapeHtml(icao)}" style="padding: 2px; margin:0;">
                 <i data-lucide="x" style="width:16px; height:16px; margin:0;"></i>
             </div>
-            <div style="display:flex; flex-direction:column; flex:1; text-align:left;">
-                <div style="display:flex; flex-direction:row; align-items:center; gap:4px;">
+            <div style="display:flex; flex-direction:column; flex:1; min-width:0; text-align:left;">
+                <div style="display:flex; flex-direction:row; align-items:center; gap:4px; min-width:0;">
+                    <span class="fav-status-badge"></span>
                     <span class="history-icao">${escapeHtml(icao)}</span>
                     <div class="fav-startup-btn fav-startup" data-icao="${escapeHtml(icao)}" title="${isFr ? (isStartup ? 'Ne plus charger au démarrage' : 'Charger au démarrage') : (isStartup ? 'Stop loading on startup' : 'Load on startup')}" style="padding:1px; cursor:pointer; opacity:${isStartup ? '1' : '0.4'}; color:${isStartup ? '#FBBF24' : 'var(--text-muted)'};">
                         <i data-lucide="${isStartup ? 'pin' : 'pin-off'}" style="width:14px; height:14px; margin:0;"></i>
@@ -353,6 +355,10 @@ export function updateFavoritesUI(onSelect) {
     c.innerHTML = html;
 
     if (window.lucide) window.lucide.createIcons({ root: c });
+
+    // Le re-rendu a recréé le DOM : ré-applique les derniers états météo
+    // connus (watchdog) sur les olives, sans attendre le prochain cycle.
+    applyFavoriteBadges();
 
     c.querySelectorAll('.fav-item').forEach(b => {
         b.addEventListener('click', function(e) {

@@ -261,13 +261,17 @@ function _draw() {
         _ctx.fillText(nm + ' NM', xOf((bornes[i] + bornes[i + 1]) / 2), ch - PAD.bottom + 16);
     }
 
-    // --- Labels départ / arrivée ---
-    _ctx.textAlign = 'left';
-    _ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    // --- Labels départ / arrivée, posés SUR LE TERRAIN (niveau du sol) ---
+    // Ancrés juste au-dessus du point de relief du départ et de l'arrivée
+    // (bornés au graphe) — avant, ils flottaient dans les coins hauts.
     _ctx.font = 'bold 9px "DM Mono", monospace';
-    _ctx.fillText(_fromIcao, PAD.left + 2, PAD.top + 10);
+    _ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    const yDep = Math.max(PAD.top + 10, yOf(pts[0].elevFt) - 5);
+    const yArr = Math.max(PAD.top + 10, yOf(pts[pts.length - 1].elevFt) - 5);
+    _ctx.textAlign = 'left';
+    _ctx.fillText(_fromIcao, PAD.left + 2, yDep);
     _ctx.textAlign = 'right';
-    _ctx.fillText(_toIcao, cw - PAD.right - 2, PAD.top + 10);
+    _ctx.fillText(_toIcao, cw - PAD.right - 2, yArr);
 
     // --- Marqueurs waypoints intermédiaires (multi-leg) ---
     if (_waypoints && _waypoints.length > 2) {

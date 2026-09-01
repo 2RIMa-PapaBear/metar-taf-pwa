@@ -7,6 +7,14 @@ import { fetchRouteElevation, evaluateClearance, fetchMultiSegmentElevation } fr
 import { computeRouteAirspaces, routeBbox } from './airspace-profile.js';
 import { fetchAirspacesForBbox } from './airspaces.js';
 import { loadFreqSources, getServiceFreq } from './freq-sia.js';
+import { getSiaAirfield } from './sia-data.js';
+
+// Élévation OFFICIELLE d'un terrain en ft (SIA AdRefAltFt, repli base locale
+// openAIP déjà convertie) — pour ancrer les extrémités du profil d'élévation
+// au niveau réel du sol des aérodromes (la maille Open-Meteo peut en différer).
+function _officialElevFt(icao, apt = null) {
+    return getSiaAirfield(icao)?.elevFt ?? apt?.elevation ?? null;
+}
 
 // Zones aériennes traversées par la route (rectangles d'altitude du profil
 // d'élévation) : bbox du corridor → items openAIP → groupes. Non bloquant —
@@ -173,7 +181,8 @@ export async function computeFlightPlan(fromIcao, toIcao, params) {
     const reserveMin = params.isNight ? RESERVE_MIN_NIGHT : RESERVE_MIN_DAY;
     const fuel = computeFuel(legTimeMin, params.fuelBurnLph, reserveMin);
 
-    const elevProfile = await fetchRouteElevation(fromLat, fromLon, toLat, toLon);
+    const elevProfile = await fetchRouteElevation(fromLat, fromLon, toLat, toLon, null,
+        [_officialElevFt(fromIcao, fromApt), _officialElevFt(toIcao, toApt)]);
     const clearance = elevProfile
         ? evaluateClearance(elevProfile, params.cruiseAltFt)
         : null;
@@ -232,7 +241,7 @@ export async function computeMultiLegFlightPlan(route, params) {
         const lat = memo?.lat ?? apt?.lat ?? null;
         const lon = memo?.lon ?? apt?.lon ?? null;
         if (lat == null || lon == null) return null;
-        waypoints.push({ icao, lat, lon, elevFt: apt?.elevation ?? null, name: apt?.name || icao });
+        waypoints.push({ icao, lat, lon, elevFt: _officialElevFt(icao, apt), name: apt?.name || icao });
     }
 
     const legs = [];
@@ -281,12 +290,13 @@ export async function computeMultiLegFlightPlan(route, params) {
         totalTripFuelL += fuel.tripFuelL;
     }
 
-    // Profil d'élévation concaténé sur tous les segments.
+    // Profil d'élévation concaténé sur tous les segments, ancré aux élévations
+    // officielles des terrains de la route (départ, étapes, arrivée).
     const legCoords = [];
     for (let i = 0; i < waypoints.length - 1; i++) {
         legCoords.push([waypoints[i].lat, waypoints[i].lon, waypoints[i + 1].lat, waypoints[i + 1].lon]);
     }
-    const elevProfile = await fetchMultiSegmentElevation(legCoords);
+    const elevProfile = await fetchMultiSegmentElevation(legCoords, waypoints.map(w => w.elevFt));
     const clearance = elevProfile ? evaluateClearance(elevProfile, params.cruiseAltFt) : null;
     const routeAirspaces = await loadRouteAirspaces(elevProfile, params.cruiseAltFt);
 

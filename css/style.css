@@ -2446,18 +2446,23 @@ body.cockpit-mode header.card {
     50% { opacity: 0.5; transform: scale(0.85); }
 }
 
-/* Badges de statut sur les favoris */
+/* Olive météo des favoris (watchdog) : UNE par ligne, posée DEVANT le code
+   OACI dans un emplacement réservé (flex-shrink:0 → jamais écrasée par le
+   nom). Sans donnée météo (vide), l'olive ne s'affiche pas. */
 .fav-status-badge {
     display: inline-block;
+    flex-shrink: 0;
     font-size: 8px;
     font-weight: 800;
     padding: 1px 5px;
     border-radius: 4px;
     border: 1px solid;
     letter-spacing: 0.5px;
-    margin-left: 4px;
+    margin-left: 0;
+    line-height: 1.5;
     font-family: 'DM Mono', monospace;
 }
+.fav-status-badge:empty { display: none; }
 
 /* Modal de réglages watchdog (réutilise le style .share-overlay) */
 .watchdog-overlay {

@@ -21,7 +21,7 @@ const MAX_SAMPLES = 100;
 const _cache = new Map();
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-export async function fetchRouteElevation(fromLat, fromLon, toLat, toLon, samples) {
+export async function fetchRouteElevation(fromLat, fromLon, toLat, toLon, samples, endElevFt = null) {
     if (fromLat == null || toLat == null) return null;
 
     let n = DEFAULT_SAMPLES;
@@ -32,7 +32,10 @@ export async function fetchRouteElevation(fromLat, fromLon, toLat, toLon, sample
         n = Math.max(2, Math.min(samples, MAX_SAMPLES));
     }
 
-    const key = `${fromLat.toFixed(2)},${fromLon.toFixed(2)},${toLat.toFixed(2)},${toLon.toFixed(2)},${n}`;
+    const key = `${fromLat.toFixed(2)},${fromLon.toFixed(2)},${toLat.toFixed(2)},${toLon.toFixed(2)},${n}`
+        + `,${
+            Array.isArray(endElevFt) ? endElevFt.map(v => Number.isFinite(v) ? Math.round(v) : '').join('|') : ''
+        }`;
     const cached = _cache.get(key);
     if (cached && Date.now() - cached.ts < TTL_MS) return cached.profile;
 
@@ -60,7 +63,6 @@ export async function fetchRouteElevation(fromLat, fromLon, toLat, toLon, sample
         if (!Array.isArray(elevs) || elevs.length !== n) return null;
 
         const points = [];
-        let maxFt = -Infinity, minFt = Infinity, sumFt = 0;
         for (let i = 0; i < n; i++) {
             const elevFt = Math.round(elevs[i] * FT_PER_M);
             const frac = i / (n - 1);
@@ -70,16 +72,30 @@ export async function fetchRouteElevation(fromLat, fromLon, toLat, toLon, sample
                 elevFt,
                 frac,
             });
-            if (elevFt > maxFt) maxFt = elevFt;
-            if (elevFt < minFt) minFt = elevFt;
-            sumFt += elevFt;
+        }
+
+        // Extrémités calées sur l'élévation OFFICIELLE des terrains (SIA /
+        // openAIP, ft) quand elle est connue : la maille du modèle Open-Meteo
+        // peut s'en écarter de plusieurs dizaines de pieds, la courbe
+        // « démarrait alors dans le vide » aux aérodromes. Sans valeur
+        // officielle, la maille est conservée.
+        if (Array.isArray(endElevFt)) {
+            if (Number.isFinite(endElevFt[0])) points[0].elevFt = Math.round(endElevFt[0]);
+            if (Number.isFinite(endElevFt[1])) points[points.length - 1].elevFt = Math.round(endElevFt[1]);
+        }
+
+        let maxFt = -Infinity, minFt = Infinity, sumFt = 0;
+        for (const p of points) {
+            if (p.elevFt > maxFt) maxFt = p.elevFt;
+            if (p.elevFt < minFt) minFt = p.elevFt;
+            sumFt += p.elevFt;
         }
 
         const profile = {
             points,
             maxFt,
             minFt,
-            avgFt: Math.round(sumFt / n),
+            avgFt: Math.round(sumFt / points.length),
         };
 
         _cache.set(key, { profile, ts: Date.now() });
@@ -116,15 +132,22 @@ export function _clearCache() { _cache.clear(); }
 // Profil d'élévation multi-segments : concatène plusieurs fetchRouteElevation
 // (un par leg), en recalculant `frac` sur la distance cumulée totale.
 // `segments` = [[fromLat, fromLon, toLat, toLon], ...].
-export async function fetchMultiSegmentElevation(segments) {
+// `wpElevFt` = élévations OFFICIELLES (ft) des points de route, indexées par
+// waypoint (longueur = segments.length + 1) : chaque jonction de segments —
+// départ, étapes intermédiaires, arrivée — est ancrée à l'élévation du
+// terrain correspondant (la maille Open-Meteo peut en différer). Les valeurs
+// non finies laissent la maille du modèle.
+export async function fetchMultiSegmentElevation(segments, wpElevFt = null) {
     if (!Array.isArray(segments) || !segments.length) return null;
 
     const profiles = [];
     const distances = [];
     let totalNm = 0;
 
-    for (const [fla, flo, tla, tlo] of segments) {
-        const prof = await fetchRouteElevation(fla, flo, tla, tlo);
+    for (let s = 0; s < segments.length; s++) {
+        const [fla, flo, tla, tlo] = segments[s];
+        const ends = Array.isArray(wpElevFt) ? [wpElevFt[s], wpElevFt[s + 1]] : null;
+        const prof = await fetchRouteElevation(fla, flo, tla, tlo, null, ends);
         if (!prof) return null;   // si un segment échoue, on abandonne (cohérence)
         const nm = _haversineNm(fla, flo, tla, tlo);
         profiles.push(prof);

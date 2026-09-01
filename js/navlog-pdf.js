@@ -1161,7 +1161,9 @@ function _drawCentroChart(doc, c, xL, xR, yT, CH) {
 // ---------------------------------------------------------------------------
 function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
     const xL = L + 42, xR = R - 6;
-    const yT = yTopSection + 4, CH = 128, yB = yT + CH;
+    // 15 pt sous le titre : rangée(s) des codes OACI des waypoints, AU-DESSUS
+    // du cadre (lisibilité, consigne pilote) — le graphe commence plus bas.
+    const yT = yTopSection + 19, CH = 128, yB = yT + CH;
     const plotW = xR - xL;
 
     // Échelle Y : englobe le terrain + l'altitude de croisière (comme le web)
@@ -1174,11 +1176,10 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
     const xOf = f => xL + f * plotW;
     const yOf = e => yT + (1 - (e - yMin) / (yMax - yMin)) * CH;
 
-    // Croisière + rangée des codes OACI (sous la ligne de croisière) —
-    // calculées tôt : les étiquettes verticales des zones doivent éviter cette rangée.
+    // Croisière — calculée tôt : son libellé (à droite) et sa ligne servent
+    // de repère aux rangées d'étiquettes.
     const cruiseDrawn = pr.cruiseAltFt > yMin && pr.cruiseAltFt < yMax;
     const yc = cruiseDrawn ? yOf(pr.cruiseAltFt) : null;
-    const codeY = cruiseDrawn ? Math.min(yc + 12, yB - 6) : yT + 9;
 
     // Fond + grille horizontale avec labels (5 lignes).
     doc.setFillColor(...PLOT_BG);
@@ -1201,8 +1202,8 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
     // séparateurs pointillés entre secteurs d'un même organisme, et nom +
     // fréquence (en dessous) écrits À L'HORIZONTALE dans le cadre, par
     // secteur. Dessiné SOUS le terrain (comme le canvas elevation-chart).
-    // Les SIV gardent leur traitement historique (limites verticales +
-    // étiquettes verticales, plus bas dans la fonction).
+    // Les SIV ont leur propre traitement (limites verticales + étiquettes
+    // horizontales AU-DESSUS DU RELIEF, plus bas dans la fonction).
     const _zones = Array.isArray(pr.routeAirspaces) ? pr.routeAirspaces : null;
     const _isSiv = (g) => /^SIV\b/i.test(g.segs?.[0]?.zone || g.name || '');
     // Index des fréquences disponibles par tronçon (groupes SIV/FIS avec
@@ -1346,23 +1347,16 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         doc.text(lab, lx, yB + 10, { align: 'center' });
     }
 
-    // Waypoints intermédiaires : filet vertical pointillé + pastille + ICAO.
-    // Labels OACI (départ/arrivée/waypoints) posés SOUS la ligne de croisière
-    // pointillée — posés en haut du graphe ils la chevauchaient (elle est haute
-    // quand la croisière domine largement le relief). Anti-collision simple :
-    // deux étiquettes qui se chevauchent s'étagent sur une 2e rangée.
+    // Waypoints intermédiaires : codes OACI AU-DESSUS DU CADRE (lisibilité,
+    // consigne pilote) — rangée sous le titre, 2e rangée si deux codes se
+    // disputent la même largeur. Filet vertical pointillé du code jusqu'au
+    // bas du graphe, pastille ambre en haut du cadre.
+    const yWpRow1 = yTopSection + 6.5, yWpRow2 = yTopSection + 13.5;
     const wpLabels = [];
     if (pr.waypoints?.length) {
         for (const wp of pr.waypoints) {
             if (wp.frac == null) continue;
-            const wx = xOf(wp.frac);
-            doc.setDrawColor(...AMBER_LN); doc.setLineWidth(0.8);
-            doc.setLineDashPattern([3, 3], 0);
-            doc.line(wx, yT, wx, yB);
-            doc.setLineDashPattern([], 0);
-            doc.setFillColor(...AMBER_LN);
-            doc.circle(wx, yT + 3, 2.2, 'F');
-            wpLabels.push({ txt: wp.name || wp.icao, x: wx, align: 'center' });
+            wpLabels.push({ txt: wp.name || wp.icao, x: xOf(wp.frac), align: 'center' });
         }
     }
 
@@ -1378,9 +1372,8 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         doc.text(`${Math.round(pr.cruiseAltFt)} ft`, xR - 4, yc - 4, { align: 'right' });
     }
 
-    // Labels départ / arrivée, sous la ligne de croisière (comme les waypoints).
-    wpLabels.push({ txt: pr.fromIcao, x: xL + 3, align: 'left', font: 'courier', size: 7.5, ink: INK });
-    wpLabels.push({ txt: pr.toIcao, x: xR - 3, align: 'right', font: 'courier', size: 7.5, ink: INK });
+    // Codes waypoints : rangement gauche → droite, 2e rangée en cas de
+    // collision, puis filet (part du code) + pastille en haut du cadre.
     wpLabels.forEach(l => {
         l.font ??= 'helvetica'; l.size ??= 6.5; l.ink ??= AMBER;
         doc.setFont(l.font, 'bold'); doc.setFontSize(l.size);
@@ -1391,18 +1384,25 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
     for (const l of wpLabels) {
         const lEdge = l.align === 'right' ? l.x - l.w : (l.align === 'center' ? l.x - l.w / 2 : l.x);
         const clash = lEdge < prevEdge + 3;
+        l.y = clash ? yWpRow2 : yWpRow1;
         doc.setFont(l.font, 'bold'); doc.setFontSize(l.size); _setInk(doc, l.ink);
-        doc.text(l.txt, l.x, clash ? codeY + 9 : codeY,
-            l.align === 'center' ? { align: 'center' } : (l.align === 'right' ? { align: 'right' } : undefined));
+        doc.text(l.txt, l.x, l.y, { align: 'center' });
         prevEdge = Math.max(prevEdge, lEdge + l.w);
+        // Filet seul, SANS pastille (consigne pilote) : le code au-dessus du
+        // cadre suffit à repérer le waypoint.
+        doc.setDrawColor(...AMBER_LN); doc.setLineWidth(0.8);
+        doc.setLineDashPattern([3, 3], 0);
+        doc.line(l.x, l.y + 1.8, l.x, yB);
+        doc.setLineDashPattern([], 0);
     }
 
     // Zones SIV traversées : LIMITES en traits verticaux pleins fins, bleu
     // identique à la carte (#38BDF8), à chaque entrée/sortie de zone ; nom
-    // du secteur + fréquence en VERTICAL, centrés entre les limites et
-    // centrés en hauteur dans le graphe. (Les autres familles — CTA, TMA,
-    // CTR, R/D/P… — sont dessinées plus haut en CADRES d'altitude
-    // horizontaux, comme la version site.)
+    // du secteur + fréquence à L'HORIZONTALE, centrés ENTRE LES LIMITES,
+    // AU-DESSUS DU RELIEF — si le texte dépasse la largeur entre limites,
+    // il passe à la ligne. (Les autres familles — CTA, TMA, CTR, R/D/P… —
+    // sont dessinées plus haut en CADRES d'altitude horizontaux, comme la
+    // version site.)
     const zones = (Array.isArray(pr.routeAirspaces) ? pr.routeAirspaces : [])
         .filter(g => /^SIV\b/i.test(g.segs?.[0]?.zone || g.name || ''));
     if (zones.length) {
@@ -1420,41 +1420,105 @@ function _drawElevationChart(doc, pr, L, R, yTopSection, fr) {
         bxs.sort((a, b) => a - b);
         doc.setDrawColor(...SIV_MAP_LN); doc.setLineWidth(0.7);
         for (const x of bxs) doc.line(x, yT, x, yB);
+    }
 
-        // Une étiquette par SECTEUR traversé (le secteur prime sur
-        // l'organisme : « SIV RENNES SUD A », pas « RENNES INFO »).
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(6);
-        const codesRowTop = codeY - 7;   // rangée des codes OACI à préserver
-        const labels = [];
-        for (const g of zones) {
-            for (const s of g.segs) {
-                const zone = (s.zone && s.zone.toUpperCase() !== g.name.toUpperCase())
-                    ? s.zone : g.name.replace(/ INFO$/, '');
-                if (!zone) continue;
-                const x0 = Math.max(xL, xOf(s.fa)), x1 = Math.min(xR, xOf(s.fb));
-                if (x1 - x0 < 3) continue;
-                // « partie A » → « A » (nom SIA compacté pour la colonne).
-                labels.push({ label: `${zone.replace(/\s+partie\s+/i, ' ')}${g.freq ? ' ' + g.freq : ''}`, x: (x0 + x1) / 2 });
+    // Étiquettes SIV (une par secteur, à l'horizontale, centrées ENTRE LEURS
+    // LIMITES) posées AU-DESSUS DU RELIEF : première ligne 12 pt au-dessus du
+    // point le plus haut du terrain (consigne pilote 10-15 px), lignes
+    // suivantes empilées vers le haut. Codes départ/arrivée : AU NIVEAU DU
+    // SOL, bas du graphe. Anti-collision par RANGÉES (compteurs indépendants
+    // par groupe) : quand deux textes de la même hauteur se chevauchent
+    // (secteurs imbriqués type SEINE 6/7 dans PARIS OUEST), le plus tardif
+    // monte d'une rangée — chaque étiquette garde son centrage, seule la
+    // hauteur s'ajuste.
+    const ROW_H = 5.5;                    // écart de rangée (> pénétration QA 1,4 pt)
+    const rowFree = (spans, row, a, b) => !(spans.get(row) || []).some(o => a < o.b - 1.2 && o.a < b - 1.2);
+    const occupyRow = (spans, row, a, b) => spans.set(row, [...(spans.get(row) || []), { a, b }]);
+    // Plus petite rangée de départ où TOUTES les lignes du bloc (bas → haut,
+    // rangées consécutives) sont libres ; ancre = ordonnée de la 1re ligne.
+    const placeBlock = (spans, lines, yAnchor) => {
+        outer: for (let r0 = 0; r0 < 24; r0++) {
+            for (let i = 0; i < lines.length; i++) {
+                if (!rowFree(spans, r0 + i, lines[i].a, lines[i].b)) continue outer;
             }
+            lines.forEach((l, i) => occupyRow(spans, r0 + i, l.a, l.b));
+            lines.forEach((l, i) => { l.y = yAnchor - (r0 + i) * ROW_H; });
+            return true;
         }
-        // Anti-collision horizontale : deux étiquettes verticales à moins de
-        // 9 pt d'écart → la 2e est décalée à droite de la 1re.
-        labels.sort((a, b) => a.x - b.x);
-        for (let i = 1; i < labels.length; i++) {
-            if (labels[i].x - labels[i - 1].x < 9) labels[i].x = labels[i - 1].x + 9;
+        return false;
+    };
+
+    // — Départ / arrivée d'abord : priorité sur la rangée du sol.
+    doc.setFont('courier', 'bold'); doc.setFontSize(7.5);
+    const endLines = [];
+    const addEnd = (txt, alignRight) => {
+        const w = doc.getTextWidth(txt);
+        const a = alignRight ? xR - 2 - w : xL + 2;
+        endLines.push({ txt, a, b: a + w, x: alignRight ? xR - 2 : xL + 2, alignRight });
+    };
+    addEnd(pr.fromIcao, false);
+    addEnd(pr.toIcao, true);
+    // MÊME RANGÉE pour les deux codes (consigne pilote) : placés séparément —
+    // un bloc de 2 lignes les empilerait, alors qu'aux extrémités opposées du
+    // graphe ils ne peuvent jamais se chevaucher.
+    const spansSol = new Map();
+    for (const l of endLines) placeBlock(spansSol, [l], yB - 2);
+    for (const l of endLines) {
+        // Fond blanc : lisible sur le remplissage du relief et sur les
+        // limites/étiquettes de zones qui passent dessous.
+        doc.setFillColor(255, 255, 255);
+        doc.rect(l.a - 1, l.y - 2.8, (l.b - l.a) + 2, 3.8, 'F');
+        _setInk(doc, INK);
+        doc.text(l.txt, l.x, l.y, l.alignRight ? { align: 'right' } : undefined);
+    }
+
+    // — Étiquettes SIV par secteur : wrap ENTRE LIMITES (découpage glouton ;
+    // un mot seul trop large déborde centré, mieux vaut déborder que d'être
+    // illisible), puis placement en rangées, gauche → droite.
+    const sivBlocks = [];
+    for (const g of zones) {
+        for (const s of g.segs) {
+            const zone = (s.zone && s.zone.toUpperCase() !== g.name.toUpperCase())
+                ? s.zone : g.name.replace(/ INFO$/, '');
+            if (!zone) continue;
+            const x0 = Math.max(xL, xOf(s.fa)), x1 = Math.min(xR, xOf(s.fb));
+            if (x1 - x0 < 3) continue;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(6);
+            // « partie A » → « A » (nom SIA compacté), fréquence en fin.
+            const words = zone.replace(/\s+partie\s+/i, ' ').split(/\s+/);
+            if (g.freq) words.push(String(g.freq));
+            const maxW = x1 - x0 - 1.5;
+            const linesTxt = [];
+            let cur = '';
+            for (const w of words) {
+                const cand = cur ? cur + ' ' + w : w;
+                if (doc.getTextWidth(cand) <= maxW || !cur) cur = cand;
+                else { linesTxt.push(cur); cur = w; }
+            }
+            if (cur) linesTxt.push(cur);
+            const lines = linesTxt.map(t => {
+                const w = doc.getTextWidth(t);
+                const cx = Math.max(xL + 2 + w / 2, Math.min((x0 + x1) / 2, xR - 2 - w / 2));
+                return { txt: t, a: cx - w / 2, b: cx + w / 2, x: cx };
+            });
+            // Lecture visuelle NOM puis fréquence DE HAUT EN BAS (consigne
+            // pilote) : les lignes sont posées bas → haut depuis l'ancre,
+            // on inverse donc l'ordre logique (nom d'abord, fréq en fin).
+            lines.reverse();
+            if (lines.length) sivBlocks.push(lines);
         }
-        _setInk(doc, SIV_TX);
-        for (const l of labels) {
-            // Vertical (lu de bas en haut), ancre = BAS du texte : centré en
-            // hauteur quand ça tient, sinon calé au fond du graphe — le haut
-            // du texte ne remonte jamais au-dessus de la rangée des codes OACI.
-            const maxW = (yB - 3) - Math.max(yT + 3, codesRowTop);
-            const txt = doc.getTextWidth(l.label) > maxW ? _trunc(doc, l.label, maxW) : l.label;
-            const tw = doc.getTextWidth(txt);
-            const floorTop = Math.max(yT + 3, codesRowTop);
-            const yBot = Math.max(Math.min((yT + yB) / 2 + tw / 2, yB - 3), floorTop + tw);
-            doc.text(txt, Math.min(l.x, xR - 4), yBot, { angle: 90 });
-        }
+    }
+    // Ancre SIV : 12 pt AU-DESSUS DU POINT LE PLUS HAUT du relief (consigne
+    // pilote 10-15 px) — les étiquettes flottent au-dessus du dessin du
+    // terrain, jamais sur le remplissage orange.
+    const yAnchorSiv = yOf(pr.maxFt) - 12;
+    const spansSiv = new Map();
+    sivBlocks.sort((A, B) => A[0].a - B[0].a);
+    for (const lines of sivBlocks) placeBlock(spansSiv, lines, yAnchorSiv);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(6);
+    _setInk(doc, SIV_TX);
+    for (const lines of sivBlocks) {
+        for (const l of lines) doc.text(l.txt, l.x, l.y, { align: 'center' });
     }
 
     return yB + 16;

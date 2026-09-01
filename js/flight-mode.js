@@ -112,6 +112,12 @@ export function setFlightMode(mode) {
         if (toName) toName.textContent = '';
         const fpPanel = document.getElementById('flight-planner-panel');
         if (fpPanel) fpPanel.style.display = 'none';
+        // La séquence d'étapes vit dans state.route (source du tracé carte et
+        // du planificateur) : sans reset, un retour en nav ressuscitait le
+        // plan effacé. Le champ (masqué) du planificateur est vidé aussi.
+        state.route = null;
+        const wpInput = document.getElementById('fp-waypoints');
+        if (wpInput) wpInput.value = '';
         clearElevationChart('elevation-profile-container');
         // Réinitialise le toggle Départ/Destination sur Départ.
         document.querySelectorAll('.dep-dest-btn').forEach(b => {
