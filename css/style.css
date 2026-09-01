@@ -2446,21 +2446,20 @@ body.cockpit-mode header.card {
     50% { opacity: 0.5; transform: scale(0.85); }
 }
 
-/* Olive météo des favoris (watchdog) : UNE par ligne, posée DEVANT le code
-   OACI dans un emplacement réservé (flex-shrink:0 → jamais écrasée par le
-   nom). Sans donnée météo (vide), l'olive ne s'affiche pas. */
+/* Voyant météo des favoris (watchdog) : UNE pastille ronde par ligne, posée
+   DEVANT le code OACI dans un emplacement réservé (flex-shrink:0 → jamais
+   écrasée par le nom). COULEUR SEULE, SANS TEXTE (consigne pilote) : la
+   couleur de remplissage porte l'info (vert/orange/rouge, posé en inline par
+   watchdog.js) ; le libellé complet reste en infobulle (title). Sans donnée
+   météo (vide), le voyant ne s'affiche pas. */
 .fav-status-badge {
     display: inline-block;
+    width: 10px;
+    height: 10px;
     flex-shrink: 0;
-    font-size: 8px;
-    font-weight: 800;
-    padding: 1px 5px;
-    border-radius: 4px;
+    padding: 0;
+    border-radius: 50%;
     border: 1px solid;
-    letter-spacing: 0.5px;
-    margin-left: 0;
-    line-height: 1.5;
-    font-family: 'DM Mono', monospace;
 }
 .fav-status-badge:empty { display: none; }
 

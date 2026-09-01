@@ -192,9 +192,10 @@ function _isWorse(newState, oldState) {
 }
 
 /**
- * Met à jour l'olive météo d'un favori dans la liste (une seule par ligne,
- * posée DEVANT le code OACI dans un emplacement réservé — plus rien n'est
- * écrasé par manque de place).
+ * Met à jour le voyant météo d'un favori dans la liste (UNE pastille par
+ * ligne, posée DEVANT le code OACI dans un emplacement réservé). Voyant
+ * COULEUR SANS TEXTE (consigne pilote) : vert = GO, orange = prudence,
+ * rouge = NO-GO — le libellé complet reste en infobulle.
  */
 function _updateFavoriteBadge(icao, weatherState, isFr = true) {
     const favList = document.getElementById('favorites-list');
@@ -203,23 +204,22 @@ function _updateFavoriteBadge(icao, weatherState, isFr = true) {
     if (!item) return;
 
     const colors = { 'GO': '#10B981', 'CAUTION': '#F59E0B', 'NO-GO': '#EF4444' };
-    const short = { 'GO': 'GO', 'CAUTION': 'CAUT', 'NO-GO': 'NO-GO' };
     let badge = item.querySelector('.fav-status-badge');
     if (!badge) {
-        // Repli (DOM ancien ou tiers) : recrée l'olive devant le code OACI.
+        // Repli (DOM ancien ou tiers) : recrée le voyant devant le code OACI.
         badge = document.createElement('span');
         badge.className = 'fav-status-badge';
         const code = item.querySelector('.history-icao');
         if (code) code.parentElement.insertBefore(badge, code);
         else item.appendChild(badge);
     }
-    badge.style.background = colors[weatherState] + '33';
-    badge.style.color = colors[weatherState];
-    badge.style.borderColor = colors[weatherState];
-    badge.textContent = short[weatherState] || weatherState;
+    badge.textContent = '';   // voyant couleur SANS texte
+    badge.style.background = colors[weatherState] || 'transparent';
+    badge.style.borderColor = colors[weatherState] || 'transparent';
     badge.title = isFr
         ? { 'GO': 'Météo favorable', 'CAUTION': 'Météo en dégradation — prudence', 'NO-GO': 'Météo défavorable — NO-GO' }[weatherState] || weatherState
         : { 'GO': 'Good weather', 'CAUTION': 'Degrading weather — caution', 'NO-GO': 'Unfavorable weather — NO-GO' }[weatherState] || weatherState;
+    badge.setAttribute('aria-label', badge.title);
 }
 
 /**
