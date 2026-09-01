@@ -17,7 +17,7 @@
  *  - L'état actuel : FENÊTRE OUVERTE / PAS ENCORE / NUIT AÉRONAUTIQUE.
  *  - Le temps restant avant la tombée de la nuit (compte à rebours).
  *  - Un code couleur : vert (ouvert), ambre (bientôt fermée / pas ouverte),
- *    rouge (nuit — vol VFR de jour interdit).
+ *    rouge (nuit — qualification de nuit requise).
  *
  * La bannière se met à jour toutes les minutes en live.
  * ================================================================ */
@@ -157,8 +157,13 @@ function render(lat, lon) {
             color: '#EF4444',       // rouge
             bg: 'rgba(239, 68, 68, 0.12)',
             icon: 'moon',
-            label: isFr ? 'NUIT AÉRONAUTIQUE — VFR DE JOUR INTERDIT' : 'AERONAUTICAL NIGHT — DAY VFR PROHIBITED',
-            detail: isFr ? 'Le prochain lever civil est demain matin.' : 'Next civil sunrise is tomorrow morning.',
+            // Libellé court + actionnable : pour voler maintenant il faut la
+            // qualification de nuit (remplace « VFR DE JOUR INTERDIT », sans
+            // objet de nuit — et tient sur une ligne téléphone).
+            label: isFr ? 'NUIT AÉRONAUTIQUE' : 'AERONAUTICAL NIGHT',
+            detail: isFr
+                ? 'Qualification de nuit requise. Prochain lever civil demain matin.'
+                : 'Night rating required. Next civil sunrise tomorrow morning.',
         },
     };
 
@@ -175,7 +180,10 @@ function render(lat, lon) {
                     <i data-lucide="${cfg.icon}" style="width:22px; height:22px; color:${cfg.color};"></i>
                 </div>
                 <div style="min-width:0;">
-                    <div style="font-weight:800; font-size:13px; color:${cfg.color}; letter-spacing:0.5px; white-space:nowrap;">${cfg.label}</div>
+                    <!-- PAS de white-space:nowrap sur le libellé : un libellé
+                         long figé sur une ligne poussait le bandeau hors du
+                         cadre téléphone (et la page entière avec). -->
+                    <div style="font-weight:800; font-size:13px; color:${cfg.color}; letter-spacing:0.5px;">${cfg.label}</div>
                     <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${cfg.detail}</div>
                 </div>
             </div>

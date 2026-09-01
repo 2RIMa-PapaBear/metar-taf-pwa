@@ -94,7 +94,7 @@ export function evaluateGoNoGo() {
             reasons.unshift({
                 level: 'danger',
                 icon: 'moon',
-                text: isFr ? 'Nuit aéronautique — VFR de jour interdit' : 'Aeronautical night — day VFR prohibited',
+                text: isFr ? 'Nuit aéronautique — qualification de nuit requise' : 'Aeronautical night — night rating required',
             });
         } else if (window && window.status === 'closing') {
             if (verdict === 'GO') verdict = 'CAUTION';

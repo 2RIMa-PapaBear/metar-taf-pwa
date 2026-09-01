@@ -1224,7 +1224,9 @@ html.night-mode body::before {
 }
 /* Indicateurs de décollage : UNE ligne de texte « Libellé : valeur »,
    typographie homogène, répartie sur la largeur — JAMAIS de retour à la
-   ligne (compactage 11 px si nécessaire pour tenir). */
+   ligne (compactage 11 px si nécessaire pour tenir). Mobile (≤ 800 px) :
+   la rangée passe à la ligne — cinq items insécables ne tiennent pas sous
+   ~640 px de large. */
 .to-metrics-grid {
     display: flex;
     flex-wrap: nowrap;
@@ -1233,6 +1235,9 @@ html.night-mode body::before {
     gap: 4px 10px;
     font-size: 11px;
     line-height: 1.6;
+}
+@media (max-width: 800px) {
+    .to-metrics-grid { flex-wrap: wrap; gap: 4px 14px; }
 }
 .to-metrics-grid > span { white-space: nowrap; }
 .to-metrics-grid .lab { color: var(--text-muted); }
