@@ -104,10 +104,6 @@ const AIRSPACE_STYLE = {
     'G':    { color: '#94A3B8', fill: 'rgba(148,163,184,0.04)', weight: 0.8, label: 'G' },
     RMZ:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'RMZ' },
     TMZ:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'TMZ' },
-    // ZRT : zones réglementées TEMPORAIRES françaises (noms openAIP « ZRT … »,
-    // absentes du XML SIA) — même violet que RMZ/TMZ, la famille où le pilote
-    // les cherche (demande 02/09) ; le libellé du popup les distingue.
-    ZRT:    { color: '#A855F7', fill: 'rgba(168,85,247,0.10)', weight: 1.5, label: 'ZRT' },
     'GLIDER': { color: '#4ADE80', fill: 'rgba(74,222,128,0.08)', weight: 1, label: 'Planel' },
     'DROP': { color: '#94A3B8', fill: 'rgba(148,163,184,0.08)', weight: 1, label: 'Parachut.' },
     'RESTRICTED': { color: '#EF4444', fill: 'rgba(239,68,68,0.18)', weight: 2, label: 'Réglementée' },
@@ -125,7 +121,7 @@ export const AIRSPACE_GROUPS = {
     siv:    { kinds: ['SIV'], label: 'SIV', en: 'SIV', color: '#38BDF8' },
     atz:    { kinds: ['ATZ'], label: 'ATZ', en: 'ATZ', color: '#FBBF24' },
     rpd:    { kinds: ['RESTRICTED', 'PROHIBITED', 'DANGER', 'DROP'], label: 'Zones R · P · D', en: 'R · P · D areas', color: '#DC2626' },
-    tmz:    { kinds: ['TMZ', 'RMZ', 'ZRT'], label: 'TMZ / RMZ / ZRT', en: 'TMZ / RMZ / ZRT', color: '#A855F7' },
+    tmz:    { kinds: ['TMZ', 'RMZ'], label: 'TMZ / RMZ', en: 'TMZ / RMZ', color: '#A855F7' },
     autres: { kinds: ['GLIDER', 'ACRO', 'OTHER'], label: 'Planeurs & autres', en: 'Glider & others', color: '#4ADE80' },
 };
 const _KIND_TO_GROUP = (() => {
@@ -333,6 +329,17 @@ export function _rdpKey(name) {
     return m ? m[1] + m[2] : null;
 }
 
+/** ZRT — zones réglementées TEMPORAIRES : JAMAIS affichées, ni carte ni
+ *  profil (décision pilote 02/09/2026). Elles n'existent pas dans l'AIP
+ *  permanente (le XML SIA n'en publie aucune) et ne vivent que dans
+ *  l'openAIP communautaire sous des noms « ZRT … » ; leur activation passe
+ *  par NOTAM → les tracer en permanence serait trompeur (même logique que
+ *  ZIT/RTBA, écartées pour cette raison). Exporté pour les tests. */
+export function _isZrt(name) {
+    return /^ZRT\b/i.test(String(name || '').trim());
+}
+const dropZrt = (items) => items.filter(it => !_isZrt(it.name));
+
 /** Écarte les zones openAIP déjà couvertes par la base SIA : par nom exact
  *  (ou normalisé — « SIV RENNES SUD partie A » ≡ « SIV RENNES SUD A », le
  *  mot « partie » vient du NomPartie XML ; les noms à trait d'union comme
@@ -373,8 +380,8 @@ async function _loadCellsGrid(minLat, minLon, maxLat, maxLon) {
         if (r) items.push(...r);
         else missing.push(cells[i]);
     });
-    if (sia.length) return { items: _dropOpenAipDuplicates(items, sia), missing };
-    return { items, missing };
+    if (sia.length) return { items: dropZrt(_dropOpenAipDuplicates(items, sia)), missing };
+    return { items: dropZrt(items), missing };
 }
 
 export function fetchOpenAipItems(url) {
@@ -448,13 +455,13 @@ export async function fetchAirspacesForBbox(minLat, minLon, maxLat, maxLon) {
         // repli API (les cellules non crawlées n'y ajouteraient que des
         // doublons, et la console se remplissait de 404 inutiles).
         const inSia = _bboxInSia(lat0, lon0, lat1, lon1);
-        if (items.length && (!missing.length || inSia)) return items;
+        if (items.length && (!missing.length || inSia)) return dropZrt(items);
         if (items.length && missing.length) {
             // Mélange : complète par l'API sur la zone manquante.
             const api = await fetchAirspacesForBbox(missing[0][0], Math.min(...missing.map(c => c[1])), Math.max(...missing.map(c => c[0])) + 1, Math.max(...missing.map(c => c[1])) + 1);
             const byId = new Map(items.map(it => [it._id, it]));
             for (const it of (api || [])) byId.set(it._id, it);
-            return [...byId.values()];
+            return dropZrt([...byId.values()]);
         }
     }
     const q = (x) => Math.floor(x);
@@ -508,10 +515,6 @@ export function _decodeType(as) {
     // on décode selon la source (marqueur _sia posé au chargement).
     const map = as._sia ? SIA_TYPE_MAP : TYPE_MAP;
     if (typeof as.type === 'number' && map[as.type]) {
-        // ZRT françaises (openAIP les tape RESTRICTED, le SIA ne les publie
-        // pas) : requalifiées par NOM en kind propre → famille TMZ/RMZ/ZRT.
-        if (map[as.type] === 'RESTRICTED'
-            && /^ZRT\b/i.test(String(as.name || as.designator || '').trim())) return 'ZRT';
         return map[as.type];
     }
 
@@ -533,7 +536,6 @@ export function _decodeType(as) {
     if (/\bATZ\b/.test(name)) return 'ATZ';
     if (/\bRMZ\b/.test(name)) return 'RMZ';
     if (/\bTMZ\b/.test(name)) return 'TMZ';
-    if (/^ZRT\b/.test(name)) return 'ZRT';
     if (/RESTRICT|REGUL|RTBA|R\d{2,}/.test(name)) return 'RESTRICTED';
     if (/DANGER/.test(name)) return 'DANGER';
     if (/PROHIB/.test(name)) return 'PROHIBITED';
@@ -666,7 +668,7 @@ export function createAirspaceController(map) {
         };
         absorb(fileItems);
         if (byId.size) {
-            lastItems = [...byId.values()];
+            lastItems = dropZrt([...byId.values()]);
             _render(lastItems);
         }
 
@@ -679,7 +681,7 @@ export function createAirspaceController(map) {
             if (epoch !== _loadEpoch) return;   // la vue a changé : abandonne
             if (items) absorb(items);
             if (byId.size) {
-                lastItems = [...byId.values()];
+                lastItems = dropZrt([...byId.values()]);
                 _render(lastItems);
             }
         }
