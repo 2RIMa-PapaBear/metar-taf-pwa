@@ -989,7 +989,9 @@ function _drawCentroPage(doc, c) {
 
     // ---- Section 2 : centrogramme ----
     y = _section(doc, L, R, fr ? 'Centrogramme — enveloppe de centrage' : 'Centrogram — CG envelope', y);
-    y = _drawCentroChart(doc, c, L + 62, R - 40, y + 2, 150);
+    // +8 pt sous le titre : respiration entre le texte et le haut du graphe
+    // (demande pilote — l'annotation MTOW et l'enveloppe collaient au titre).
+    y = _drawCentroChart(doc, c, L + 62, R - 40, y + 10, 150);
 
     // ---- Cellules résultats ----
     y = _section(doc, L, R, null, y + 2);
@@ -1009,7 +1011,9 @@ function _drawCentroPage(doc, c) {
         { color: c.calc.level === 'ok' ? WB_GREEN : WB_RED, size: 9.5 });
     y += 37;
 
-    // Légende (pastilles couleur, comme la barre de marge décollage p3).
+    // Légende (pastilles couleur, comme la barre de marge décollage p3) —
+    // décalée vers le bas (consigne pilote) : collée au bas des vignettes
+    // CG/MTOW/Enveloppe, elle paraissait accrochée à leur cadre.
     doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); _setInk(doc, MUTED);
     let lx = L + 1;
     const LEG = [
@@ -1019,8 +1023,8 @@ function _drawCentroPage(doc, c) {
     ];
     for (const [col, lab] of LEG) {
         doc.setFillColor(...col); doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
-        doc.circle(lx + 2.5, y - 5, 2.5, 'F');
-        doc.text(lab, lx + 9, y - 2.6);
+        doc.circle(lx + 2.5, y - 1.5, 2.5, 'F');
+        doc.text(lab, lx + 9, y + 0.9);
         lx += 11 + doc.getTextWidth(lab) + 9;
     }
 
@@ -1107,14 +1111,16 @@ function _drawCentroChart(doc, c, xL, xR, yT, CH) {
     doc.setFillColor(227, 242, 253); doc.setDrawColor(...BLUE); doc.setLineWidth(1.2);
     doc.lines(segs, pts[0][0], pts[0][1], [1, 1], 'FD', true);
 
-    // Ligne MTOW (rouge pointillée).
+    // Ligne MTOW (rouge pointillée) — étiquette À GAUCHE de la ligne
+    // (consigne pilote : à droite elle écrasait le coin de l'enveloppe et
+    // l'étiquette du point Décollage ; le haut-gauche du graphe est libre).
     if (c.wb.mtowKg > 0 && c.wb.mtowKg >= mMin && c.wb.mtowKg <= mMax) {
         doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.9);
         doc.setLineDashPattern([5, 3], 0);
         doc.line(xL, yOf(c.wb.mtowKg), xR, yOf(c.wb.mtowKg));
         doc.setLineDashPattern([], 0);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); _setInk(doc, [220, 38, 38]);
-        doc.text(`MTOW ${fmtM(c.wb.mtowKg)} ${u.mass}`, xR - 3, yOf(c.wb.mtowKg) - 3, { align: 'right' });
+        doc.text(`MTOW ${fmtM(c.wb.mtowKg)} ${u.mass}`, xL + 3, yOf(c.wb.mtowKg) - 3, { align: 'left' });
     }
 
     // Points : Décollage (vert) / Arrivée (orange, étiquette à GAUCHE) /
