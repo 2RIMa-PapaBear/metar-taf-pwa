@@ -78,7 +78,7 @@ function render(container, freqs, source, vac, atis, isFr) {
         const freqStr = f.freq.toFixed(3);
         return `<div style="display:flex; align-items:center; gap:10px; padding:6px 12px; background:${isPrimary ? 'rgba(56,189,248,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:6px; border-left:3px solid ${isPrimary ? '#38BDF8' : 'rgba(148,163,184,0.3)'};">
             <span style="font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:78px;">${freqStr}</span>
-            <span style="font-size:9px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:38px; text-align:center;">${escapeHtml(f.type)}</span>
+            ${f.type ? `<span style="font-size:9px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:38px; text-align:center;">${escapeHtml(f.type)}</span>` : ''}
             <span style="font-size:11px; color:var(--text-muted); flex:1;">${escapeHtml(f.name || '')}</span>
         </div>`;
     };

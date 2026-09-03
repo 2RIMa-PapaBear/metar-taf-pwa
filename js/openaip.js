@@ -118,18 +118,32 @@ export function _mapAirport(aip) {
     };
     const frequencies = (aip.frequencies || [])
         .filter(f => f && f.value)
-        .map(f => ({
-            freq: parseFloat(f.value),
-            name: f.name || '',
-            type: FREQ_TYPE_LABELS[f.type] === 'UNK'
+        .map(f => {
+            let type = FREQ_TYPE_LABELS[f.type] ?? 'COM';
+            if (type === 'UNK') {
                 // openAIP tape « UNK » (type 16) sur beaucoup de fréquences
-                // A/A ; leur nom les désigne (« A/A », « AIR/AIR ») → vraie
-                // étiquette à l'affichage (détail des waypoints, widget).
-                && /\bA\s*\/\s*A\b|AIR[\s\/-]?AIR/i.test(f.name || '')
-                ? 'A/A'
-                : (FREQ_TYPE_LABELS[f.type] ?? 'COM'),
-            primary: !!f.primary,
-        }))
+                // des petits terrains. Le NOM désigne parfois le vrai rôle
+                // (« A/A », « AIR-AIR », « TWR »…) → vraie étiquette ; sinon
+                // PAS D'ÉTIQUETTE (jamais « UNK » à l'affichage — le détail
+                // des waypoints montre la fréquence seule : la valeur est
+                // fiable, le rôle community ne l'est pas).
+                const n = String(f.name || '');
+                if (/\bA\s*\/\s*A\b|AIR[\s\/-]?AIR/i.test(n)) type = 'A/A';
+                else if (/\bTWR\b|TOUR DE CONTR|TOWER/i.test(n)) type = 'TWR';
+                else if (/\bAFIS\b/i.test(n)) type = 'AFIS';
+                else if (/\bAPP\b|APPROCHE/i.test(n)) type = 'APP';
+                else if (/\bATIS\b/i.test(n)) type = 'ATIS';
+                else if (/\bGND\b/i.test(n)) type = 'GND';
+                else if (/\bDEL\b/i.test(n)) type = 'DEL';
+                else type = '';
+            }
+            return {
+                freq: parseFloat(f.value),
+                name: f.name || '',
+                type,
+                primary: !!f.primary,
+            };
+        })
         .filter(f => !isNaN(f.freq))
 
         .sort((a, b) => (b.primary - a.primary) || a.freq - b.freq);

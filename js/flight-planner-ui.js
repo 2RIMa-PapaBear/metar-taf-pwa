@@ -293,7 +293,7 @@ async function _generateNavLogPdfInto(tab) {
     };
     const legFreq = (icao) => {
         const f = _legMainFreq(icao);
-        return f ? `${f.freq.toFixed(3)} ${f.type}` : '';
+        return f ? `${f.freq.toFixed(3)}${f.type ? ' ' + f.type : ''}` : '';
     };
     const calc = {
         isFr: state.lang === 'fr',
@@ -636,7 +636,7 @@ function _renderResult(container, plan, isFr, isNight, alt, tas, burn) {
                                 <td>${String(lg.magHeading).padStart(3,'0')}°</td>
                                 <td>${fmtTime(lg.legTimeMin)}</td>
                                 <td>${lg.fuel.tripFuelL} L</td>
-                                <td class="freq-cell">${f ? f.freq.toFixed(3) + ' ' + escapeHtml(f.type) : '—'}</td>
+                                <td class="freq-cell">${f ? f.freq.toFixed(3) + (f.type ? ' ' + escapeHtml(f.type) : '') : '—'}</td>
                             </tr>`;
                         }).join('')}
                         <tr class="total">
