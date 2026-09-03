@@ -436,13 +436,29 @@ async function _generateNavLogPdfInto(tab) {
     });
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const filename = `Log-nav_${fromIcao}-${toIcao}_${today}.pdf`;
-    // Le PDF s'ouvre dans un onglet : le visualiseur du navigateur offre le
-    // bouton Imprimer (Ctrl+P). Fallback téléchargement si l'onglet a été bloqué.
+    // Le PDF s'ouvre dans un onglet, dans une PAGE HTML HABILLÉE : il y est
+    // embarqué en <iframe src="data:application/pdf;base64,…">. En HTTPS le
+    // visualiseur du navigateur l'affiche ; surtout, sur une origine HTTP
+    // (Free.fr, pas de TLS possible) Chrome REFUSE d'afficher un blob: PDF
+    // issu d'une page non sécurisée et le fait télécharger — l'iframe data:
+    // contourne ce refus et rend l'aperçu. Repli : navigation blob: directe,
+    // puis téléchargement classique.
     if (tab && !tab.closed) {
         try {
-            tab.location.href = doc.output('bloburl');
+            const dataUri = doc.output('datauristring');
+            const blobUrl = URL.createObjectURL(doc.output('blob'));
+            const title = isFr3 ? `Log de nav ${fromIcao}-${toIcao}` : `Nav log ${fromIcao}-${toIcao}`;
+            tab.document.open();
+            tab.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+<style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%}
+#dl{position:fixed;right:10px;bottom:10px;z-index:9;font:12px/1 sans-serif;color:#e2e8f0;background:#1e293bdd;padding:7px 12px;border-radius:8px;text-decoration:none;border:1px solid #475569}
+#dl:hover{background:#334155dd}</style></head>
+<body><iframe src="${dataUri}" title="${title}"></iframe>
+<a id="dl" href="${blobUrl}" download="${filename}">${isFr3 ? '⤓ Télécharger le PDF' : '⤓ Download PDF'}</a></body></html>`);
+            tab.document.close();
             return;
         } catch (e) {
+            try { tab.location.href = doc.output('bloburl'); return; } catch { /* on referme */ }
             try { tab.close(); } catch { /* déjà fermé */ }
         }
     }
