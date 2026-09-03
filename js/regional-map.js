@@ -293,7 +293,11 @@ async function _initOrRefresh() {
     _addAirportMarker(lat, lon, _currentIcao, apt?.name || _currentIcao, null, true);
     await _drawRunways(lat, lon, apt);
 
-    await _loadNeighborCategories(lat, lon);
+    // Voisins : la zone RÉELLEMENT VISIBLE dès le premier rendu (bounds
+    // capées), pas un carré ±2° autour du départ — toute la carte visible
+    // est peuplée d'emblée (retour pilote 04/09).
+    const vb = _viewBboxCapped(_map.getBounds());
+    await _loadNeighborCategories(vb.minLat, vb.minLon, vb.maxLat, vb.maxLon);
     if (myToken !== _refreshToken) return;
 
     const toInput = document.getElementById('route-to-input');
@@ -824,33 +828,42 @@ function _wireFreeWaypointShortcuts() {
     });
 }
 
-// Détection de fin de déplacement : charge les terrains de la nouvelle zone visible.
-// Debounce 1.5 s ; seuil de 0.8° depuis le dernier centre chargé pour éviter
-// les rechargements redondants (et protéger le proxy AviationWeather).
+// Détection de fin de déplacement/dézoom : charge les terrains de la zone
+// RÉELLEMENT VISIBLE (bounds Leaflet, capées à 6°), pas un carré fixe autour
+// du centre — au dézoom le champ ±2° ne couvrait qu'un tiers de la vue
+// (retour pilote 04/09). On ne RECHARGE que si la zone déjà peuplée ne
+// couvre plus la vue courante (test d'inclusion, plus fiable qu'une
+// distance de centre). Debounce court : pastilles plus réactives.
 let _neighborMoveDebounce = null;
-let _lastNeighborsCenter = null;
-const NEIGHBOR_MOVE_THRESHOLD = 0.8;
+let _lastNeighborsBbox = null;
+const NEIGHBOR_MAX_SPAN = 6;   // garde-fou requête ≈ France entière
+
+function _viewBboxCapped(b) {
+    let s = b.getSouth(), w = b.getWest(), n = b.getNorth(), e = b.getEast();
+    const cLat = (s + n) / 2, cLon = (w + e) / 2;
+    if (n - s > NEIGHBOR_MAX_SPAN) { s = cLat - NEIGHBOR_MAX_SPAN / 2; n = cLat + NEIGHBOR_MAX_SPAN / 2; }
+    if (e - w > NEIGHBOR_MAX_SPAN) { w = cLon - NEIGHBOR_MAX_SPAN / 2; e = cLon + NEIGHBOR_MAX_SPAN / 2; }
+    return { minLat: s, minLon: w, maxLat: n, maxLon: e };
+}
+
 function _onMapMovedForNeighbors() {
     if (!_map) return;
     clearTimeout(_neighborMoveDebounce);
     _neighborMoveDebounce = setTimeout(() => {
-        const c = _map.getCenter();
-        if (_lastNeighborsCenter) {
-            const dLat = Math.abs(c.lat - _lastNeighborsCenter.lat);
-            const dLon = Math.abs(c.lng - _lastNeighborsCenter.lon);
-            if (dLat < NEIGHBOR_MOVE_THRESHOLD && dLon < NEIGHBOR_MOVE_THRESHOLD) return;
-        }
-        _lastNeighborsCenter = { lat: c.lat, lon: c.lng };
-        _loadNeighborCategories(c.lat, c.lng);
-    }, 1500);
+        const bb = _viewBboxCapped(_map.getBounds());
+        if (_lastNeighborsBbox
+            && _lastNeighborsBbox.minLat <= bb.minLat + 0.05
+            && _lastNeighborsBbox.minLon <= bb.minLon + 0.05
+            && _lastNeighborsBbox.maxLat >= bb.maxLat - 0.05
+            && _lastNeighborsBbox.maxLon >= bb.maxLon - 0.05) return;   // vue déjà couverte
+        _loadNeighborCategories(bb.minLat, bb.minLon, bb.maxLat, bb.maxLon);
+    }, 600);
 }
 
-async function _loadNeighborCategories(lat, lon) {
+async function _loadNeighborCategories(minLat, minLon, maxLat, maxLon) {
     try {
-        // Référence du dernier centre chargé (utilisée par le seuil anti-rechargement).
-        _lastNeighborsCenter = { lat, lon };
-        const minLat = lat - 2, maxLat = lat + 2;
-        const minLon = lon - 2, maxLon = lon + 2;
+        // Référence de la zone chargée (test de couverture au prochain déplacement).
+        _lastNeighborsBbox = { minLat, minLon, maxLat, maxLon };
 
         // 1. Base locale : tous les aérodromes de la zone (piste >= 1000 ft).
         const localAirports = getAirportsInBbox(minLat, minLon, maxLat, maxLon);
@@ -869,7 +882,7 @@ async function _loadNeighborCategories(lat, lon) {
             const nearby = stations
                 .map(s => ({ code: s.icaoId || s.id }))
                 .filter(s => s.code && /^[A-Z][A-Z0-9]{3}$/.test(s.code))
-                .slice(0, 50);
+                .slice(0, 150);   // vue large = plus de stations (au-delà : pastilles grises)
             stations.forEach(s => {
                 const code = s.icaoId || s.id;
                 if (code && /^[A-Z][A-Z0-9]{3}$/.test(code) && typeof s.lat === 'number' && typeof s.lon === 'number') {
@@ -921,7 +934,7 @@ async function _loadNeighborCategories(lat, lon) {
         if (Object.keys(metarByCode).length === 0 && localAirports.length > 1 && !_neighborRetryDone) {
             _neighborRetryDone = true;
             console.warn('[voisins] Aucun METAR récupéré — nouvelle tentative dans 4 s');
-            setTimeout(() => { _neighborRetryDone = false; _loadNeighborCategories(lat, lon); }, 4000);
+            setTimeout(() => { _neighborRetryDone = false; _loadNeighborCategories(minLat, minLon, maxLat, maxLon); }, 4000);
         }
     } catch (e) {
         console.warn('Neighbor categories load failed:', e);
