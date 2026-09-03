@@ -1,13 +1,12 @@
 import { state, I18N, fetchAvecRelais, memoGet } from './core.js';
-import { getAirportByICAO } from './ui-module.js';
+import { getAirportByICAO, getAirportsInBbox } from './ui-module.js';
 import { parseVisiToMeters, getCeiling, CAT_COLORS } from './core.js';
-import { fetchOpenAipItems } from './airspaces.js';
 
 // ====================================================================
 // ALTERNATES DE ROUTE — TOUS les aérodromes à ± maxOffsetNm de la route
-// prévue (openAIP), avec ou sans METAR : si le terrain n'émet pas de
-// METAR, on reprend celui de la STATION ÉMETTRICE LA PLUS PROCHE
-// (substitution marquée « * » dans le log de nav).
+// prévue (base locale des terrains), avec ou sans METAR : si le terrain
+// n'émet pas de METAR, on reprend celui de la STATION ÉMETTRICE LA PLUS
+// PROCHE (substitution marquée « * » dans le log de nav).
 //
 // Utilisé par le log de nav PDF (page « Performances et terrain ») :
 // le pilote veut savoir où se dérouter en cours de route, pas seulement
@@ -89,34 +88,17 @@ export function _attachMetars(candidates, metarByCode, pool) {
     }).filter(Boolean);
 }
 
-// Types openAIP à exclure : 0 = aerodrome fermé, 7 = hélisurface.
-const OPENAIP_TYPE_EXCLUDED = new Set([0, 7]);
-
-/** Tous les aérodromes openAIP d'une bbox (couloir) — avec ou sans METAR.
- *  Hélisurfaces, terrains fermés et plateformes treuil exclus. Bbox
- *  découpée en tuiles ≤ 5° (limite openAIP) pour couvrir les routes
- *  longues sans écrêtage d'un côté ; une tuile refusée (429/5xx, rafale
- *  au changement de plan) est réessayée une fois. */
-async function _fetchOpenAipAirports(minLat, minLon, maxLat, maxLon) {
-    // Arrondi au quart de degré : meilleure réutilisation du cache relais.
-    const q = x => (Math.round(x * 4) / 4).toFixed(2);
-    const tiles = [];
-    for (let lat = minLat; lat < maxLat; lat += 5) {
-        for (let lon = minLon; lon < maxLon; lon += 5) {
-            tiles.push([lat, lon, Math.min(lat + 5, maxLat), Math.min(lon + 5, maxLon)]);
-        }
-    }
-    const byId = new Map();
-    for (const [t0, t1, t2, t3] of tiles) {
-        const url = `https://api.core.openaip.net/api/airports?bbox=${q(t1)},${q(t0)},${q(t3)},${q(t2)}&limit=1000`;
-        // File partagée openAIP (airspaces.js) : sérialisée et espacée —
-        // l'API refuse les rafales (429 sans en-têtes CORS).
-        const items = await fetchOpenAipItems(url);
-        for (const a of (items || [])) {
-            byId.set(a._id ?? JSON.stringify(a.name) + byId.size, a);
-        }
-    }
-    return byId.size ? [...byId.values()] : null;
+/** Tous les aérodromes du couloir — depuis la BASE LOCALE des terrains
+ *  (airports.json en cache IndexedDB, déjà chargée pour l'autocomplétion).
+ *  Zéro requête réseau : l'API openAIP (avant ici) renvoyait 429 à la
+ *  génération du PDF — sans en-têtes CORS sur l'erreur, d'où des messages
+ *  « blocked by CORS » trompeurs et la section alternates amputée.
+ *  La base filtre d'office les terrains sans piste ≥ 1000 ft (~300 m),
+ *  plancher raisonnable pour un déroutement. */
+function _corridorAirports(minLat, minLon, maxLat, maxLon) {
+    return getAirportsInBbox(minLat, minLon, maxLat, maxLon)
+        .map(a => ({ code: _validIcao(a.icao), name: a.name || '', lat: a.lat, lon: a.lon }))
+        .filter(a => a.code && Number.isFinite(a.lat) && Number.isFinite(a.lon));
 }
 
 /**
@@ -145,28 +127,23 @@ export async function getEnRouteAlternates(routePts, maxOffsetNm = 25, maxRows =
             Math.max(...lats) + latMargin, Math.max(...lons) + lonMargin,
         ].map(v => v.toFixed(3)).join(',');
 
-        // ---- Terrains du couloir : openAIP (tous aérodromes), repli sur
-        // les stations aviationweather si openAIP est indisponible.
+        // ---- Terrains du couloir : base locale (zéro réseau) ; repli sur
+        // les stations aviationweather si la base IDB n'est pas encore là.
         const routeIcaos = new Set(routePts.map(p => String(p.icao || '').toUpperCase()).filter(Boolean));
         const candidates = [];
 
-        const aipItems = await _fetchOpenAipAirports(
+        const localItems = _corridorAirports(
             Math.min(...lats) - latMargin, Math.min(...lons) - lonMargin,
             Math.max(...lats) + latMargin, Math.max(...lons) + lonMargin);
-        if (aipItems) {
-            for (const a of aipItems) {
-                if (OPENAIP_TYPE_EXCLUDED.has(a.type) || a.winchOnly) continue;
-                const [lon, lat] = a.geometry?.coordinates || [];
-                if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-                candidates.push({ aip: true, code: _validIcao(a.icaoCode), name: a.name || '', lat, lon });
-            }
+        if (localItems.length) {
+            candidates.push(...localItems);
         } else {
             const stationsUrl = `https://aviationweather.gov/api/data/stationinfo?bbox=${bbox}&format=json`;
             const stations = await fetchAvecRelais(stationsUrl, 'json', 3600);
             if (!Array.isArray(stations)) return null;
             for (const s of stations) {
                 if (s.lat == null || s.lon == null) continue;
-                candidates.push({ aip: false, code: _validIcao(s.icaoId || s.id), name: s.site || s.name || '', lat: s.lat, lon: s.lon });
+                candidates.push({ code: _validIcao(s.icaoId || s.id), name: s.site || s.name || '', lat: s.lat, lon: s.lon });
             }
         }
 
