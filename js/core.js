@@ -149,7 +149,6 @@ export const I18N = {
         mapPrecipAnimation: "Animation précipitations",
 
         freqsAndAirfieldInfo: "Fréquences & info terrain",
-        pirepTitle: "PIREP",
 
         cockpitModeTitle: "Briefing express (vue cockpit)",
         shareTitle: "Partager ce briefing",
@@ -304,7 +303,6 @@ export const I18N = {
         mapPrecipAnimation: "Precipitation animation",
 
         freqsAndAirfieldInfo: "Frequencies & airfield info",
-        pirepTitle: "PIREP",
 
         cockpitModeTitle: "Briefing express (cockpit view)",
         shareTitle: "Share this briefing",

@@ -7,7 +7,6 @@ import { showRouteWeather, resetRouteFit } from './route-weather.js';
 import { createPrecipController } from './radar-layer.js';
 import { createAirspaceController } from './airspaces.js';
 import { createRadioPointsController } from './radio-points-layer.js';
-import { fetchPireps, pirepDisplayMeta } from './pireps.js';
 import { getRunwayThresholds } from './runways-geo.js';
 
 let _map = null;
@@ -16,7 +15,6 @@ let _airspaces = null;
 let _radioPoints = null;   // couches VOR/NDB/points VFR (menu « Espaces »).
 let _sigmetLayer = null;
 let _currentBaseLayer = null;
-let _pirepMarkers = [];
 let _airportMarkers = [];
 let _neighborMarkers = [];
 let _metarByIcao = {};   // METARs bruts des voisins (déjà fetchés pour la catégorie VFR).
@@ -289,7 +287,6 @@ async function _initOrRefresh() {
 
     _clearAirportMarkers();
     _clearNeighborMarkers();
-    _clearPirepMarkers();
     // (Ré)initialisation : la route qui suivra sera re-cadrée sur départ →
     // destination même si c'est la même qu'avant (panneau rouvert…).
     resetRouteFit();
@@ -297,9 +294,6 @@ async function _initOrRefresh() {
     await _drawRunways(lat, lon, apt);
 
     await _loadNeighborCategories(lat, lon);
-    if (myToken !== _refreshToken) return;
-
-    await _loadPireps(lat, lon);
     if (myToken !== _refreshToken) return;
 
     const toInput = document.getElementById('route-to-input');
@@ -895,41 +889,8 @@ async function _loadNeighborCategories(lat, lon) {
 }
 let _neighborRetryDone = false;
 
-async function _loadPireps(lat, lon) {
-    try {
-        const pireps = await fetchPireps(lat, lon, 3);
-        _clearPirepMarkers();
-        if (pireps.length === 0) return;
-
-        const isFr = state.lang === 'fr';
-        pireps.forEach(p => {
-            const meta = pirepDisplayMeta(p.type, p.intensity);
-            const altStr = p.altFt != null ? ` · ${p.altFt} ft` : '';
-            const marker = L.circleMarker([p.lat, p.lon], {
-                radius: 7,
-                fillColor: meta.color,
-                color: '#fff',
-                weight: 1.5,
-                opacity: 1,
-                fillOpacity: 0.9,
-            }).addTo(_map);
-
-            marker.bindTooltip(
-                `<strong>${isFr ? meta.labelFr : meta.labelEn}</strong>${altStr}<br>
-                 <span style="font-size:10px;color:var(--text-muted);">PIREP</span>`,
-                { direction: 'top' }
-            );
-            _pirepMarkers.push(marker);
-        });
-    } catch (e) {
-        console.warn('PIREPs load failed:', e);
-    }
-}
-
-function _clearPirepMarkers() {
-    _pirepMarkers.forEach(m => _map?.removeLayer(m));
-    _pirepMarkers = [];
-}
+// PIREPs SUPPRIMÉS (demande pilote 03/09/2026) : sans intérêt pour le VFR —
+// module js/pireps.js retiré avec ses marqueurs et son fetch.
 
 function _categoryFromMetar(raw) {
     const visiMatch = raw.match(/KT(?:\s+\d{3}V\d{3})?\s+(\d{4})\b/);
