@@ -60,6 +60,37 @@ function _mapSurface(mainComposite) {
 
 function _mToFt(m) { return Math.round(m * FT_PER_M); }
 
+// openAIP tape « UNK » (type 16) sur beaucoup de fréquences des petits
+// terrains. Le NOM désigne parfois le vrai rôle (« A/A », « AIR-AIR »,
+// « TWR »…) → vraie étiquette ; sinon PAS D'ÉTIQUETTE (jamais « UNK » à
+// l'affichage — le détail des waypoints montre la fréquence seule : la
+// valeur est fiable, le rôle community ne l'est pas).
+// Sert AUSSI à assainir les entrées du cache IndexedDB écrites avant cette
+// règle (elles portent des « UNK » persistés).
+export function _relabelUnk(name) {
+    const n = String(name || '');
+    if (/\bA\s*\/\s*A\b|AIR[\s\/-]?AIR/i.test(n)) return 'A/A';
+    if (/\bTWR\b|TOUR DE CONTR|TOWER/i.test(n)) return 'TWR';
+    if (/\bAFIS\b/i.test(n)) return 'AFIS';
+    if (/\bAPP\b|APPROCHE/i.test(n)) return 'APP';
+    if (/\bATIS\b/i.test(n)) return 'ATIS';
+    if (/\bGND\b/i.test(n)) return 'GND';
+    if (/\bDEL\b/i.test(n)) return 'DEL';
+    return '';
+}
+
+/** Assainit un aéroport issu du cache IDB : requalifie ses fréquences
+ *  « UNK » (entrées écrites avant la règle _relabelUnk) et repersiste. */
+function _sanitizeCachedAirport(key, data) {
+    if (Array.isArray(data?.frequencies) && data.frequencies.some(f => f && f.type === 'UNK')) {
+        for (const f of data.frequencies) {
+            if (f && f.type === 'UNK') f.type = _relabelUnk(f.name);
+        }
+        _idbPut(key, data);   // repersiste propre (fire-and-forget)
+    }
+    return data;
+}
+
 /** Mapping d'un item openAIP brut → forme interne. Exporté pour les tests. */
 export function _mapAirport(aip) {
     const [lon, lat] = aip.geometry?.coordinates || [null, null];
@@ -119,28 +150,11 @@ export function _mapAirport(aip) {
     const frequencies = (aip.frequencies || [])
         .filter(f => f && f.value)
         .map(f => {
-            let type = FREQ_TYPE_LABELS[f.type] ?? 'COM';
-            if (type === 'UNK') {
-                // openAIP tape « UNK » (type 16) sur beaucoup de fréquences
-                // des petits terrains. Le NOM désigne parfois le vrai rôle
-                // (« A/A », « AIR-AIR », « TWR »…) → vraie étiquette ; sinon
-                // PAS D'ÉTIQUETTE (jamais « UNK » à l'affichage — le détail
-                // des waypoints montre la fréquence seule : la valeur est
-                // fiable, le rôle community ne l'est pas).
-                const n = String(f.name || '');
-                if (/\bA\s*\/\s*A\b|AIR[\s\/-]?AIR/i.test(n)) type = 'A/A';
-                else if (/\bTWR\b|TOUR DE CONTR|TOWER/i.test(n)) type = 'TWR';
-                else if (/\bAFIS\b/i.test(n)) type = 'AFIS';
-                else if (/\bAPP\b|APPROCHE/i.test(n)) type = 'APP';
-                else if (/\bATIS\b/i.test(n)) type = 'ATIS';
-                else if (/\bGND\b/i.test(n)) type = 'GND';
-                else if (/\bDEL\b/i.test(n)) type = 'DEL';
-                else type = '';
-            }
+            const label = FREQ_TYPE_LABELS[f.type] ?? 'COM';
             return {
                 freq: parseFloat(f.value),
                 name: f.name || '',
-                type,
+                type: label === 'UNK' ? _relabelUnk(f.name) : label,
                 primary: !!f.primary,
             };
         })
@@ -208,8 +222,13 @@ export async function fetchAirportByIcao(icao, opts = {}) {
     if (!opts.forceRefresh) {
         const cached = await _idbGet(key);
         if (cached?.data) {
-            _memCache.set(key, cached.data);
-            return cached.data;
+            // Entrées écrites AVANT la règle « jamais UNK » : leurs
+            // fréquences « UNK » sont requalifiées (puis repersistées) —
+            // sinon le cache IndexedDB (sans TTL) resservait le vieux
+            // libellé indéfiniment.
+            const data = _sanitizeCachedAirport(key, cached.data);
+            _memCache.set(key, data);
+            return data;
         }
     }
 
