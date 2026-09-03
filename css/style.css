@@ -893,6 +893,42 @@ html.night-mode .fp-print-btn {
 
 @media (max-width: 600px) { .regional-map { height: 320px; } }
 
+/* PLEIN CADRE INTÉGRÉ (consigne pilote) : le panneau carte passe au-dessus
+   de tout — même rendu PC / tablette / téléphone, sans popup ni API
+   Fullscreen du navigateur (celle-ci n'existe pas pour une carte sur
+   iPhone/iPad Safari). Sortie : bouton (✕) ou Échap. */
+#regional-map-panel.map-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel-bg);
+}
+/* En plein cadre, l'en-tête (titre + chevron) cède la place à la carte —
+   et son chevron de repli ne peut plus refermer la carte en plein écran. */
+#regional-map-panel.map-fullscreen .regional-map-header { display: none; }
+#regional-map-panel.map-fullscreen .regional-map-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    padding: 8px 10px 10px;
+}
+#regional-map-panel.map-fullscreen .regional-map {
+    flex: 1;
+    height: auto;
+    border: none;
+    border-radius: 0;
+}
+body.map-overlay-open { overflow: hidden; }
+/* Icône du bouton : ⛶ en mode normal, ✕ en plein cadre. */
+.map-fs-btn .fs-ic-min { display: none; }
+#regional-map-panel.map-fullscreen .map-fs-btn .fs-ic-max { display: none; }
+#regional-map-panel.map-fullscreen .map-fs-btn .fs-ic-min { display: inline-flex; }
+@media print { #regional-map-panel.map-fullscreen { position: static; } }
+
 /* ================================================================
  * BANNIÈRE GO / NO-GO — Verdict synthétique de décision
  * ================================================================ */

@@ -338,11 +338,12 @@ function _initLayerControls() {
     _sigmetLayer.mountControls(bar);
 
     // Ordre de la barre (une ligne) : Radar+lecture+horloge — Espaces — SIGMET —
-    // Satellite (fond de carte) — Terrain — + Waypoint.
+    // Satellite (fond de carte) — Terrain — + Waypoint — Plein cadre.
     try { _mountBasemapSwitcher(bar); } catch (e) { console.error('basemap switcher failed:', e.message); }
 
     _mountZoomAirfieldButton(bar);
     _mountFreeWaypointButton(bar);
+    _mountFullscreenButton(bar);
 
     // Radar et SIGMET ne sont PLUS activés d'office : le pilote les allume
     // d'un clic (état initial OFF dans leurs contrôleurs respectifs).
@@ -716,6 +717,53 @@ if (typeof document !== 'undefined') {
         if (typeof lat !== 'number' || typeof lon !== 'number') return;
         if (!_map) { _pendingFreeWps.push({ lat, lon, name }); return; }
         _createFreeWaypoint(lat, lon, String(name || 'WPT').slice(0, 24));
+    });
+}
+
+// ---- Plein cadre intégré (consigne pilote) ----------------------------
+// Le panneau carte passe AU-DESSUS de tout (position:fixed inset:0) : même
+// rendu PC / tablette / téléphone, sans popup ni API Fullscreen (absente
+// sur iPhone/iPad Safari pour un élément). La carte et sa barre d'outils
+// (Radar, Espaces…) restent interactives ; sortie par le bouton ou Échap.
+function _toggleMapFullscreen(on) {
+    const panel = document.getElementById('regional-map-panel');
+    if (!panel) return;
+    panel.classList.toggle('map-fullscreen', on);
+    document.body.classList.toggle('map-overlay-open', on);
+    const btn = document.querySelector('.map-fs-btn');
+    if (btn) {
+        btn.setAttribute('aria-pressed', String(on));
+        const lbl = btn.querySelector('span');
+        if (lbl) lbl.textContent = state.lang === 'fr' ? (on ? 'Réduire' : 'Plein cadre') : (on ? 'Reduce' : 'Full view');
+    }
+    // Leaflet doit retailler ses tuiles au nouvel habitat (double appel : le
+    // layout fixed s'applique dans la même frame, on laisse une marge).
+    requestAnimationFrame(() => setTimeout(() => { _map?.invalidateSize(); }, 60));
+    setTimeout(() => { _map?.invalidateSize(); }, 350);
+}
+
+function _mountFullscreenButton(bar) {
+    const isFr = state.lang === 'fr';
+    const group = document.createElement('div');
+    group.className = 'precip-control-group';
+    group.innerHTML = `
+        <button class="precip-toggle map-fs-btn" aria-pressed="false" title="${isFr ? 'Agrandir la carte sur tout l\u2019écran (Échap pour revenir)' : 'Expand the map to the whole screen (Esc to return)'}">
+            <i data-lucide="maximize-2" class="fs-ic-max" style="width:14px;height:14px;"></i>
+            <i data-lucide="minimize-2" class="fs-ic-min" style="width:14px;height:14px;"></i>
+            <span>${isFr ? 'Plein cadre' : 'Full view'}</span>
+        </button>`;
+    bar.appendChild(group);
+    if (window.lucide) window.lucide.createIcons({ root: group });
+    group.querySelector('.map-fs-btn')?.addEventListener('click', (ev) => {
+        ev.currentTarget.blur();   // pour que Échap referme la carte, pas le bouton
+        const panel = document.getElementById('regional-map-panel');
+        _toggleMapFullscreen(!panel?.classList.contains('map-fullscreen'));
+    });
+    // Échap quitte le plein cadre (écouté au niveau document, jetable).
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const panel = document.getElementById('regional-map-panel');
+        if (panel?.classList.contains('map-fullscreen')) _toggleMapFullscreen(false);
     });
 }
 
