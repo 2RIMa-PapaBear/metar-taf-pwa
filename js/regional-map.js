@@ -338,11 +338,11 @@ function _initLayerControls() {
     _sigmetLayer.mountControls(bar);
 
     // Ordre de la barre (une ligne) : Radar+lecture+horloge — Espaces — SIGMET —
-    // Satellite (fond de carte) — Terrain — + Waypoint — Cadrer plan — Plein cadre.
+    // Satellite (fond de carte) — Terrain — Cadrer plan — Plein cadre.
     try { _mountBasemapSwitcher(bar); } catch (e) { console.error('basemap switcher failed:', e.message); }
 
     _mountZoomAirfieldButton(bar);
-    _mountFreeWaypointButton(bar);
+    _wireFreeWaypointShortcuts();
     _mountFitPlanButton(bar);
     _mountFullscreenButton(bar);
 
@@ -520,7 +520,6 @@ function _mountZoomAirfieldButton(bar) {
  * ================================================================ */
 
 let _freeWaypoints = new Map();   // 'ZZAA' → { lat, lon, name, marker }
-let _freeWpInsertMode = false;
 let _freeWpSeq = 1;
 
 // Coordonnées en degrés-minutes aviation (ex. « 4851N 00221W ») — nom par
@@ -816,67 +815,11 @@ function _mountFitPlanButton(bar) {
     });
 }
 
-function _setFreeWpInsertMode(on) {
-    _freeWpInsertMode = on;
-    document.getElementById('regional-map')?.classList.toggle('inserting-wp', on);
-    const hint = document.getElementById('wp-insert-hint');
-    if (hint) hint.hidden = !on;
-    if (!on) {
-        document.querySelectorAll('.free-wp-btn').forEach(b => {
-            b.classList.remove('active');
-            b.setAttribute('aria-pressed', 'false');
-        });
-    }
-}
-
-function _mountFreeWaypointButton(bar) {
-    const isFr = state.lang === 'fr';
-    const group = document.createElement('div');
-    group.className = 'precip-control-group';
-    group.innerHTML = `
-        <button class="precip-toggle free-wp-btn" aria-pressed="false" title="${isFr ? 'Poser un waypoint libre, puis cliquer sur la carte (ou clic droit direct sur la carte)' : 'Drop a free waypoint, then click the map (or right-click the map)'}">
-            <i data-lucide="map-pin-plus" style="width:14px;height:14px;"></i>
-            <span>${isFr ? '+ Waypoint' : '+ Waypoint'}</span>
-        </button>`;
-    bar.appendChild(group);
-    if (window.lucide) window.lucide.createIcons({ root: group });
-
-    group.querySelector('.free-wp-btn')?.addEventListener('click', (ev) => {
-        const on = !_freeWpInsertMode;
-        _setFreeWpInsertMode(on);
-        if (on) {
-            ev.currentTarget.classList.add('active');
-            ev.currentTarget.setAttribute('aria-pressed', 'true');
-        }
-    });
-
-    // Bandeau d'aide affiché pendant le mode insertion.
-    if (!document.getElementById('wp-insert-hint')) {
-        const hint = document.createElement('div');
-        hint.id = 'wp-insert-hint';
-        hint.className = 'wp-insert-hint';
-        hint.hidden = true;
-        hint.textContent = isFr
-            ? 'Cliquez sur la carte pour poser le waypoint — Échap pour annuler'
-            : 'Click the map to drop the waypoint — Esc to cancel';
-        document.getElementById('regional-map-body')?.appendChild(hint);
-    }
-
-    // Échap quitte le mode insertion.
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && _freeWpInsertMode) _setFreeWpInsertMode(false);
-    });
-
-    // Mode insertion : le prochain clic sur la carte pose le waypoint.
-    _map.on('click', (e) => {
-        if (!_freeWpInsertMode) return;
-        _setFreeWpInsertMode(false);
-        _dropFreeWaypoint(e.latlng);
-    });
-
-    // Raccourci : clic droit = création directe, sans passer par le mode.
+// Repères libres (consigne pilote 04/09 : le BOUTON « + Waypoint » sans
+// utilité est retiré) — création par CLIC DROIT direct sur la carte, et
+// via les popups VOR/NDB/points VFR (+ Plan) et l'import de plan de vol.
+function _wireFreeWaypointShortcuts() {
     _map.on('contextmenu', (e) => {
-        _setFreeWpInsertMode(false);
         _dropFreeWaypoint(e.latlng);
     });
 }

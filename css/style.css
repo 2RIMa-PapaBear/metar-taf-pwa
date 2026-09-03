@@ -742,10 +742,8 @@ body.mode-local #alternates-container { display: none !important; }
 }
 .mp-inner .mp-waypoint-btn:hover { background: rgba(251,191,36,0.3); }
 
-/* ---- Waypoints libres (clic droit / mode insertion) ---- */
+/* ---- Waypoints libres (clic droit) & bandeaux transitoires ---- */
 .regional-map-body { position: relative; }
-#regional-map.inserting-wp,
-#regional-map.inserting-wp .leaflet-grab { cursor: crosshair; }
 .wp-insert-hint {
     position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
     z-index: 1100; padding: 6px 12px; border-radius: 6px;
