@@ -338,11 +338,12 @@ function _initLayerControls() {
     _sigmetLayer.mountControls(bar);
 
     // Ordre de la barre (une ligne) : Radar+lecture+horloge — Espaces — SIGMET —
-    // Satellite (fond de carte) — Terrain — + Waypoint — Plein cadre.
+    // Satellite (fond de carte) — Terrain — + Waypoint — Cadrer plan — Plein cadre.
     try { _mountBasemapSwitcher(bar); } catch (e) { console.error('basemap switcher failed:', e.message); }
 
     _mountZoomAirfieldButton(bar);
     _mountFreeWaypointButton(bar);
+    _mountFitPlanButton(bar);
     _mountFullscreenButton(bar);
 
     // Radar et SIGMET ne sont PLUS activés d'office : le pilote les allume
@@ -764,6 +765,54 @@ function _mountFullscreenButton(bar) {
         if (e.key !== 'Escape') return;
         const panel = document.getElementById('regional-map-panel');
         if (panel?.classList.contains('map-fullscreen')) _toggleMapFullscreen(false);
+    });
+}
+
+// ---- Cadrer sur le plan de vol courant (consigne pilote) ----------------
+// Recentre ET zoome la carte pour englober tout le plan actif (départ →
+// étapes → destination). Sans plan actif : bandeau transitoire, pas d'alerte.
+function _mountFitPlanButton(bar) {
+    const isFr = state.lang === 'fr';
+    const group = document.createElement('div');
+    group.className = 'precip-control-group';
+    group.innerHTML = `
+        <button class="precip-toggle map-fitplan-btn" title="${isFr ? 'Cadrer et zoomer sur le plan de vol courant' : 'Fit and zoom to the current flight plan'}">
+            <i data-lucide="focus" style="width:14px;height:14px;"></i>
+            <span>${isFr ? 'Cadrer plan' : 'Fit plan'}</span>
+        </button>`;
+    bar.appendChild(group);
+    if (window.lucide) window.lucide.createIcons({ root: group });
+    group.querySelector('.map-fitplan-btn')?.addEventListener('click', () => {
+        // Séquence du plan : state.route (multi-étapes) sinon départ→dest.
+        const toIcao = (document.getElementById('route-to-input')?.value || '').trim().toUpperCase();
+        const raw = (Array.isArray(state.route) && state.route.length >= 2)
+            ? state.route : [_currentIcao, toIcao];
+        const pts = [];
+        for (const c of raw) {
+            const code = String(c || '').toUpperCase();
+            if (!code) continue;
+            const apt = getAirportByICAO(code);
+            const memo = memoGet(code);
+            const lat = memo?.lat ?? apt?.lat ?? null, lon = memo?.lon ?? apt?.lon ?? null;
+            if (lat != null && lon != null) pts.push([lat, lon]);
+        }
+        if (pts.length >= 2 && _map) {
+            _map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 10 });
+            return;
+        }
+        // Aucun plan actif : bandeau transitoire (même style que l'aide
+        // « + Waypoint », sans voler le focus).
+        let hint = document.getElementById('fitplan-hint');
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.id = 'fitplan-hint';
+            hint.className = 'wp-insert-hint';
+            document.getElementById('regional-map-body')?.appendChild(hint);
+        }
+        hint.textContent = isFr ? 'Aucun plan de vol actif — saisissez une destination' : 'No active flight plan — enter a destination';
+        hint.hidden = false;
+        clearTimeout(hint._t);
+        hint._t = setTimeout(() => { hint.hidden = true; }, 1800);
     });
 }
 
