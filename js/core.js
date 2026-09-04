@@ -609,7 +609,7 @@ export async function fetchAvecRelais(url, type = 'text', ttlSec = null) {
     }
 
     // Même URL déjà en cours → on partage son résultat au lieu d'empiler
-    // une requête identique dans la file (ex. fetchAtis appelé 2× de suite).
+    // une requête identique dans la file (ex. un même METAR demandé 2× de suite).
     const pending = _relaisInFlight.get(url);
     if (pending) return pending;
 

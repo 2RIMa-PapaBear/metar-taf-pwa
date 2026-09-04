@@ -1,37 +1,9 @@
-import { fetchAvecRelais } from './core.js';
-
-const _cache = new Map();
-const TTL_MS = 30 * 60 * 1000;
-
-export async function fetchAtis(icao) {
-    if (!icao) return null;
-    const key = icao.toUpperCase();
-
-    const cached = _cache.get(key);
-    if (cached && Date.now() - cached.ts < TTL_MS) return cached.data;
-
-    // NOTE : l'endpoint /api/data/atis d'AviationWeather.gov a été supprimé lors de la
-    // refonte de l'API (septembre 2025). Il retourne désormais 404 "Not found".
-    // On tente quand même (au cas où il réapparaisse), mais tout échec est silencieux :
-    // le widget fréquences fonctionne sans ATIS (fréquences OpenAIP).
-    try {
-        const url = `https://aviationweather.gov/api/data/atis?station=${encodeURIComponent(key)}&format=json`;
-        const data = await fetchAvecRelais(url, 'json');
-
-        const item = Array.isArray(data) ? data[0] : data;
-        if (!item) return null;
-
-        const raw = item.rawOb || item.rawText || item.datis || '';
-        if (!raw) return null;
-
-        const result = { raw, icao: key };
-        _cache.set(key, { data: result, ts: Date.now() });
-        return result;
-    } catch {
-        // Silencieux : endpoint déprécié côté AviationWeather. Pas de warn bruyant.
-        return null;
-    }
-}
+/* NOTE 04/09/2026 : fetchAtis SUPPRIMÉ sur demande pilote — l'endpoint
+ * /api/data/atis d'AviationWeather.gov a été retiré lors de leur refonte
+ * API (septembre 2025, 404 permanent) : chaque chargement de terrain
+ * partait une requête vouée à l'échec. Le widget fréquences fonctionne
+ * sans (fréquences SIA/OpenAIP). Ne pas ré-introduire sans vérifier que
+ * l'endpoint est réapparu. */
 
 const VAC_PROVIDERS = [
     {
@@ -106,5 +78,3 @@ export function getVacLink(icao) {
     }
     return null;
 }
-
-export function _clearCache() { _cache.clear(); }

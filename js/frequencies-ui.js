@@ -13,7 +13,7 @@
 
 import { state, escapeHtml } from './core.js';
 import { getAirportByICAO } from './ui-module.js';
-import { fetchAtis, getVacLink } from './atc-info.js';
+import { getVacLink } from './atc-info.js';
 import { makeCollapsible } from './collapsible.js';
 import { loadFreqSources, getAirportFreqs, getSiaAirac } from './freq-sia.js';
 
@@ -52,22 +52,14 @@ export async function showFrequenciesWidget(icao) {
     // Prépare le panel repliable et rend dans le body.
     const body = makeCollapsible(container, isFr ? 'Fréquences & info terrain' : 'Frequencies & airfield info', 'radio-tower');
 
-    // Affiche immédiatement les fréquences + VAC, puis complète l'ATIS
-    // en arrière-plan (non bloquant).
-    render(body, freqs, source, vac, null, isFr);
+    render(body, freqs, source, vac, isFr);
     container.style.display = 'block';
-
-    // Récupère l'ATIS en arrière-plan.
-    const atis = await fetchAtis(icao);
-    if (atis) {
-        render(body, freqs, source, vac, atis, isFr);
-    }
 }
 
 /**
- * Génère le HTML du widget (fréquences + ATIS + lien VAC).
+ * Génère le HTML du widget (fréquences + lien VAC).
  */
-function render(container, freqs, source, vac, atis, isFr) {
+function render(container, freqs, source, vac, isFr) {
     // Sépare les fréquences principales des secondaires.
     const primary = freqs.filter(f => f.primary);
     const others = freqs.filter(f => !f.primary);
@@ -87,17 +79,6 @@ function render(container, freqs, source, vac, atis, isFr) {
         <i data-lucide="radio-tower" class="icon-sm"></i>
         <span>${isFr ? 'Fréquences & info terrain' : 'Frequencies & airfield info'}</span>
     </div>`;
-
-    // ATIS (si disponible).
-    if (atis?.raw) {
-        html += `<div style="margin-bottom:8px; padding:8px 10px; background:rgba(45,212,191,0.08); border:1px solid rgba(45,212,191,0.25); border-radius:6px;">
-            <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-                <i data-lucide="radio" style="width:13px;height:13px;color:#2DD4BF;"></i>
-                <span style="font-size:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700; color:#2DD4BF;">ATIS</span>
-            </div>
-            <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--text-color); line-height:1.5; max-height:120px; overflow-y:auto; white-space:pre-wrap;">${escapeHtml(atis.raw)}</div>
-        </div>`;
-    }
 
     // Fréquences principales (Tour) en premier si elles existent.
     if (primary.length > 0) {
