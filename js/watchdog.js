@@ -407,8 +407,34 @@ export function openWatchdogPanel() {
     });
 
     // Check immédiat.
-    overlay.querySelector('#wd-check-now')?.addEventListener('click', () => {
-        checkNow();
+    // « Vérifier maintenant » : spinner actif PENDANT le check (demande
+    // pilote — sans retour visuel, on ne sait pas si le clic a pris) :
+    // icône rotative, bouton désactivé, puis bref « ✓ Vérifié ».
+    const checkBtn = overlay.querySelector('#wd-check-now');
+    checkBtn?.addEventListener('click', async () => {
+        if (checkBtn.classList.contains('wd-checking')) return;   // déjà en cours
+        const isFr = state.lang === 'fr';
+        const idle = checkBtn.innerHTML;
+        checkBtn.classList.add('wd-checking');
+        checkBtn.disabled = true;
+        checkBtn.innerHTML = `<i data-lucide="loader-2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+            ${isFr ? 'Vérification…' : 'Checking…'}`;
+        if (window.lucide) window.lucide.createIcons({ root: checkBtn });
+        try {
+            await checkNow();
+        } finally {
+            checkBtn.classList.remove('wd-checking');
+            checkBtn.disabled = false;
+            checkBtn.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                ${isFr ? '✓ Vérifié' : '✓ Checked'}`;
+            if (window.lucide) window.lucide.createIcons({ root: checkBtn });
+            setTimeout(() => {
+                if (!checkBtn.classList.contains('wd-checking')) {
+                    checkBtn.innerHTML = idle;
+                    if (window.lucide) window.lucide.createIcons({ root: checkBtn });
+                }
+            }, 1600);
+        }
     });
 }
 

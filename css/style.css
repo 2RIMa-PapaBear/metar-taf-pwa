@@ -2599,3 +2599,9 @@ html:not(.theme-light) .theme-ic-dark { display: none !important; }
 html.theme-light .neighbors-loading { background: rgba(255, 255, 255, 0.9); color: #0F172A; }
 .neighbors-loading svg { animation: neighbors-spin 1s linear infinite; }
 @keyframes neighbors-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* « Vérifier maintenant » (panneau surveillance) : icône rotative pendant
+ * le check — retour visuel immédiat au clic (demande pilote). */
+.wd-check-btn.wd-checking svg { animation: wd-check-spin 0.9s linear infinite; }
+.wd-check-btn:disabled { opacity: 0.85; cursor: wait; }
+@keyframes wd-check-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
