@@ -560,15 +560,15 @@ function _renderWbSection() {
 
     const stRows = d.stations.map((s, i) => `
         <div class="wb-tbl-row" data-i="${i}">
-            <input class="wb-st-name${s.fuel ? ' wb-st-fuel' : ''}" type="text" maxlength="24" value="${_esc(s.name)}" placeholder="${isFr ? 'poste' : 'station'}"${s.fuel ? ` title="${isFr ? 'Poste carburant : saisie en litres dans le widget (densité appliquée)' : 'Fuel station: entered in litres in the widget (density applied)'}"` : ''}>
-            <input class="wb-st-arm" type="number" step="any" value="${s.arm}" placeholder="—">
-            <input class="wb-st-max" type="number" step="any" value="${s.max}" placeholder="${s.fuel ? 'L' : u.mass}"${s.fuel ? ` title="${isFr ? 'Capacité en litres' : 'Capacity in litres'}"` : ''}>
+            <input name="wb-st-name" aria-label="Nom du poste" class="wb-st-name${s.fuel ? ' wb-st-fuel' : ''}" type="text" maxlength="24" value="${_esc(s.name)}" placeholder="${isFr ? 'poste' : 'station'}"${s.fuel ? ` title="${isFr ? 'Poste carburant : saisie en litres dans le widget (densité appliquée)' : 'Fuel station: entered in litres in the widget (density applied)'}"` : ''}>
+            <input name="wb-st-arm" aria-label="Bras du poste" class="wb-st-arm" type="number" step="any" value="${s.arm}" placeholder="—">
+            <input name="wb-st-max" aria-label="Masse maxi du poste" class="wb-st-max" type="number" step="any" value="${s.max}" placeholder="${s.fuel ? 'L' : u.mass}"${s.fuel ? ` title="${isFr ? 'Capacité en litres' : 'Capacity in litres'}"` : ''}>
             <button class="wb-del" data-del="st" data-i="${i}" title="${isFr ? 'Supprimer' : 'Delete'}">×</button>
         </div>`).join('');
     const envRows = d.envelope.map((p, i) => `
         <div class="wb-tbl-row" data-i="${i}">
-            <input class="wb-env-m" type="number" step="any" value="${p[0]}" placeholder="${isFr ? 'masse' : 'mass'}">
-            <input class="wb-env-a" type="number" step="any" value="${p[1]}" placeholder="${isFr ? 'bras' : 'arm'}">
+            <input name="wb-env-masse" aria-label="Masse du point enveloppe" class="wb-env-m" type="number" step="any" value="${p[0]}" placeholder="${isFr ? 'masse' : 'mass'}">
+            <input name="wb-env-bras" aria-label="Bras du point enveloppe" class="wb-env-a" type="number" step="any" value="${p[1]}" placeholder="${isFr ? 'bras' : 'arm'}">
             <button class="wb-del" data-del="env" data-i="${i}" title="${isFr ? 'Supprimer' : 'Delete'}">×</button>
         </div>`).join('');
 

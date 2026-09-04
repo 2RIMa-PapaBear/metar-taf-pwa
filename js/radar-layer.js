@@ -251,7 +251,7 @@ export function createPrecipController(map) {
                 </button>
             </div>
             <div class="precip-slider-group">
-                <input type="range" class="precip-slider" min="0" max="${Math.max(0, radarFrames.length - 1)}" value="${frameIdx}" step="1" aria-label="${isFr ? 'Horloge animation' : 'Animation clock'}">
+                <input type="range" name="precip-frame" aria-label="Horloge animation radar" class="precip-slider" min="0" max="${Math.max(0, radarFrames.length - 1)}" value="${frameIdx}" step="1" aria-label="${isFr ? 'Horloge animation' : 'Animation clock'}">
                 <span class="precip-time-label">—</span>
             </div>
         `;

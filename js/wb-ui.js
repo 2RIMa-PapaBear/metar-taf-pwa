@@ -110,8 +110,8 @@ function _render(body, ac, isFr) {
     const stCell = (s) => `
         <label class="wb-load">
             <span class="wb-load-lab"><span class="lab">${escapeHtml(s.name)}</span>${s.maxKg ? ` <span class="val">Max ${_m(s.maxKg, u.mass)}</span>` : ''}</span>
-            <input type="number" step="any" min="0" class="wb-load-in" data-key="st:${escapeHtml(s.name)}" data-max="${s.maxKg || ''}" value="${loads.masses[s.name] ?? ''}" placeholder="0">
-            <input type="range" class="wb-load-range" data-key="st:${escapeHtml(s.name)}" min="0" max="${s.maxKg ? Math.max(1, Math.round(massFromKg(s.maxKg, u.mass))) : 150}" step="1" value="${Math.round(massFromKg(loads.masses[s.name] || 0, u.mass))}">
+            <input type="number" step="any" min="0" name="wb-load" aria-label="Masse embarquée au poste" class="wb-load-in" data-key="st:${escapeHtml(s.name)}" data-max="${s.maxKg || ''}" value="${loads.masses[s.name] ?? ''}" placeholder="0">
+            <input type="range" name="wb-load-range" aria-label="Réglage de la masse" class="wb-load-range" data-key="st:${escapeHtml(s.name)}" min="0" max="${s.maxKg ? Math.max(1, Math.round(massFromKg(s.maxKg, u.mass))) : 150}" step="1" value="${Math.round(massFromKg(loads.masses[s.name] || 0, u.mass))}">
         </label>`;
     const fuelCell = fuelSt ? `
         <label class="wb-load wb-load-fuel" title="${isFr
@@ -123,7 +123,7 @@ function _render(body, ac, isFr) {
                 : 'Total fuel at takeoff — free entry, saved for this aircraft.')}">
             <span class="wb-load-lab"><span class="lab">${isFr ? 'Carburant embarqué (L)' : 'Fuel on board (L)'}</span>${fuelSt.maxKg ? ` <span class="val">Max ${fuelSt.maxKg}</span>` : ''}</span>
             <input type="number" step="any" min="0" id="wb-fuel-l" data-key="fuel" data-max="${fuelSt.maxKg || ''}" value="${loads.fuelL || ''}" placeholder="0">
-            <input type="range" class="wb-load-range" data-key="fuel" min="0" max="${fuelSt.maxKg ? Math.max(1, Math.round(fuelSt.maxKg)) : 200}" step="1" value="${Math.round(loads.fuelL || 0)}">
+            <input type="range" name="wb-load-range" aria-label="Réglage de la masse" class="wb-load-range" data-key="fuel" min="0" max="${fuelSt.maxKg ? Math.max(1, Math.round(fuelSt.maxKg)) : 200}" step="1" value="${Math.round(loads.fuelL || 0)}">
         </label>` : '';
     const burnCell = (fuelSt && isNav) ? `
         <label class="wb-load wb-load-fuel" title="${isFr ? 'Essence consommée jusqu\u2019à destination, issue du plan de vol (trajet, sans la réserve) — non modifiable. Le point Arrivée est calculé avec le carburant restant (embarqué − consommée).' : 'Fuel burned to destination, from the flight plan (trip, no reserve) — read-only. The landing point uses the remaining fuel (on board − burned).'}">

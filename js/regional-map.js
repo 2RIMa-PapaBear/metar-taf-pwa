@@ -581,7 +581,7 @@ function _freeWpPopupHtml(code) {
     return `
         <div class="fw-inner">
             <div class="fw-title"><strong>${escapeHtml(wp.name)}</strong> <span class="fw-code">${escapeHtml(code)}</span></div>
-            <input type="text" class="fw-name-input" maxlength="24" value="${escapeHtml(wp.name)}" placeholder="${isFr ? 'Nom du waypoint' : 'Waypoint name'}">
+            <input type="text" name="wp-name" aria-label="Nom du waypoint" class="fw-name-input" maxlength="24" value="${escapeHtml(wp.name)}" placeholder="${isFr ? 'Nom du waypoint' : 'Waypoint name'}">
             <div class="mp-btns">
                 <button class="fw-ok-btn" data-code="${escapeHtml(code)}">${isFr ? 'Renommer' : 'Rename'}</button>
                 ${!inPlan ? `<button class="fw-add-btn" data-code="${escapeHtml(code)}">+ ${isFr ? 'Plan' : 'Plan'}</button>` : ''}
@@ -597,7 +597,7 @@ function _freeWpCreatePopupHtml(lat, lon) {
     return `
         <div class="fw-inner">
             <div class="fw-title">${isFr ? 'Nouveau waypoint' : 'New waypoint'}</div>
-            <input type="text" class="fw-name-input" maxlength="24" value="${escapeHtml(_formatDmCoords(lat, lon))}" placeholder="${isFr ? 'Nom du waypoint' : 'Waypoint name'}">
+            <input type="text" name="wp-name" aria-label="Nom du waypoint" class="fw-name-input" maxlength="24" value="${escapeHtml(_formatDmCoords(lat, lon))}" placeholder="${isFr ? 'Nom du waypoint' : 'Waypoint name'}">
             <div class="mp-btns"><button class="fw-ok-btn" data-lat="${lat}" data-lon="${lon}">${isFr ? 'Valider' : 'OK'}</button></div>
         </div>`;
 }
