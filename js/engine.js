@@ -418,6 +418,7 @@ function _computeRowLayout(stackOrder, data, PADDING_TOP, OFFSET_STEP) {
  * et lignes verticales pointillées aux heures de lever/coucher.
  */
 function _drawSunLayer(geom, data, tr) {
+    const T = themeTokens();   // couleurs du thème
     const { ctx, getX, AXIS_Y, availableWidth, logicalHeight, PADDING_LEFT, PADDING_RIGHT, yConfig } = geom;
     if (!data.code || !state.memo[data.code] || state.memo[data.code].lat == null || typeof SunCalc === 'undefined') return;
 
@@ -474,6 +475,7 @@ function _drawSunLayer(geom, data, tr) {
  * Dessine la grille verticale et les étiquettes d'heures en haut du graphique.
  */
 function _drawTimeAxis(geom, data) {
+    const T = themeTokens();   // couleurs du thème
     const { ctx, getX, AXIS_Y, logicalHeight } = geom;
     let stepH = data.isMetar ? 0.5 : 2;
     if (!data.isMetar) {
@@ -508,6 +510,7 @@ function _drawTimeAxis(geom, data) {
  * valeurs temporaires (TEMPO) et températures TAF (TX/TN).
  */
 function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
+    const T = themeTokens();   // couleurs du thème
     const { ctx, PADDING_LEFT, OFFSET_STEP, pxPerH, availableWidth, getX, yConfig } = geom;
 
     stackOrder.forEach(key => {
@@ -569,6 +572,7 @@ function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
  * Dessine le curseur d'heure d'arrivée (HPP) : disque solaire + étiquette d'heure.
  */
 function _drawArrivalCursor(geom, data, hppValue, tr) {
+    const T = themeTokens();   // couleurs du thème
     if (hppValue === null || hppValue < data.startH || hppValue > data.endH) return;
     const { ctx, getX, PADDING_TOP, yConfig } = geom;
     const xHpp = getX(hppValue);
