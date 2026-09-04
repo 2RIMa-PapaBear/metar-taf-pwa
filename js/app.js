@@ -641,11 +641,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }).catch(() => {});
 
     // Version servie (bump ?v= posé par le workflow à chaque déploiement) :
-    // window.APP_VERSION + ligne console au chargement — le pilote vérifie
-    // d'un coup d'œil (console ou en tapant APP_VERSION) ce qui tourne.
+    // window.APP_VERSION + ligne console au chargement + pied de page — le
+    // pilote vérifie d'un coup d'œil (écran, console ou APP_VERSION) ce qui
+    // tourne, y compris sur mobile sans console (Brave Android).
     try {
         const src = document.querySelector('script[src*="js/app.js"]')?.src || '';
         window.APP_VERSION = (src.match(/v=([\d.]+)/) || [])[1] || '?';
+        const build = document.getElementById('app-build');
+        if (build) build.textContent = 'v' + window.APP_VERSION;
         console.info('%c✈ météo VFR %cv' + window.APP_VERSION, 'font-weight:700;color:#38BDF8', 'color:#94A3B8');
     } catch { /* affichage seul */ }
 
