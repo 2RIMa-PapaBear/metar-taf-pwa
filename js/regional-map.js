@@ -861,6 +861,23 @@ function _onMapMovedForNeighbors() {
 }
 
 async function _loadNeighborCategories(minLat, minLon, maxLat, maxLon) {
+    // Icône animée pendant le chargement (demande pilote) : visible tant
+    // que les pastilles météo ne sont pas rendues.
+    const setLoading = (on) => {
+        let el = document.getElementById('neighbors-loading');
+        if (on && !el) {
+            el = document.createElement('div');
+            el.id = 'neighbors-loading';
+            el.className = 'neighbors-loading';
+            const isFr = state.lang === 'fr';
+            el.innerHTML = `<i data-lucide="loader-2" style="width:13px;height:13px;"></i>
+                <span>${isFr ? 'Météo des terrains…' : 'Airfield weather…'}</span>`;
+            document.getElementById('regional-map-body')?.appendChild(el);
+            if (window.lucide) window.lucide.createIcons({ root: el });
+        }
+        if (el) el.style.display = on ? 'flex' : 'none';
+    };
+    setLoading(true);
     try {
         // Référence de la zone chargée (test de couverture au prochain déplacement).
         _lastNeighborsBbox = { minLat, minLon, maxLat, maxLon };
@@ -938,6 +955,8 @@ async function _loadNeighborCategories(minLat, minLon, maxLat, maxLon) {
         }
     } catch (e) {
         console.warn('Neighbor categories load failed:', e);
+    } finally {
+        setLoading(false);
     }
 }
 let _neighborRetryDone = false;

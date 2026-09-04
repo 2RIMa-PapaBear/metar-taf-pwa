@@ -7,6 +7,7 @@ import { I18N, PALETTE, UNIFIED_RED, REGEX_BLOCKS_PATTERN, sunCacheGet, sunCache
 import { state } from './core.js';
 import { parseVisiToMeters, getCeiling, getFlightCategory, getWeatherIcon, inferStartYear, traduireCode, findActiveValueAtHour, surfaceLabel, SOFT_SURFACES } from './core.js';
 import { getDeclinationForIcao } from './magvar.js';
+import { themeTokens } from './night-mode.js';
 import { siaRunwayFor, siaSurfaceCode } from './sia-data.js';
 
 /**
@@ -346,7 +347,8 @@ export function dessinerGraphique(data, hppValue, activeTzOffset) {
     canvas.width = availableWidth * dpr; canvas.height = logicalHeight * dpr;
     canvas.style.width = availableWidth + 'px'; canvas.style.height = logicalHeight + 'px';
     ctx.scale(dpr, dpr);
-    ctx.fillStyle = '#0F172A'; ctx.fillRect(0, 0, availableWidth, logicalHeight);
+    const T = themeTokens();
+    ctx.fillStyle = T.bg; ctx.fillRect(0, 0, availableWidth, logicalHeight);
     ctx.font = 'bold 12px Arial';
     const getX = h => PADDING_LEFT + (h - data.startH) * pxPerH, AXIS_Y = PADDING_TOP - OFFSET_STEP;
     const geom = { ctx, getX, AXIS_Y, availableWidth, logicalHeight, PADDING_LEFT, PADDING_RIGHT, OFFSET_STEP, pxPerH, yConfig };
@@ -449,7 +451,7 @@ function _drawSunLayer(geom, data, tr) {
     ctx.lineTo(pts[pts.length - 1].x, horizonY);
     ctx.lineTo(pts[0].x, horizonY);
     ctx.fillStyle = 'rgba(253, 224, 71, 0.12)'; ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = T.gridStrong; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
     ctx.beginPath(); ctx.moveTo(PADDING_LEFT, horizonY); ctx.lineTo(availableWidth - PADDING_RIGHT, horizonY); ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
@@ -480,7 +482,7 @@ function _drawTimeAxis(geom, data) {
     }
 
     // Grille verticale.
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.beginPath();
+    ctx.strokeStyle = T.grid; ctx.lineWidth = 1; ctx.beginPath();
     for (let h = Math.floor(data.startH); h <= Math.ceil(data.endH); h += stepH) {
         if (h < data.startH || h > data.endH) continue;
         const x = getX(h); ctx.moveTo(x, AXIS_Y); ctx.lineTo(x, logicalHeight);
@@ -491,7 +493,7 @@ function _drawTimeAxis(geom, data) {
     for (let h = Math.floor(data.startH); h <= Math.ceil(data.endH); h += stepH) {
         if (h < data.startH || h > data.endH) continue;
         const x = getX(h);
-        ctx.fillStyle = '#94A3B8'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = 'bold 11px Arial';
+        ctx.fillStyle = T.muted; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = 'bold 11px Arial';
         const { hh, mm } = _hourToTimeParts(h);
         ctx.fillText(`${hh}h${mm}Z`, x, AXIS_Y - 4);
     }
@@ -509,7 +511,7 @@ function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
     const { ctx, PADDING_LEFT, OFFSET_STEP, pxPerH, availableWidth, getX, yConfig } = geom;
 
     stackOrder.forEach(key => {
-        ctx.fillStyle = '#94A3B8'; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = T.muted; ctx.font = 'bold 12px Arial'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
 
         const labelY = key === 'soleil' ? yConfig[key].baseLineY : yConfig[key].yStart;
         const textToDraw = labelsMap[key] || '';
@@ -530,7 +532,7 @@ function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
                 const x = getX(t.continuousH), y = yConfig[key].baseLineY;
                 ctx.fillStyle = t.type === 'Max' ? '#EF4444' : '#3B82F6';
                 ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = '#E2E8F0'; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom'; ctx.textAlign = 'center';
+                ctx.fillStyle = T.text; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom'; ctx.textAlign = 'center';
                 ctx.fillText(`${t.val}°C`, x, y - 6);
             });
             return;
@@ -543,7 +545,7 @@ function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
             ctx.strokeStyle = ctx.fillStyle = item.color; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
             ctx.beginPath(); ctx.arc(x1, y, 3, 0, Math.PI * 2); ctx.fill();
             if (item.val) {
-                ctx.fillStyle = '#E2E8F0'; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom';
+                ctx.fillStyle = T.text; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom';
                 ctx.textAlign = x1 + 100 > availableWidth ? 'right' : 'left';
                 ctx.fillText(item.val, x1 + (ctx.textAlign === 'right' ? -6 : 6), y - 4);
             }
@@ -556,7 +558,7 @@ function _drawWeatherLayers(geom, data, stackOrder, labelsMap) {
             ctx.strokeStyle = ctx.fillStyle = '#EF4444'; ctx.lineWidth = 2.5; ctx.setLineDash([4, 3]);
             ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]);
             const label = `${tBlk.prob || ''} ${tBlk[key]}`.trim();
-            ctx.fillStyle = '#E2E8F0'; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom';
+            ctx.fillStyle = T.text; ctx.font = 'bold 11px Arial'; ctx.textBaseline = 'bottom';
             ctx.textAlign = x1 + 100 > availableWidth ? 'right' : 'left';
             ctx.fillText(label, x1 + (ctx.textAlign === 'right' ? -6 : 6), y - 4);
         });
@@ -585,7 +587,7 @@ function _drawArrivalCursor(geom, data, hppValue, tr) {
         if (alt > 0) {
             ctx.fillStyle = '#FDE047'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#CA8A04'; ctx.stroke();
         } else {
-            ctx.fillStyle = '#E2E8F0'; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = '#94A3B8'; ctx.stroke();
+            ctx.fillStyle = T.text; ctx.fill(); ctx.lineWidth = 1.5; ctx.strokeStyle = T.muted; ctx.stroke();
         }
     }
 
@@ -667,12 +669,13 @@ export function isAeroNight(lat, lon, dateUTC) {
 export function renderWindCompass(containerId, windStr, runways = null, forcedId = null, apt = null) {
     const host = document.getElementById(containerId);
     if (!host) return;
+    const T = themeTokens();   // couleurs du thème (graduations, textes)
     const isFr = state.lang === 'fr';
     const wind = parseWindString(windStr);
 
     if (!wind) {
         state.activeRunwayName = null;   // sans vent : plus de piste active publiée
-        host.innerHTML = `<div class="dash-title">${isFr ? 'Vent' : 'Wind'}</div><div style="flex:1;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);">—</div>`;
+        host.innerHTML = `<div class="dash-title">${isFr ? 'Vent' : 'Wind'}</div><div style="flex:1;display:flex;align-items:center;justify-content:center;color:"+T.dim+";">—</div>`;
         return;
     }
     
@@ -711,7 +714,7 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
 
     const ticksSvg = Array.from({ length: 36 }, (_, i) => {
         const a = i * 10; const r = (a - 90) * Math.PI / 180; const isMain = a % 30 === 0;
-        return `<line x1="${CX + Math.cos(r) * R_OUTER}" y1="${CY + Math.sin(r) * R_OUTER}" x2="${CX + Math.cos(r) * (R_OUTER - (isMain ? 5 : 2))}" y2="${CY + Math.sin(r) * (R_OUTER - (isMain ? 5 : 2))}" stroke="rgba(255,255,255,${isMain ? 0.4 : 0.2})" stroke-width="${isMain ? 2 : 1.5}"/>`;
+        return `<line x1="${CX + Math.cos(r) * R_OUTER}" y1="${CY + Math.sin(r) * R_OUTER}" x2="${CX + Math.cos(r) * (R_OUTER - (isMain ? 5 : 2))}" y2="${CY + Math.sin(r) * (R_OUTER - (isMain ? 5 : 2))}" stroke="${isMain ? T.gridStrong : T.grid}" stroke-width="${isMain ? 2 : 1.5}"/>`;
     }).join('');
 
     const cardsSvg = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(a => {
@@ -720,12 +723,12 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
         let l = a;
         let fontSize = 10;
         let fontWeight = 600;
-        let fill = 'rgba(255,255,255,0.4)';
+        let fill = T.dim;
         
-        if (a === 0) { l = 'N'; fontSize = 15; fontWeight = 800; fill = 'rgba(255,255,255,0.85)'; }
-        else if (a === 90) { l = 'E'; fontSize = 15; fontWeight = 800; fill = 'rgba(255,255,255,0.85)'; }
-        else if (a === 180) { l = 'S'; fontSize = 15; fontWeight = 800; fill = 'rgba(255,255,255,0.85)'; }
-        else if (a === 270) { l = isFr ? 'O' : 'W'; fontSize = 15; fontWeight = 800; fill = 'rgba(255,255,255,0.85)'; }
+        if (a === 0) { l = 'N'; fontSize = 15; fontWeight = 800; fill = T.text; }
+        else if (a === 90) { l = 'E'; fontSize = 15; fontWeight = 800; fill = T.text; }
+        else if (a === 180) { l = 'S'; fontSize = 15; fontWeight = 800; fill = T.text; }
+        else if (a === 270) { l = isFr ? 'O' : 'W'; fontSize = 15; fontWeight = 800; fill = T.text; }
         else {
             l = a.toString().padStart(3, '0');
             R_TEXT = R_OUTER + 12;
@@ -738,7 +741,7 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
 
     const runwaySvg = bestRwy ? `
         <g transform="rotate(${bestRwy.hdg}, ${CX}, ${CY})">
-            <rect x="${CX - 12}" y="${CY - 85}" width="24" height="170" fill="#1E293B" rx="2" stroke="rgba(255,255,255,0.1)"/>
+            <rect x="${CX - 12}" y="${CY - 85}" width="24" height="170" fill="#1E293B" rx="2" stroke="${T.grid}"/>
             <line x1="${CX}" y1="${CY - 50}" x2="${CX}" y2="${CY + 50}" stroke="#94A3B8" stroke-width="2" stroke-dasharray="10,8" opacity="0.6" />
             <line x1="${CX - 9}" y1="${CY - 78}" x2="${CX + 9}" y2="${CY - 78}" stroke="#94A3B8" stroke-width="2" opacity="0.7" />
             <text x="${CX}" y="${CY - 60}" text-anchor="middle" fill="#94A3B8" font-size="13" font-weight="800" font-family="system-ui" opacity="0.7" transform="rotate(180, ${CX}, ${CY - 64})">${bestRwy.oppositeName}</text>
@@ -844,7 +847,7 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
             const isActive = bestRwy && bestRwy.id === rwy.id;
             const bg = isActive ? 'rgba(74, 222, 128, 0.15)' : 'rgba(30, 41, 59, 0.5)';
             const col = isActive ? '#4ADE80' : '#94A3B8';
-            const border = isActive ? '#4ADE80' : 'rgba(255,255,255,0.1)';
+            const border = isActive ? '#4ADE80' : T.grid;
             return `<div class="rwy-bubble" data-rwy-id="${rwy.id}" style="cursor:pointer;background:${bg};color:${col};border:1px solid ${border};padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;font-family:system-ui;transition:all 0.2s;">${rwy.label}</div>`;
         }).join('');
     }
@@ -854,12 +857,12 @@ export function renderWindCompass(containerId, windStr, runways = null, forcedId
     host.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;">
             <svg viewBox="0 -15 260 295" style="width:100%;max-width:280px;overflow:visible;">
-                <circle cx="${CX}" cy="${CY}" r="${R_OUTER}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+                <circle cx="${CX}" cy="${CY}" r="${R_OUTER}" fill="none" stroke="${T.grid}" stroke-width="1.5"/>
                 ${ticksSvg}${cardsSvg}${runwaySvg}${arrowSvg}${varRangeSvg}
                 ${gustTextSvg}
             </svg>
             <div style="color:${color};font-weight:500;font-size:15px;margin-top:2px;font-family:'DM Mono', monospace;background:#1E293B;padding:6px 12px;border-radius:6px;border:1px solid ${color}; text-align: center; letter-spacing: 0.5px;">${windText}</div>
-            ${wind.varFrom != null && wind.varTo != null ? `<div style="color:rgba(255,255,255,0.55);font-size:10px;margin-top:3px;font-family:'DM Mono', monospace;letter-spacing:0.3px;">${isFr ? 'Var.' : 'Var.'} ${wind.varFrom}°–${wind.varTo}°</div>` : ''}
+            ${wind.varFrom != null && wind.varTo != null ? `<div style="color:${T.muted};font-size:10px;margin-top:3px;font-family:'DM Mono', monospace;letter-spacing:0.3px;">${isFr ? 'Var.' : 'Var.'} ${wind.varFrom}°–${wind.varTo}°</div>` : ''}
             ${bubblesHtml ? `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:300px;margin-top:8px;">${bubblesHtml}</div>` : ''}
             ${surfHtml}
         </div>

@@ -28,15 +28,15 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="modulepreload" href="js/app.js?v=1.218">
+    <link rel="modulepreload" href="js/app.js?v=1.220">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"
             integrity="sha384-ZHM8wxIpZLrn5eRq7p0QQvd4+K4Ve51xqJgNw1MqVv329Jntjpjal7C1C4rnZSSx"
             crossorigin="anonymous" defer></script>
-    <script src="vendor/lucide.min.js?v=1.218" defer></script>
-    <script src="vendor/geomag.js?v=1.218" defer></script>
+    <script src="vendor/lucide.min.js?v=1.220" defer></script>
+    <script src="vendor/geomag.js?v=1.220" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=1.218">
-    <link rel="stylesheet" href="css/wind-compass-styles.css?v=1.218">
+    <link rel="stylesheet" href="css/style.css?v=1.220">
+    <link rel="stylesheet" href="css/wind-compass-styles.css?v=1.220">
     <script>
         // Anti-flash mode nuit : applique la classe AVANT le premier rendu
         // pour éviter une explosion de lumière blanche destructrice pour la
@@ -76,17 +76,13 @@
                 <span class="header-subtitle">Aviation Weather Decoder</span>
             </div>
             <div class="header-controls" style="display:flex; gap:10px; align-items:center;">
+                <!-- Ordre demandé par le pilote : FR/ANG — Local/Navigation —
+                     Briefing express — Partager — Surveillance — Thème — Notice. -->
                 <div class="lang-switcher" role="group" aria-label="Paramètres">
                 <button id="btn-lang-toggle" class="btn-lang-toggle" aria-label="Basculer entre français et anglais">
                     <div class="flag-fr" aria-hidden="true"></div>
                     <div class="flag-en" aria-hidden="true"></div>
                     <div class="flag-line" aria-hidden="true"></div>
-                </button>
-                <button id="btn-notice" class="btn-help" title="Ouvrir la notice complète" onclick="window.location.href = document.documentElement.lang === 'en' ? 'notice-en.html' : 'notice-fr.html'">
-					<i data-lucide="book-open" class="icon-sm"></i> <span id="lbl-notice">Notice</span>
-				</button>
-                <button id="btn-night-mode" class="btn-night-mode" title="Mode nuit (vision nocturne)" aria-label="Basculer le mode nuit rouge" aria-pressed="false">
-                    <i data-lucide="moon" class="icon-sm"></i>
                 </button>
                 </div>
                 <div id="flight-mode-toggle" class="flight-mode-toggle" role="switch" aria-label="Mode de vol" aria-pressed="false" data-mode="local" title="Basculer entre vol local et navigation">
@@ -103,6 +99,14 @@
                 <button id="btn-watchdog" class="btn-watchdog" title="Surveillance des favoris" aria-label="Surveillance favoris" aria-pressed="false">
                     <i data-lucide="bell" class="icon-sm"></i>
                 </button>
+                <button id="btn-theme" class="btn-theme" title="Passer en thème clair" aria-label="Basculer thème clair/sombre" aria-pressed="false">
+                    <i data-lucide="sun" class="theme-ic-light icon-sm"></i>
+                    <i data-lucide="moon" class="theme-ic-dark icon-sm" style="display:none;"></i>
+                    <span class="theme-lbl">Clair</span>
+                </button>
+                <button id="btn-notice" class="btn-help" title="Ouvrir la notice complète" onclick="window.location.href = document.documentElement.lang === 'en' ? 'notice-en.html' : 'notice-fr.html'">
+					<i data-lucide="book-open" class="icon-sm"></i> <span id="lbl-notice">Notice</span>
+				</button>
             </div>
         </div>
 
@@ -270,9 +274,9 @@
 
 <div id="canvasTooltip" class="canvas-tooltip" role="tooltip"></div>
 
-    <script type="module" src="js/app.js?v=1.218"></script>
-    <script src="vendor/jspdf.umd.min.js?v=1.218" defer></script>
-    <link rel="stylesheet" href="vendor/leaflet.min.css?v=1.218">
-    <script src="vendor/leaflet.min.js?v=1.218" defer></script>
+    <script type="module" src="js/app.js?v=1.220"></script>
+    <script src="vendor/jspdf.umd.min.js?v=1.220" defer></script>
+    <link rel="stylesheet" href="vendor/leaflet.min.css?v=1.220">
+    <script src="vendor/leaflet.min.js?v=1.220" defer></script>
 </body>
 </html>

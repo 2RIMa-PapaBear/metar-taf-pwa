@@ -1,85 +1,120 @@
 /* ================================================================
- * NIGHT MODE — Préservation de la vision nocturne (rhodopsine)
+ * THÈME CLAIR / THÈME SOMBRE — remplace l'ancien « mode nuit rouge »
  * ================================================================
  *
- * PRINCIPE AÉRONAUTIQUE
- * ----------------------
- * La vision nocturne dépend de la rhodopsine, un pigment rétinien
- * extrêmement sensible à la lumière — surtout aux longueurs d'onde
- * courtes (bleu/vert). Une exposition même brève à un écran blanc
- * détruit l'adaptation nocturne (30+ min pour la récupérer).
- *
- * La lumière rouge (>620nm) préserve la rhodopsine : c'est pourquoi
- * les cockpits et les tours de contrôle utilisent un éclairage rouge.
- *
- * IMPLÉMENTATION
- * --------------
- * On bascule une classe `.night-mode` sur <html>, qui surcharge les
- * variables CSS (--bg-color, --text-color, etc.) vers une palette
- * exclusivement rouge sombre. Le canvas et les SVG (qui utilisent
- * des couleurs codées en dur) reçoivent un filtre CSS `hue-rotate`
- * + `sepia` + `saturate` qui les pousse vers le rouge sans casser
- * la sémantique des couleurs (les catégories VFR/IFR restent
- * distinctes, juste décalées vers le spectre rouge).
+ * PRINCIPE
+ * --------
+ * L'app naît sombre (palette bleu nuit). Le bouton « Thème » de
+ * l'en-tête bascule l'ENSEMBLE de l'interface vers un thème clair
+ * (jour, salle de briefing) et inversement :
+ *   - la classe .theme-light sur <html> surcharge les variables CSS ;
+ *   - les CANVAS et SVG (graphique METAR/TAF, profil d'élévation,
+ *     rose des vents), qui ne lisent pas les variables CSS, pigent
+ *     leurs couleurs de fond/texte/grille via themeTokens() ;
+ *   - un événement 'theme-changed' est émis pour que l'app redessine
+ *     les canvas concernés.
  *
  * PERSISTANCE
  * -----------
- * Le choix de l'utilisateur est sauvegardé en localStorage pour
- * être restauré à la prochaine visite.
+ * Le choix est sauvegardé en localStorage ('theme-mode') et restauré
+ * au démarrage — sans flash grâce à l'init précoce.
  * ================================================================ */
 
-const STORAGE_KEY = 'night-mode-enabled';
+const STORAGE_KEY = 'theme-mode';
 
 /**
- * Indique si le mode nuit est actuellement actif.
+ * Thème clair actif ?
  * @returns {boolean}
  */
-export function isNightMode() {
-    return document.documentElement.classList.contains('night-mode');
+export function isLightTheme() {
+    return document.documentElement.classList.contains('theme-light');
 }
 
 /**
- * Active ou désactive le mode nuit rouge.
- * @param {boolean} enabled
+ * Couleurs des rendus canvas/SVG selon le thème (ils ne lisent pas
+ * les variables CSS). À appeler À CHAQUE tracé, pas une fois pour
+ * toutes — le thème peut basculer à tout moment.
  */
-export function setNightMode(enabled) {
+export function themeTokens() {
+    return isLightTheme()
+        ? {
+            bg: '#FFFFFF',            // fond canvas
+            text: '#1E293B',          // texte principal
+            muted: '#64748B',         // texte secondaire
+            dim: 'rgba(15, 23, 42, 0.45)',
+            grid: 'rgba(15, 23, 42, 0.10)',
+            gridStrong: 'rgba(15, 23, 42, 0.22)',
+        }
+        : {
+            bg: '#0F172A',
+            text: '#E2E8F0',
+            muted: '#94A3B8',
+            dim: 'rgba(255, 255, 255, 0.35)',
+            grid: 'rgba(255, 255, 255, 0.08)',
+            gridStrong: 'rgba(255, 255, 255, 0.15)',
+        };
+}
+
+/**
+ * Applique le thème.
+ * @param {'light'|'dark'} mode
+ */
+export function setTheme(mode) {
+    const light = mode === 'light';
     const root = document.documentElement;
-    if (enabled) {
-        root.classList.add('night-mode');
-    } else {
-        root.classList.remove('night-mode');
-    }
+    root.classList.toggle('theme-light', light);
+    // Nettoyage de l'ancien mode nuit rouge (migration une fois).
+    root.classList.remove('night-mode');
     try {
-        localStorage.setItem(STORAGE_KEY, enabled ? '1' : '0');
+        localStorage.setItem(STORAGE_KEY, light ? 'light' : 'dark');
+        localStorage.removeItem('night-mode-enabled');
     } catch {
         /* quota / mode privé — on ignore */
     }
 
-    // Met à jour l'apparence du bouton toggle.
-    const btn = document.getElementById('btn-night-mode');
+    // Apparence du bouton : libellé (l'icône suit via CSS).
+    const btn = document.getElementById('btn-theme');
     if (btn) {
-        btn.setAttribute('aria-pressed', String(enabled));
-        btn.classList.toggle('active', enabled);
+        btn.setAttribute('aria-pressed', String(light));
+        const lbl = btn.querySelector('.theme-lbl');
+        if (lbl) {
+            const fr = (document.documentElement.lang || 'fr') === 'fr';
+            lbl.textContent = light
+                ? (fr ? 'Sombre' : 'Dark')
+                : (fr ? 'Clair' : 'Light');
+        }
+        btn.title = light
+            ? 'Passer en thème sombre'
+            : 'Passer en thème clair';
     }
+
+    // Les canvas/SVG se redessinent avec les nouveaux tokens.
+    document.dispatchEvent(new CustomEvent('theme-changed', { detail: { light } }));
 }
 
 /**
- * Bascule le mode nuit (ON ↔ OFF).
+ * Bascule clair ↔ sombre.
  */
-export function toggleNightMode() {
-    setNightMode(!isNightMode());
+export function toggleTheme() {
+    setTheme(isLightTheme() ? 'dark' : 'light');
 }
 
 /**
- * Restaure le mode nuit depuis le localStorage au démémarrage.
- * À appeler tôt dans l'init pour éviter un flash de lumière blanche.
+ * Restaure le thème au démarrage (sans flash). Pas d'événement ici :
+ * les canvas se dessinent après l'init, avec les bons tokens d'emblée.
  */
-export function initNightMode() {
-    let enabled = false;
+export function initTheme() {
+    let mode = 'dark';
     try {
-        enabled = localStorage.getItem(STORAGE_KEY) === '1';
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'light' || saved === 'dark') mode = saved;
+        // Ancien mode nuit rouge → on retombe sur le thème sombre.
+        localStorage.removeItem('night-mode-enabled');
     } catch {
         /* localStorage indisponible */
     }
-    setNightMode(enabled);
+    document.documentElement.classList.toggle('theme-light', mode === 'light');
+    const btn = document.getElementById('btn-theme');
+    if (btn) btn.setAttribute('aria-pressed', String(mode === 'light'));
+    try { localStorage.setItem(STORAGE_KEY, mode); } catch { /* quota */ }
 }

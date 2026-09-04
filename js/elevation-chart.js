@@ -1,3 +1,4 @@
+import { themeTokens } from './night-mode.js';
 /* ================================================================
  * ELEVATION CHART — Profil d'élévation interactif (canvas)
  * ================================================================
@@ -137,6 +138,7 @@ function _ensureCanvas(container) {
 
 function _draw() {
     if (!_ctx || !_canvas || !_profile) return;
+    const T = themeTokens();   // couleurs du thème (le canvas ignore les variables CSS)
 
     // Titre re-traduit à chaque dessin (langue courante du document).
     const titleEl = _canvas.parentElement?.querySelector('.elev-title');
@@ -173,13 +175,13 @@ function _draw() {
     const yOf = elev => PAD.top + (1 - (elev - yMin) / (yMax - yMin)) * plotH;
 
     // --- Fond ---
-    _ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    _ctx.fillStyle = T.grid;
     _ctx.fillRect(PAD.left, PAD.top, plotW, plotH);
 
     // --- Grille horizontale + labels Y ---
-    _ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    _ctx.strokeStyle = T.grid;
     _ctx.lineWidth = 1;
-    _ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    _ctx.fillStyle = T.dim;
     _ctx.font = '9px "DM Mono", monospace';
     _ctx.textAlign = 'right';
     const ySteps = 4;
@@ -243,7 +245,7 @@ function _draw() {
     // --- Axe X : distance de chaque tronçon (entre waypoints), en NM ---
     // Remplace les graduations km : le pilote veut la distance de chaque
     // segment de route, alignée sous celui-ci (bornes = départ, étapes, arrivée).
-    _ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    _ctx.fillStyle = T.muted;
     _ctx.font = '9px "DM Mono", monospace';
     _ctx.textAlign = 'center';
     const distTotalNm = _distTotalKm / 1.852;
@@ -265,7 +267,7 @@ function _draw() {
     // Ancrés juste au-dessus du point de relief du départ et de l'arrivée
     // (bornés au graphe) — avant, ils flottaient dans les coins hauts.
     _ctx.font = 'bold 9px "DM Mono", monospace';
-    _ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    _ctx.fillStyle = T.text;
     const yDep = Math.max(PAD.top + 10, yOf(pts[0].elevFt) - 5);
     const yArr = Math.max(PAD.top + 10, yOf(pts[pts.length - 1].elevFt) - 5);
     _ctx.textAlign = 'left';
@@ -316,7 +318,7 @@ function _draw() {
             _ctx.setLineDash([3, 3]);
             _ctx.moveTo(hx, PAD.top);
             _ctx.lineTo(hx, PAD.top + plotH);
-            _ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            _ctx.strokeStyle = T.gridStrong;
             _ctx.lineWidth = 1;
             _ctx.stroke();
             _ctx.setLineDash([]);
@@ -344,7 +346,7 @@ function _draw() {
             const tipY = Math.max(PAD.top, hy - tipH - 8);
 
             _ctx.fillStyle = 'rgba(15,23,42,0.95)';
-            _ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            _ctx.strokeStyle = T.gridStrong;
             _ctx.lineWidth = 1;
             _roundRect(tipX, tipY, tipW, tipH, 5);
             _ctx.fill();
@@ -352,7 +354,7 @@ function _draw() {
 
             _ctx.font = '9px "DM Mono", monospace';
             _ctx.textAlign = 'left';
-            const colors = ['#FB923C', 'rgba(255,255,255,0.6)', clearance >= 0 ? '#4ADE80' : '#EF4444'];
+            const colors = ['#FB923C', T.muted, clearance >= 0 ? '#4ADE80' : '#EF4444'];
             lines.forEach((line, i) => {
                 _ctx.fillStyle = colors[i];
                 _ctx.fillText(line, tipX + 6, tipY + 12 + i * 11);

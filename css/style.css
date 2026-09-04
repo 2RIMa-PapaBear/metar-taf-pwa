@@ -859,12 +859,6 @@ body.mode-local #alternates-container { display: none !important; }
 .fp-wp-del { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px; display: flex; flex-shrink: 0; }
 .fp-wp-del:hover { color: #F87171; }
 .fp-wp-del svg { width: 12px; height: 12px; }
-html.night-mode .fp-print-btn {
-    background: #3A0A0A;
-    border-color: rgba(232, 155, 130, 0.5);
-    color: #FCA5A5;
-    box-shadow: none;
-}
 
 /* Désignateurs de piste (divIcon Leaflet). */
 .regional-map .runway-designator span {
@@ -991,11 +985,7 @@ body.map-overlay-open { overflow: hidden; }
     color: #fff;
 }
 
-/* En mode nuit, le toggle adopte les teintes rouges. */
-html.night-mode .flight-mode-toggle .seg-slider {
-    background: var(--primary);
-    box-shadow: 0 2px 8px rgba(232, 160, 130, 0.3);
-}
+/* (thème : le toggle suit les variables) */
 
 /* Adaptation mobile : header wraps dès tablette, compact sur téléphone. */
 @media (max-width: 900px) {
@@ -1065,50 +1055,14 @@ html.night-mode .flight-mode-toggle .seg-slider {
 }
 .flight-window-content { gap: 14px; }
 
-/* ================================================================
- * MODE NUIT ROUGE — Préservation de la vision nocturne (rhodopsine)
- * ================================================================
- * La classe .night-mode sur <html> surcharge TOUTES les variables
- * CSS vers une palette exclusivement rouge (>620nm), préserve de la
- * rhodopsine rétinienne. Le canvas et les SVG reçoivent un filtre
- * qui décale leur spectre vers le rouge sans casser la sémantique
- * des couleurs (catégories VFR/IFR restent distinctes).
- * ================================================================ */
 
-html.night-mode {
-    /* Palette rouge sombre — aucune longueur d'onde courte (bleu/vert). */
-    --primary: #E8A082;          /* rouge cuivré pour les éléments clés */
-    --secondary: #C97B5C;
-    --danger: #FF6B4A;
 
-    --bg-color: #0A0000;          /* noir teinté rouge, quasi pur */
-    --panel-bg: #1A0000;
-    --inner-bg: #1A0000;
-    --input-bg: #1A0000;
-
-    --text-color: #E89B82;        /* texte rouge chaud, lisible en basse luminosité */
-    --text-muted: #A05642;
-    --text-dim: rgba(232, 155, 130, 0.4);
-
-    --focus-ring: #E8A082;
-    --border-color: rgba(232, 155, 130, 0.18);
-    --border-hover: rgba(232, 155, 130, 0.35);
-
-    --shadow: rgba(0, 0, 0, 0.8);
-    --hover-bg: rgba(232, 160, 130, 0.08);
-    --hover-bg-strong: rgba(232, 160, 130, 0.15);
-}
 
 /* Le fond du body : on retire les halos bleu/cyan (délétères) pour
  * ne garder qu'un dégradé rouge très sombre. */
-html.night-mode body {
-    background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 50, 30, 0.06) 0%, transparent 60%),
-        var(--bg-color);
-}
 
-/* Bouton toggle du mode nuit. */
-#btn-night-mode {
+/* Bouton thème (clair/sombre). */
+#btn-theme {
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
     color: var(--text-muted);
@@ -1123,85 +1077,38 @@ html.night-mode body {
     flex-shrink: 0;
     padding: 0;
 }
-#btn-night-mode:hover {
+#btn-theme:hover {
     border-color: var(--border-hover);
     transform: translateY(-1px);
 }
-#btn-night-mode.active {
+#btn-theme.active {
     background: rgba(232, 160, 130, 0.15);
     border-color: var(--primary);
     color: var(--primary);
 }
-#btn-night-mode .icon-sm { margin: 0; }
+#btn-theme .icon-sm { margin: 0; }
 
 /* ---- Filtrage du CANVAS vers le rouge ----
  * Le canvas météo utilise des couleurs codées en dur (vert=VFR, etc.).
  * On applique une rotation de teinte + sépia + saturation qui pousse
  * TOUT le spectre vers le rouge/ambre. Les rapports de luminosité entre
  * catégories sont préservés (le LIFR reste plus saturé que le VFR). */
-html.night-mode #tafCanvas,
-html.night-mode #wind-compass-container svg {
-    filter: hue-rotate(290deg) sepia(0.7) saturate(1.8) brightness(0.85);
-}
 
 /* La grille et le fond du canvas sont repeints en rouge sombre par
  * dessinerGraphique (qui lit ctx.fillStyle = '#0F172A' en dur).
  * On ne peut pas intercepter cela en CSS, mais le filtre ci-dessus
  * atténue fortement le bleu initial. Pour parfaire le rendu, le
  * conteneur reçoit un fond rouge cohérent. */
-html.night-mode .graph-container {
-    background: var(--panel-bg);
-}
 
 /* Les chips du dashboard VFR ont des couleurs rgba() en dur via style
  * inline. On les atténue avec un voile rouge via un pseudo-élément
  * sur le conteneur — léger et non intrusif. */
-html.night-mode .vfr-card { background: var(--inner-bg) !important; }
-html.night-mode .vfr-chip { background: rgba(40, 0, 0, 0.6) !important; }
-
-/* Les boutons bleu/cyan deviennent rouge cuivré. */
-html.night-mode .btn-fetch-metar {
-    background: #6B2818 !important;
-    box-shadow: 0 2px 8px rgba(107, 40, 24, 0.4) !important;
-}
-html.night-mode .btn-fetch-metar:hover {
-    background: #5A1F12 !important;
-}
-html.night-mode .btn-fetch-taf {
-    background: #5C2418 !important;
-    box-shadow: 0 2px 8px rgba(92, 36, 24, 0.4) !important;
-}
-html.night-mode .btn-fetch-taf:hover {
-    background: #4A1C12 !important;
-}
 
 /* La légende des nuages (tags verts/rouges) est filtrée elle aussi. */
-html.night-mode .tag-cloud {
-    background-color: rgba(160, 50, 30, 0.15) !important;
-    color: #E8A082 !important;
-    border-color: rgba(232, 160, 130, 0.25) !important;
-}
 
 /* Les cartes prennent le fond rouge sombre du thème. */
-html.night-mode .card {
-    background: rgba(26, 0, 0, 0.7) !important;
-}
 
 /* La zone d'info (bleu clair en thème normal) devient rouge chaud. */
-html.night-mode #lbl-info { color: #E8A082; }
-html.night-mode #icaoInput { color: #E8A082; }
-
-/* Indicateur visuel subtil en haut de l'écran quand le mode est actif,
- * pour rappeler au pilote qu'il est en vision nocturne protégée. */
-html.night-mode body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: rgba(232, 100, 60, 0.6);
-    z-index: 9999;
-    pointer-events: none;
-}
 
 /* ================================================================
  * COLLAPSIBLE — Style générique des widgets repliables
@@ -2014,19 +1921,6 @@ html.night-mode body::before {
  * préserver la vision nocturne (rhodopsine) tout en gardant la
  * sémantique des couleurs (vert=léger, rouge=fort).
  */
-html.night-mode .leaflet-tile-pane {
-    filter: hue-rotate(290deg) sepia(0.7) saturate(1.8) brightness(0.85);
-}
-html.night-mode .map-layers-bar {
-    background: #1A0000;
-    border-color: rgba(232, 155, 130, 0.2);
-}
-html.night-mode .precip-toggle,
-html.night-mode .precip-play-btn {
-    background: #1A0000;
-    border-color: rgba(232, 155, 130, 0.2);
-    color: var(--text-muted);
-}
 
 /* ---- Responsive : barre de calques compacte sur petits écrans ----
    (seuil 700 px : en dessous, le nowrap couperait le dernier bouton —
@@ -2637,3 +2531,71 @@ body.cockpit-mode header.card {
 }
 
 /* 2026-08-19 : test chaîne de déploiement automatique (commentaire sans effet) */
+
+/* ================================================================
+ * THÈME CLAIR — la classe .theme-light sur <html> surcharge les
+ * variables (l'app naît sombre). Les canvas/SVG pigent leurs
+ * couleurs via themeTokens() (night-mode.js) et se redessinent sur
+ * l'événement 'theme-changed'.
+ * ================================================================ */
+html.theme-light {
+    --bg-color: #E2E8F0;
+    --panel-bg: #F8FAFC;
+    --inner-bg: #F1F5F9;
+    --input-bg: #FFFFFF;
+
+    --text-color: #0F172A;
+    --text-muted: #475569;
+    --text-dim: rgba(15, 23, 42, 0.55);
+
+    --border-color: rgba(15, 23, 42, 0.15);
+    --border-hover: rgba(15, 23, 42, 0.30);
+
+    --shadow: rgba(15, 23, 42, 0.12);
+    --hover-bg: rgba(2, 132, 209, 0.07);
+    --hover-bg-strong: rgba(2, 132, 209, 0.13);
+}
+html.theme-light body {
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(2, 132, 209, 0.06) 0%, transparent 60%),
+        var(--bg-color);
+}
+/* Cartes translucides sombres en dur → claires. */
+html.theme-light .card { background: rgba(248, 250, 252, 0.9); }
+/* Champ OACI / ligne d'info (bleu clair codé) → encre sombre. */
+html.theme-light #icaoInput,
+html.theme-light #lbl-info { color: #0F172A; }
+html.theme-light .editor-textarea { color: #0F172A; }
+/* Barre d'outils de la carte + ses boutons (fonds sombres en dur). */
+html.theme-light .map-layers-bar { background: var(--panel-bg); }
+html.theme-light .precip-toggle,
+html.theme-light .precip-play-btn { background: var(--panel-bg); color: var(--text-muted); }
+/* Le bandeau titre du PDF habillé reste sombre : ok dans les 2 thèmes. */
+
+/* ---- Bouton THÈME (hérite des styles #btn-theme) : icône + libellé ----
+ * Sombre → icône SOLEIL, libellé « Clair » (l'action) ;
+ * clair  → icône LUNE,   libellé « Sombre ». */
+#btn-theme { width: auto; gap: 6px; padding: 0 10px; font-size: 11px; font-weight: 600; }
+html.theme-light .theme-ic-light { display: none !important; }
+html:not(.theme-light) .theme-ic-dark { display: none !important; }
+
+/* ================================================================
+ * CHARGEMENT DES PASTILLES MÉTÉO VOISINES — icône animée sur la carte
+ * (apparaît pendant le fetch des METAR, disparaît au rendu).
+ * ================================================================ */
+.neighbors-loading {
+    position: absolute;
+    top: 46px; right: 12px;
+    z-index: 1100;
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #E2E8F0;
+    font-size: 11px; font-weight: 600;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+html.theme-light .neighbors-loading { background: rgba(255, 255, 255, 0.9); color: #0F172A; }
+.neighbors-loading svg { animation: neighbors-spin 1s linear infinite; }
+@keyframes neighbors-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

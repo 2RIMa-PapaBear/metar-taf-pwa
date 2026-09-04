@@ -14,7 +14,7 @@ import {
     updateHighlights, getAirportByICAO, _selectAndFetch, enrichAirport,
     getStartupFavorite
 } from './ui-module.js';
-import { initNightMode, toggleNightMode } from './night-mode.js';
+import { initTheme, toggleTheme } from './night-mode.js';
 import { showFlightWindow, hideFlightWindow } from './flight-window.js';
 import { initFlightMode, setFlightMode, getFlightMode } from './flight-mode.js';
 import { renderGoNoGo, refreshPressureTrend, refreshSigmet, refreshFreezingLevel } from './go-nogo.js';
@@ -612,7 +612,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     await applyLocalOverride();
     // Mode nuit rouge : restauré AVANT tout le reste pour éviter un flash de
     // lumière blanche destructrice pour la vision nocturne déjà adaptée.
-    initNightMode();
+    initTheme();
 
     // Mode de vol (Local / Navigation) : applique la classe sur <body>.
     initFlightMode();
@@ -659,6 +659,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('tafInput').addEventListener('input', handleInput);
     document.getElementById('tafInput').addEventListener('scroll', handleScroll);
     document.getElementById('btn-lang-toggle').addEventListener('click', toggleLanguage);
+    // Changement de THÈME (clair/sombre) : les canvas (graphique METAR/TAF,
+    // rose des vents) et le profil d'élévation ne lisent pas les variables
+    // CSS — ils se redessinent avec les tokens du nouveau thème.
+    document.addEventListener('theme-changed', () => {
+        state.lastRenderState = null;   // force le redraw (garde anti-doublon)
+        genererGraphique();
+        refreshElevationChart();
+    });
     // Changement de langue : re-rend les panneaux dont les titres/contenus
     // dépendent de la langue (widgets repliables, alternates, planificateur,
     // profil d'élévation) pour le terrain courant.
@@ -688,7 +696,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const icao = state.requestedIcao;
         if (icao) refreshWbWidget(icao);
     });
-    document.getElementById('btn-night-mode').addEventListener('click', toggleNightMode);
+    document.getElementById('btn-theme').addEventListener('click', toggleTheme);
     document.getElementById('btn-cockpit-mode')?.addEventListener('click', toggleCockpitMode);
     document.getElementById('btn-share')?.addEventListener('click', openShareModal);
     document.getElementById('btn-watchdog')?.addEventListener('click', () => {

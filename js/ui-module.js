@@ -605,7 +605,7 @@ export function setLanguage(l) {
     const attrs = {
         'btn-lang-toggle': { 'aria-label': tr.langToggleAria },
         'btn-notice': { title: tr.noticeBtnTitle },
-        'btn-night-mode': { title: tr.nightModeTitle, 'aria-label': tr.nightModeAria },
+        'btn-theme': { title: tr.nightModeTitle, 'aria-label': tr.nightModeAria },
         'flight-mode-toggle': { title: tr.flightModeTitle, 'aria-label': tr.flightModeTitle },
         'btn-cockpit-mode': { title: tr.cockpitModeTitle, 'aria-label': tr.cockpitModeAria },
         'btn-share': { title: tr.shareTitle, 'aria-label': tr.shareAria },
