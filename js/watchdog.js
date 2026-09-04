@@ -219,10 +219,15 @@ function _updateFavoriteBadge(icao, weatherState, isFr = true) {
         badge = document.createElement('span');
         badge.className = 'fav-status-badge';
         const code = item.querySelector('.history-icao');
-        if (code) code.parentElement.insertBefore(badge, code);
+        const row = item.querySelector(".history-icao")?.parentElement;
+        if (pin && row) row.insertBefore(badge, pin.nextSibling);   // derrière le pin
+        else if (row) row.appendChild(badge);
         else item.appendChild(badge);
     }
-    badge.textContent = '';   // voyant couleur SANS texte
+    // Voyant couleur SANS texte : un ESPACE INSÉCABLE occupe l'élément,
+    // sinon la règle CSS .fav-status-badge:empty le masquait à jamais
+    // (bug réel : olives peintes mais invisibles depuis v1.202).
+    badge.textContent = ' ';
     badge.style.background = colors[weatherState] || 'transparent';
     badge.style.borderColor = colors[weatherState] || 'transparent';
     badge.title = isFr

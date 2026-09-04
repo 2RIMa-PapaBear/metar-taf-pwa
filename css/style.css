@@ -2391,6 +2391,7 @@ body.cockpit-mode header.card {
     height: 10px;
     flex-shrink: 0;
     padding: 0;
+    font-size: 0;   /* l'insécable du voyant ne l'étire pas */
     border-radius: 50%;
     border: 1px solid;
 }

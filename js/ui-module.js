@@ -340,11 +340,11 @@ export function updateFavoritesUI(onSelect) {
             </div>
             <div style="display:flex; flex-direction:column; flex:1; min-width:0; text-align:left;">
                 <div style="display:flex; flex-direction:row; align-items:center; gap:4px; min-width:0;">
-                    <span class="fav-status-badge"></span>
                     <span class="history-icao">${escapeHtml(icao)}</span>
                     <div class="fav-startup-btn fav-startup" data-icao="${escapeHtml(icao)}" title="${isFr ? (isStartup ? 'Ne plus charger au démarrage' : 'Charger au démarrage') : (isStartup ? 'Stop loading on startup' : 'Load on startup')}" style="padding:1px; cursor:pointer; opacity:${isStartup ? '1' : '0.4'}; color:${isStartup ? '#FBBF24' : 'var(--text-muted)'};">
                         <i data-lucide="${isStartup ? 'pin' : 'pin-off'}" style="width:14px; height:14px; margin:0;"></i>
                     </div>
+                    <span class="fav-status-badge" title=""></span>
                 </div>
                 <span class="history-name">${escapeHtml(displayName)}</span>
             </div>
