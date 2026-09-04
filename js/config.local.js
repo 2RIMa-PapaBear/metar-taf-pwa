@@ -9,8 +9,13 @@
  * claire au lieu de planter silencieusement.
  * ================================================================ */
 
-// URL du proxy Google Apps Script (relai CORS pour aviationweather.gov).
-export const PROXY_URL = 'https://script.google.com/macros/s/AKfycby7fXRbE2jE0-X6UCruvck-Q899PJ2X_USuGuno7I82AtM3icPivRbphzakNolu19SNrw/exec';
+// Relai CORS météo — Cloudflare Worker (code : worker/index.js, compte papabear56).
+// Déployé le 04/09/2026 : remplace le relai Google Apps Script, sujet à des phases
+// de surcharge (8-34 s mesurées). Mesures Cloudflare : ~0,2 s à froid, ~0,1 s en
+// cache. RETOUR ARRIÈRE : décommenter l'URL Apps Script ci-dessous et commenter
+// la ligne export du Worker.
+// export const PROXY_URL = 'https://script.google.com/macros/s/AKfycby7fXRbE2jE0-X6UCruvck-Q899PJ2X_USuGuno7I82AtM3icPivRbphzakNolu19SNrw/exec';
+export const PROXY_URL = 'https://meteo-relais.papabear56.workers.dev';
 
 // Clé API OpenAIP (https://account.openaip.net/).
 // Saisissez votre clé ci-dessous. Elle est visible côté navigateur (inévitable
