@@ -639,6 +639,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         const el = document.getElementById('sia-airac');
         if (el) el.textContent = airac ? ` · cycle AIRAC ${airac}` : '';
     }).catch(() => {});
+
+    // Version servie (bump ?v= posé par le workflow à chaque déploiement) :
+    // window.APP_VERSION + ligne console au chargement — le pilote vérifie
+    // d'un coup d'œil (console ou en tapant APP_VERSION) ce qui tourne.
+    try {
+        const src = document.querySelector('script[src*="js/app.js"]')?.src || '';
+        window.APP_VERSION = (src.match(/v=([\d.]+)/) || [])[1] || '?';
+        console.info('%c✈ météo VFR %cv' + window.APP_VERSION, 'font-weight:700;color:#38BDF8', 'color:#94A3B8');
+    } catch { /* affichage seul */ }
+
     state.refreshCallback = genererGraphique; setLanguage('fr');
 
     // Effet d'ondulation (ripple) au clic sur les boutons principaux.
