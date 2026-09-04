@@ -121,11 +121,11 @@ function sourceNote(source, isFr) {
     if (source === 'sia') {
         const airac = getSiaAirac();
         return isFr
-            ? `Fréquences : SIA · eAIP France${airac ? ' (AIRAC ' + airac + ')' : ''} · ATIS : AviationWeather`
-            : `Frequencies: SIA French AIP${airac ? ' (AIRAC ' + airac + ')' : ''} · ATIS: AviationWeather`;
+            ? `Fréquences : SIA · eAIP France${airac ? ' (AIRAC ' + airac + ')' : ''}`
+            : `Frequencies: SIA French AIP${airac ? ' (AIRAC ' + airac + ')' : ''}`;
     }
     if (source === 'overrides') {
         return isFr ? 'Fréquences : corrections manuelles' : 'Frequencies: manual corrections';
     }
-    return isFr ? 'Fréquences : OpenAIP · ATIS : AviationWeather' : 'Frequencies: OpenAIP · ATIS: AviationWeather';
+    return isFr ? 'Fréquences : OpenAIP' : 'Frequencies: OpenAIP';
 }
