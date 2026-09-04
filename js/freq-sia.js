@@ -24,14 +24,14 @@ let _siaAa = null;          // idem, AFIS + A/A du XML_SIA
 let _overrides = null;      // { airports: {OACI: [...]}, services: {NOM: "fréq"} }
 let _loading = null;
 
-async function _fetchJsonCached(url, idbStore, idbKey) {
-    const cached = await _idbGet(idbStore, idbKey);
+async function _fetchJsonCached(url, idbKey) {
+    const cached = await _idbGet(idbKey);
     if (cached?.data && Date.now() - cached.ts < TTL_MS) return cached.data;
     try {
         const res = await fetch(url + `?t=${cached?.ts || 0}`);
         if (!res.ok) return cached?.data || null;
         const data = await res.json();
-        _idbPut(idbStore, idbKey, data);
+        _idbPut(idbKey, data);
         return data;
     } catch { return cached?.data || null; }
 }
@@ -40,9 +40,14 @@ async function _fetchJsonCached(url, idbStore, idbKey) {
 function _idbOpen() {
     return new Promise((resolve, reject) => {
         if (typeof indexedDB === 'undefined') return reject(new Error('no idb'));
-        const req = indexedDB.open('freq-sia-cache', 1);
+        // v2 (04/09/2026) : purge de l'entrée « freq » empoisonnée par un bug
+        // de clé (l'ancien appel passait le NOM du store aux helpers uniparamétrés
+        // _idbGet/_idbPut → les deux fichiers s'écrasaient mutuellement sous la
+        // clé « freq », et la valeur stockée était la chaîne 'sia'/'sia-aa').
+        const req = indexedDB.open('freq-sia-cache', 2);
         req.onupgradeneeded = () => {
             if (!req.result.objectStoreNames.contains('freq')) req.result.createObjectStore('freq');
+            try { req.transaction.objectStore('freq').delete('freq'); } catch { /* base neuve */ }
         };
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
@@ -79,11 +84,15 @@ export function loadFreqSources() {
             if (res.ok) _overrides = await res.json();
         } catch {   }
         const [sia, aa] = await Promise.all([
-            _fetchJsonCached('data/freq-sia.json', 'freq', 'sia'),
-            _fetchJsonCached('data/freq-aa-sia.json', 'freq', 'sia-aa'),
+            _fetchJsonCached('data/freq-sia.json', 'sia'),
+            _fetchJsonCached('data/freq-aa-sia.json', 'sia-aa'),
         ]);
         _sia = sia;
         _siaAa = aa;
+        // Échec total (réseau coupé au chargement) : autoriser une nouvelle
+        // tentative au prochain appel plutôt que de figer l'échec pour
+        // toute la session.
+        if (!_sia && !_siaAa) _loading = null;
     })();
     return _loading;
 }
