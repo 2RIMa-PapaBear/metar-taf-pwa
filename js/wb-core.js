@@ -377,10 +377,12 @@ export function wbChartSvg(wb, calc, isFr = true, width = 340, opts = {}) {
     // Enveloppe (polygone fermé) — points réordonnés en polygone simple.
     const envPts = normalizeEnvelope(wb.envelope)
         .map(([m, a]) => `${L.xOf(a).toFixed(1)},${L.yOf(m).toFixed(1)}`).join(' ');
-    // Ligne MTOW (rouge pointillée).
+    // Ligne MTOW (rouge pointillée) — étiquette À GAUCHE de la ligne
+    // (même arbitrage que le PDF 03/09 : à droite elle écrase le coin de
+    // l'enveloppe et l'étiquette du point Décollage).
     const mtowY = (wb.mtowKg > 0 && wb.mtowKg >= L.massRange[0] && wb.mtowKg <= L.massRange[1])
         ? `<line x1="${L.xL}" y1="${L.yOf(wb.mtowKg).toFixed(1)}" x2="${L.xR}" y2="${L.yOf(wb.mtowKg).toFixed(1)}" stroke="${C.mtow}" stroke-width="1" stroke-dasharray="5 3" opacity="0.9"/>` +
-          `<text x="${(L.xR - 2).toFixed(1)}" y="${(L.yOf(wb.mtowKg) - 4).toFixed(1)}" text-anchor="end" fill="${C.mtow}" font-size="9">MTOW ${val(wb.mtowKg)}</text>`
+          `<text x="${(L.xL + 2).toFixed(1)}" y="${(L.yOf(wb.mtowKg) - 4).toFixed(1)}" text-anchor="start" fill="${C.mtow}" font-size="9">MTOW ${val(wb.mtowKg)}</text>`
         : '';
 
     const grid = L.ticksX.map(t =>
