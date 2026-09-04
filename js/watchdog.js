@@ -153,8 +153,17 @@ async function _check() {
         }
     } catch (e) {
         console.warn('Watchdog check failed:', e.message);
+        // Le relais Google a des accès froids (mesuré : 29 s certains soirs,
+        // > timeout de la 1re tentative) — une unique relance 15 s plus tard
+        // peint les olives sans attendre le prochain cycle (5 min+).
+        if (!_retryScheduled) {
+            _retryScheduled = true;
+            setTimeout(() => { _retryScheduled = false; _check(); }, 15000);
+        }
     }
 }
+
+let _retryScheduled = false;
 
 /**
  * Évalue l'état d'un terrain depuis son METAR.
