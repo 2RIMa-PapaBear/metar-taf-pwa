@@ -16,7 +16,7 @@
  * ================================================================ */
 
 import { state, escapeHtml } from './core.js';
-import { getAirportByICAO } from './ui-module.js';
+import { getAirportByICAO, initAirportsDB } from './ui-module.js';
 import { getVacLink } from './atc-info.js';
 import { makeCollapsible } from './collapsible.js';
 import { loadFreqSources, getAirportFreqs, getSiaAirac } from './freq-sia.js';
@@ -42,9 +42,14 @@ export async function showFrequenciesWidget(icao) {
     // (France métropole) > openAIP. Le premier affichage attend le chargement
     // (120 Ko, puis cache IndexedDB) pour ne jamais montrer openAIP par erreur.
     // Les pistes/terrains officiels France chargent en parallèle (cache IDB).
+    // La base embarquée (17 000 terrains) participe au rendu (pays/élévation/
+    // pistes hors France) : on l'attend, sinon le widget s'affiche complet
+    // pour la France mais AMPUTÉ hors France (base encore en cours de
+    // chargement, jamais re-rendue ensuite).
     const [, aux] = await Promise.all([
         loadFreqSources(),
         loadSiaAux().catch(() => null),
+        initAirportsDB().catch(() => {}),
     ]);
     const { source, freqs } = getAirportFreqs(icao, apt?.frequencies);
     const sia = aux ? getSiaAirfield(icao) : null;
