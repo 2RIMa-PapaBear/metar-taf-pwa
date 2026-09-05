@@ -101,12 +101,17 @@ export function loadFreqSources() {
  *  Priorité : overrides > SIA eAIP ⊕ SIA XML (AFIS/A-A fusionnés,
  *  dédupliqués par fréquence) > openAIP.
  *  Retourne aussi la source ('overrides' | 'sia' | 'openaip'). */
+/** Fréquences GONIO (VDF) : elles ne font que DUPLIQUER les fréquences des
+ * organismes existants (Tour, FIS…) utilisables pour le relèvement —
+ * aucune valeur propre, elles alourdissent la liste (retour pilote 05/09). */
+const _isGonio = (f) => /^(VDF|GONIO)$/i.test(f.type || '') || /gonio/i.test(f.name || '');
+
 export function getAirportFreqs(icao, openaipFreqs) {
     const code = String(icao || '').toUpperCase();
     const ov = _overrides?.airports?.[code];
     if (Array.isArray(ov) && ov.length) {
-        return { source: 'overrides', freqs: ov.map(f => ({
-            freq: parseFloat(f.value), name: f.name || '', type: f.type || '',
+        return { source: 'overrides', freqs: ov.filter(f => !_isGonio(f)).map(f => ({
+            freq: parseFloat(f.value), name: f.name || '', type: f.type || '', hor: f.hor || null,
             primary: /^(TWR|AFIS|APP)$/i.test(f.type || ''),
         })) };
     }
@@ -115,17 +120,18 @@ export function getAirportFreqs(icao, openaipFreqs) {
     if ((Array.isArray(sia) && sia.length) || (Array.isArray(aa) && aa.length)) {
         // Fusion : eAIP d'abord (TWR/AFIS/ATIS…), AFIS/A-A du XML en
         // complément, doublons de fréquence écartés (AFIS et A/A portent
-        // souvent la même valeur).
-        const merged = [...(sia || [])];
+        // souvent la même valeur). GONIO écartées partout.
+        const merged = [...(sia || [])].filter(f => !_isGonio(f));
         for (const f of aa || []) {
+            if (_isGonio(f)) continue;
             if (!merged.some(x => x.value === f.value)) merged.push(f);
         }
         return { source: 'sia', freqs: merged.map(f => ({
-            freq: parseFloat(f.value), name: f.name || '', type: f.type || '',
+            freq: parseFloat(f.value), name: f.name || '', type: f.type || '', hor: f.hor || null,
             primary: /^(TWR|AFIS|APP)$/i.test(f.type || ''),
         })) };
     }
-    return { source: 'openaip', freqs: openaipFreqs || [] };
+    return { source: 'openaip', freqs: (openaipFreqs || []).filter(f => !_isGonio(f)) };
 }
 
 /** Correction manuelle d'une fréquence de SERVICE (SIV/APP…), par nom

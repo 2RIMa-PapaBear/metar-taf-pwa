@@ -36,8 +36,6 @@ export async function showFrequenciesWidget(icao) {
         return;
     }
 
-    const apt = getAirportByICAO(icao);
-
     // Source des fréquences : corrections manuelles > eAIP officiel SIA
     // (France métropole) > openAIP. Le premier affichage attend le chargement
     // (120 Ko, puis cache IndexedDB) pour ne jamais montrer openAIP par erreur.
@@ -45,12 +43,14 @@ export async function showFrequenciesWidget(icao) {
     // La base embarquée (17 000 terrains) participe au rendu (pays/élévation/
     // pistes hors France) : on l'attend, sinon le widget s'affiche complet
     // pour la France mais AMPUTÉ hors France (base encore en cours de
-    // chargement, jamais re-rendue ensuite).
+    // chargement, jamais re-rendue ensuite) — et apt n'est capturé QU'APRÈS
+    // cette attente (sinon null ou partiel au 1er rendu : course vue en QA).
     const [, aux] = await Promise.all([
         loadFreqSources(),
         loadSiaAux().catch(() => null),
         initAirportsDB().catch(() => {}),
     ]);
+    const apt = getAirportByICAO(icao);
     const { source, freqs } = getAirportFreqs(icao, apt?.frequencies);
     const sia = aux ? getSiaAirfield(icao) : null;
 
@@ -161,14 +161,25 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
     const primary = freqs.filter(f => f.primary);
     const others = freqs.filter(f => !f.primary);
 
+    // Codes d'horaires des organismes (eAIP AD 2.18) — info-bulle du badge.
+    const HOR_CODES = {
+        H24: isFr ? 'Service permanent 24 h/24' : 'Continuous service',
+        HO: isFr ? 'Service sur demande (hors horaires publiés)' : 'Service on request',
+        HX: isFr ? 'Horaires variables (consulter le complément AIP)' : 'Variable hours',
+        HJ: isFr ? 'Du lever au coucher du soleil' : 'Sunrise to sunset',
+        HN: isFr ? 'Du coucher au lever du soleil' : 'Sunset to sunrise',
+    };
+
     // Construit les lignes de fréquences.
     const freqRow = (f) => {
         const isPrimary = f.primary;
         const freqStr = f.freq.toFixed(3);
+        const hor = f.hor && HOR_CODES[f.hor] ? f.hor : null;
         return `<div style="display:flex; align-items:center; gap:10px; padding:6px 12px; background:${isPrimary ? 'rgba(56,189,248,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:6px; border-left:3px solid ${isPrimary ? '#38BDF8' : 'rgba(148,163,184,0.3)'};">
             <span style="font-family:'DM Mono',monospace; font-size:13.5px; font-weight:700; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:70px;">${freqStr}</span>
             ${f.type ? `<span style="font-size:10px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:40px; text-align:center;">${escapeHtml(f.type)}</span>` : ''}
             <span style="font-size:12px; color:var(--text-muted); flex:1;">${escapeHtml(f.name || '')}</span>
+            ${hor ? `<span title="${escapeHtml(HOR_CODES[f.hor])}" style="font-size:10px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text-dim); border:1px solid var(--border-color); border-radius:4px; padding:1px 6px;">${hor}</span>` : ''}
         </div>`;
     };
 
