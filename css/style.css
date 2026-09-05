@@ -316,6 +316,13 @@ canvas { background-color: transparent; display: block; transition: opacity 0.3s
 .fav-load-btn:hover { color: #7DD3FC; }
 .fav-remove-btn { background: transparent; color: var(--text-dim); border: none; padding: 6px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .fav-remove-btn:hover { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+/* Classement des favoris à la souris : poignée + repère d'insertion */
+.fav-drag-handle { background: transparent; color: var(--text-dim); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: var(--radius-sm); transition: color 0.2s; }
+.fav-drag-handle:hover { color: var(--text-muted); }
+.fav-item[draggable="true"], .fav-item[draggable="true"] .fav-drag-handle { cursor: grabbing; }
+.fav-item.fav-dragging { opacity: 0.35; }
+.fav-item.fav-drop-before { box-shadow: inset 0 2px 0 var(--primary); }
+.fav-item.fav-drop-after { box-shadow: inset 0 -2px 0 var(--primary); }
 .favorite-item.dragging { background: var(--hover-bg-strong); border: 1px dashed var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: scale(1.02); z-index: 10; }
 
 #search-history-container { display: flex; flex-direction: column; gap: 0; background: var(--inner-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
@@ -445,7 +452,7 @@ body.mode-nav .dep-dest-toggle { display: flex; }
     body { background: #fff; color: #000; padding: 0; }
     .side-column, .btn-fetch-metar, .btn-fetch-taf, .btn-help, .btn-lang-toggle, 
     .btn-add-favorite, .btn-read-metar, .btn-stop-audio, .audio-controls, 
-    .btn-clear-history, .fav-remove-btn, .canvas-tooltip, .aero-legend-bar { display: none !important; }
+    .btn-clear-history, .fav-remove-btn, .fav-drag-handle, .canvas-tooltip, .aero-legend-bar { display: none !important; }
     .container { grid-template-columns: 1fr; max-width: 100%; }
     .card { box-shadow: none; border: 1px solid #ccc; background: #fff; }
     .metar-dashboard { grid-template-columns: 1fr; }

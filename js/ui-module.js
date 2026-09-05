@@ -308,6 +308,19 @@ export function isFavorite(icao) {
     try { return (JSON.parse(localStorage.getItem('favorites')) || []).includes(icao); } catch (e) { console.warn('isFavorite failed:', e); return false; }
 }
 
+/** Déplace un favori AVANT/APRÈS un autre et persiste l'ordre (drag souris).
+ * Retourne la liste résultante (inchangée si IACO inconnu ou cible = source). */
+export function orderFavorites(fromIcao, toIcao, after = false) {
+    let favs = []; try { favs = JSON.parse(localStorage.getItem('favorites')) || []; } catch {}
+    const from = favs.indexOf(fromIcao);
+    const to = favs.indexOf(toIcao);
+    if (from < 0 || to < 0 || to === from) return favs;
+    favs.splice(from, 1);
+    favs.splice(favs.indexOf(toIcao) + (after ? 1 : 0), 0, fromIcao);
+    try { localStorage.setItem('favorites', JSON.stringify(favs)); } catch (e) { console.warn('orderFavorites failed:', e); }
+    return favs;
+}
+
 export function getStartupFavorite() {
     try { return localStorage.getItem('startup-favorite') || null; } catch (e) { return null; }
 }
@@ -335,6 +348,9 @@ export function updateFavoritesUI(onSelect) {
         const isStartup = icao === startup;
 
         html += `<button class="history-item fav-item" data-icao="${escapeHtml(icao)}" style="display:flex; flex-direction:row; align-items:center; padding: 6px 8px 6px 4px; gap: 6px;">
+            <div class="fav-drag-handle" title="${isFr ? 'Glisser pour classer' : 'Drag to reorder'}" style="padding: 2px; margin:0;">
+                <i data-lucide="grip-vertical" style="width:14px; height:14px; margin:0;"></i>
+            </div>
             <div class="fav-remove-btn fav-remove" data-icao="${escapeHtml(icao)}" style="padding: 2px; margin:0;">
                 <i data-lucide="x" style="width:16px; height:16px; margin:0;"></i>
             </div>
@@ -381,6 +397,54 @@ export function updateFavoritesUI(onSelect) {
             e.stopPropagation();
             const icao = this.dataset.icao;
             setStartupFavorite(getStartupFavorite() === icao ? null : icao);
+            updateFavoritesUI(onSelect);
+        });
+    });
+
+    // ---- Classement à la souris (drag & drop HTML5, depuis la poignée) ----
+    // draggable n'est armé QUE depuis la poignée : un clic un peu glissant
+    // sur le reste de la ligne doit rester un clic (ouvrir le terrain).
+    let _dragIcao = null;
+    const clearDropMarks = () => c.querySelectorAll('.fav-item')
+        .forEach(x => x.classList.remove('fav-drop-before', 'fav-drop-after'));
+
+    c.querySelectorAll('.fav-drag-handle').forEach(h => {
+        const item = h.closest('.fav-item');
+        h.addEventListener('pointerdown', () => { item.draggable = true; });
+        h.addEventListener('click', e => e.stopPropagation());
+    });
+
+    c.querySelectorAll('.fav-item').forEach(b => {
+        b.addEventListener('dragstart', e => {
+            _dragIcao = b.dataset.icao;
+            b.classList.add('fav-dragging');
+            try {
+                e.dataTransfer.setData('text/plain', b.dataset.icao);
+                e.dataTransfer.effectAllowed = 'move';
+            } catch {}
+        });
+        b.addEventListener('dragend', () => {
+            _dragIcao = null;
+            b.draggable = false;
+            b.classList.remove('fav-dragging');
+            clearDropMarks();
+        });
+        b.addEventListener('dragover', e => {
+            if (!_dragIcao || _dragIcao === b.dataset.icao) return;
+            e.preventDefault();
+            try { e.dataTransfer.dropEffect = 'move'; } catch {}
+            const r = b.getBoundingClientRect();
+            const after = (e.clientY - r.top) > r.height / 2;
+            clearDropMarks();
+            b.classList.add(after ? 'fav-drop-after' : 'fav-drop-before');
+        });
+        b.addEventListener('drop', e => {
+            e.preventDefault();
+            const from = e.dataTransfer?.getData('text/plain') || _dragIcao;
+            _dragIcao = null;
+            if (!from || from === b.dataset.icao) return;
+            const r = b.getBoundingClientRect();
+            orderFavorites(from, b.dataset.icao, (e.clientY - r.top) > r.height / 2);
             updateFavoritesUI(onSelect);
         });
     });
