@@ -154,5 +154,13 @@ export function hasSiaEaip(icao) {
     return Array.isArray(_sia?.airports?.[code]) && _sia.airports[code].length > 0;
 }
 
+/** Cartes PDF publiées pour un terrain (liste officielle de sa fiche eAIP —
+ * noms de fichiers dans Cartes/<ICAO>/, toutes familles IFR comprises). */
+export function getCharts(icao) {
+    const code = String(icao || '').toUpperCase();
+    const all = _sia?.charts?.[code];
+    return Array.isArray(all) ? all : null;
+}
+
 /** Test only. */
 export function _setSources(sia, overrides, siaAa) { _sia = sia; _overrides = overrides; _siaAa = siaAa; }
