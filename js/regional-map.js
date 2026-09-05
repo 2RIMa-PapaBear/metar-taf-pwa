@@ -2,7 +2,6 @@ import { state, I18N, fetchAvecRelais, memoGet, memoSet, surfaceLabel } from './
 import { getAirportByICAO, getAirportsInBbox, enrichAirport } from './ui-module.js';
 import { parseWaypointsField, formatWaypointsField, registerFreeWpResolver, _wpDisplayName } from './flight-planner-ui.js';
 import { parseVisiToMeters, getCeiling } from './core.js';
-import { HAZARD_COLORS } from './sigmet.js';
 import { showRouteWeather, resetRouteFit } from './route-weather.js';
 import { createPrecipController } from './radar-layer.js';
 import { createAirspaceController } from './airspaces.js';
@@ -13,7 +12,6 @@ let _map = null;
 let _precip = null;
 let _airspaces = null;
 let _radioPoints = null;   // couches VOR/NDB/points VFR (menu « Espaces »).
-let _sigmetLayer = null;
 let _currentBaseLayer = null;
 let _airportMarkers = [];
 let _neighborMarkers = [];
@@ -338,10 +336,7 @@ function _initLayerControls() {
         _radioPoints.mountControls(bar);
     } catch (e) { console.error('radio points layer failed:', e.message); }
 
-    _sigmetLayer = createSigmetController(_map);
-    _sigmetLayer.mountControls(bar);
-
-    // Ordre de la barre (une ligne) : Radar+lecture+horloge — Espaces — SIGMET —
+    // Ordre de la barre (une ligne) : Radar+lecture+horloge — Espaces —
     // Satellite (fond de carte) — Terrain — Cadrer plan — Plein cadre.
     try { _mountBasemapSwitcher(bar); } catch (e) { console.error('basemap switcher failed:', e.message); }
 
@@ -350,13 +345,10 @@ function _initLayerControls() {
     _mountFitPlanButton(bar);
     _mountFullscreenButton(bar);
 
-    // Radar et SIGMET ne sont PLUS activés d'office : le pilote les allume
-    // d'un clic (état initial OFF dans leurs contrôleurs respectifs).
-
-    // Écoute les mises à jour SIGMET émises par go-nogo.js (event custom 'sigmets-updated').
-    document.addEventListener('sigmets-updated', (e) => {
-        if (_sigmetLayer && e.detail) _sigmetLayer.refresh(e.detail);
-    });
+    // Radar n'est PAS activé d'office : le pilote l'allume d'un clic
+    // (état initial OFF dans son contrôleur).
+    // SIGMET retiré de la carte (retour pilote 05/09 « peu utile en VFR ») :
+    // l'évaluation GO/NO-GO et le briefing gardent les SIGMET/AIRMET.
 
     // Redessine la route quand les waypoints changent (event émis par flight-planner-ui).
     // On ne redessine QUE la polyline + marqueurs, SANS recharger les METARs du corridor
@@ -384,74 +376,10 @@ function _initLayerControls() {
     });
 }
 
-// Contrôleur SIGMET/AIRMET : trace les polygones de hazard sur la carte.
-function createSigmetController(map) {
-    let layer = null;
-    let visible = false;   // DÉSACTIVÉ par défaut (choix du pilote)
-    let sigmets = [];
-
-    function _redraw() {
-        if (layer) { map.removeLayer(layer); layer = null; }
-        if (!visible || !sigmets || !sigmets.length) return;
-
-        const markers = [];
-        for (const s of sigmets) {
-            const color = HAZARD_COLORS[s.hazard] || HAZARD_COLORS.OTHER;
-            const isAirmet = s.type === 'AIRMET';
-            const label = isAirmet ? `AIRMET ${s.hazard}` : `SIGMET ${s.hazard}`;
-            const popupHtml = `<div style="max-width:280px;"><b style="color:${color};">${label}</b><br>` +
-                              `<pre style="white-space:pre-wrap; font-family:'DM Mono',monospace; font-size:11px; margin-top:4px;">${_escapeHtml(s.raw)}</pre></div>`;
-
-            if (s.polygon && s.polygon.length >= 3) {
-                markers.push(L.polygon(s.polygon, {
-                    color, weight: 2, opacity: 0.9, fillColor: color, fillOpacity: 0.12,
-                    dashArray: isAirmet ? '4 4' : null, zIndex: 500,
-                }).bindPopup(popupHtml));
-            } else if (s.center) {
-                markers.push(L.circleMarker([s.center.lat, s.center.lon], {
-                    radius: 8, color, weight: 2, fillColor: color, fillOpacity: 0.25, zIndex: 500,
-                }).bindPopup(popupHtml));
-            }
-        }
-        if (markers.length) {
-            layer = L.layerGroup(markers).addTo(map);
-        }
-    }
-
-    return {
-        refresh(newSigmets) { sigmets = newSigmets || []; _redraw(); },
-        toggle(on) { visible = on; _redraw(); },
-        isVisible() { return visible; },
-        mountControls(bar) {
-            const isFr = state.lang === 'fr';
-            const group = document.createElement('div');
-            group.className = 'precip-control-group';
-            group.innerHTML = `
-                <button class="precip-toggle sigmet-toggle ${visible ? 'active' : ''}" aria-pressed="${String(visible)}" title="${isFr ? 'Afficher les SIGMET/AIRMET' : 'Show SIGMET/AIRMET'}">
-                    <i data-lucide="alert-triangle" style="width:14px;height:14px;"></i>
-                    <span>SIGMET</span>
-                </button>`;
-            bar.appendChild(group);
-            if (window.lucide) window.lucide.createIcons({ root: group });
-            group.querySelector('.sigmet-toggle')?.addEventListener('click', (ev) => {
-                visible = !visible;
-                ev.currentTarget.setAttribute('aria-pressed', String(visible));
-                ev.currentTarget.classList.toggle('active', visible);
-                _redraw();
-            });
-            // Replay : si des SIGMET ont déjà été fetchés avant l'init de la carte.
-            if (state._sigmets && state._sigmets.length) {
-                sigmets = state._sigmets;
-                _redraw();
-            }
-        },
-        destroy() { if (layer) map.removeLayer(layer); },
-    };
-}
-
-function _escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-}
+// Contrôleur SIGMET/AIRMET retiré de la carte (retour pilote 05/09 :
+// « peu utile en VFR ») — les polygones n'étaient plus activables depuis
+// que le bouton est parti. Les SIGMET restent évalués pour le GO/NO-GO et
+// le briefing (js/sigmet.js inchangé).
 
 // Sélecteur de fond de carte (satellite / OSM / sombre / relief).
 function _mountBasemapSwitcher(bar) {
