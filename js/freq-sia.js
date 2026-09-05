@@ -84,9 +84,10 @@ export function loadFreqSources() {
             if (res.ok) _overrides = await res.json();
         } catch {   }
         const [sia, aa] = await Promise.all([
-            // v2 (05/09) : observations eAIP ajoutées (rem) — la clé change
-            // pour forcer le re-téléchargement malgré le cache 7 j.
-            _fetchJsonCached('data/freq-sia.json', 'sia:v2'),
+            // v3 (05/09 soir) : champ charts ajouté (dossiers de cartes VAC) ;
+            // v2 = observations eAIP. La clé change à chaque évolution du
+            // CONTENU intra-cycle, sinon le cache 7 j sert l'ancien fichier.
+            _fetchJsonCached('data/freq-sia.json', 'sia:v3'),
             _fetchJsonCached('data/freq-aa-sia.json', 'sia-aa'),
         ]);
         _sia = sia;
