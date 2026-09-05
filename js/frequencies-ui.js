@@ -52,7 +52,7 @@ export async function showFrequenciesWidget(icao) {
     // Lien VAC officiel (peut être null si le pays n'est pas reconnu).
     const vac = getVacLink(icao);
 
-    const ident = identityChips(icao, apt, sia);
+    const ident = identityRows(icao, apt, sia, state.lang === 'fr');
     const runways = runwayRows(icao, apt, sia);
 
     if (!freqs.length && !vac && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
@@ -69,28 +69,40 @@ export async function showFrequenciesWidget(icao) {
     container.style.display = 'block';
 }
 
-/** Chips d'identité du terrain : élévation, déclinaison, usage, statut… */
-function identityChips(icao, apt, sia) {
-    const chips = [];
+/** Lignes d'identité « Libellé : valeur » (retour pilote 05/09 : chaque
+ * donnée dit ce qu'elle est). NB : TfcPrive = « vols privés AUTORISÉS »
+ * (314 terrains CAP sur 316 l'ont) — ce n'est PAS « terrain privé », on ne
+ * l'affiche pas ; l'ouverture est portée par la ligne « Ouvert aux vols ». */
+function identityRows(icao, apt, sia, isFr) {
+    const rows = [];
     const elevFt = Number.isFinite(sia?.elevFt) ? sia.elevFt : apt?.elevation;
-    if (Number.isFinite(elevFt)) chips.push({ v: `${elevFt} ft`, l: 'élévation / elevation' });
+    if (Number.isFinite(elevFt)) rows.push({ l: isFr ? 'Alt. terrain' : 'Field elevation', v: `${elevFt} ft`, mono: true });
 
     // Déclinaison : officielle SIA (millésimée) en France, sinon modèle.
     let dec = Number.isFinite(sia?.magVar) ? sia.magVar : getDeclinationForIcao(icao);
     if (Number.isFinite(dec)) {
         const deg = Math.abs(dec) >= 10 ? Math.abs(dec).toFixed(0) : Math.abs(dec).toFixed(1);
-        chips.push({
-            v: `${deg}° ${dec >= 0 ? 'E' : 'W'}${sia?.magVarYear ? ` (${sia.magVarYear})` : ''}`,
-            l: 'déclinaison magnétique / magnetic variation',
-        });
+        rows.push({ l: isFr ? 'Déclinaison' : 'Variation', v: `${deg}° ${dec >= 0 ? 'E' : 'W'}${sia?.magVarYear ? ` (${sia.magVarYear})` : ''}`, mono: true });
     }
 
-    const usage = [sia?.vfr === true && 'VFR', sia?.ifr === true && 'IFR'].filter(Boolean).join(' · ');
-    if (usage) chips.push({ v: usage, l: 'usage autorisé / traffic' });
-    if (sia?.statut) chips.push({ v: sia.statut, l: 'statut de la carte SIA / SIA map status' });
-    if (sia?.prive) chips.push({ v: 'privé / private', l: 'usage privé / private' });
-    if (!sia && apt?.country) chips.push({ v: apt.country, l: 'pays / country' });
-    return chips;
+    if (sia) {
+        const t = [sia.vfr === true && 'VFR', sia.ifr === true && 'IFR'].filter(Boolean);
+        if (t.length === 2) rows.push({ l: isFr ? 'Ouvert aux vols' : 'Open to traffic', v: t.join(' · ') });
+        else if (t.length === 1 && t[0] === 'VFR') rows.push({ l: isFr ? 'Ouvert aux vols' : 'Open to traffic', v: isFr ? 'VFR uniquement' : 'VFR only' });
+        else if (t.length === 1) rows.push({ l: isFr ? 'Ouvert aux vols' : 'Open to traffic', v: t[0] });
+
+        const STATUTS = {
+            CAP: isFr ? 'Ouvert à la circulation aérienne publique' : 'Open to public air traffic',
+            RST: isFr ? 'Usage restreint' : 'Restricted use',
+            PRV: isFr ? 'Usage privé' : 'Private use',
+            MIL: isFr ? 'Militaire' : 'Military',
+            OFF: isFr ? 'Fermé (OFF)' : 'Closed (OFF)',
+        };
+        if (STATUTS[sia.statut]) rows.push({ l: isFr ? 'Statut' : 'Status', v: STATUTS[sia.statut] });
+    } else if (apt?.country) {
+        rows.push({ l: isFr ? 'Pays' : 'Country', v: apt.country });
+    }
+    return rows;
 }
 
 /** Lignes de pistes : officielles SIA (France) ou base embarquée (monde). */
@@ -149,7 +161,7 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         const isPrimary = f.primary;
         const freqStr = f.freq.toFixed(3);
         return `<div style="display:flex; align-items:center; gap:10px; padding:6px 12px; background:${isPrimary ? 'rgba(56,189,248,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:6px; border-left:3px solid ${isPrimary ? '#38BDF8' : 'rgba(148,163,184,0.3)'};">
-            <span style="font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:78px;">${freqStr}</span>
+            <span style="font-family:'DM Mono',monospace; font-size:13.5px; font-weight:700; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:70px;">${freqStr}</span>
             ${f.type ? `<span style="font-size:10px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:40px; text-align:center;">${escapeHtml(f.type)}</span>` : ''}
             <span style="font-size:12px; color:var(--text-muted); flex:1;">${escapeHtml(f.name || '')}</span>
         </div>`;
@@ -180,9 +192,9 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
             const dims = [r.lenM != null ? `${r.lenM}` : null, r.widM != null ? `${r.widM}` : null].filter(Boolean).join(' × ');
             html += `<div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 10px; padding:5px 10px; background:rgba(255,255,255,0.03); border-radius:6px;">
                 <span style="font-family:'DM Mono',monospace; font-size:13px; font-weight:700; color:var(--text-color); min-width:58px;">${escapeHtml(r.d)}${r.main ? ' ★' : ''}</span>
-                ${r.cap != null ? `<span style="font-family:'DM Mono',monospace; font-size:12px; color:var(--text-muted); min-width:70px;">${String(r.cap).padStart(3, '0')}°${sia ? (isFr ? ' vrai' : ' true') : ''}</span>` : ''}
-                ${dims ? `<span style="font-family:'DM Mono',monospace; font-size:12px; color:var(--text-color); font-weight:500;">${dims} m</span>` : ''}
-                <span style="font-size:11.5px; color:var(--text-muted); margin-left:auto; text-align:right;">
+                ${r.cap != null ? `<span style="font-family:'DM Mono',monospace; font-size:13px; color:var(--text-muted); min-width:74px;">${String(r.cap).padStart(3, '0')}°${sia ? (isFr ? ' vrai' : ' true') : ''}</span>` : ''}
+                ${dims ? `<span style="font-family:'DM Mono',monospace; font-size:13px; color:var(--text-color); font-weight:500;">${dims} m</span>` : ''}
+                <span style="font-size:12px; color:var(--text-muted); margin-left:auto; text-align:right;">
                     ${r.surf ? escapeHtml(r.surf) : ''}${r.surf && r.thr ? ' · ' : ''}${r.thr ? `${isFr ? 'seuils' : 'thr.'} <span style="font-family:'DM Mono',monospace;">${escapeHtml(r.thr)}</span>` : ''}
                 </span>
             </div>`;
@@ -205,8 +217,11 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
     // ---- 4. Le reste : identité du terrain puis avitaillement ----
     if (ident.length) {
         html += sectionTitle('id-card', isFr ? 'Terrain' : 'Airfield');
-        html += `<div style="display:flex; flex-wrap:wrap; gap:4px;">` + ident.map(c =>
-            `<span title="${escapeHtml(c.l)}" style="font-size:11px; background:rgba(255,255,255,0.06); color:var(--text-color); padding:3px 9px; border-radius:4px; font-weight:600;">${escapeHtml(c.v)}</span>`
+        html += `<div style="display:flex; flex-direction:column; gap:2px;">` + ident.map(r =>
+            `<div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:3px 0; font-size:12px;">
+                <span style="color:var(--text-muted); white-space:nowrap;">${escapeHtml(r.l)} :</span>
+                <span style="color:var(--text-color); font-weight:500; text-align:right;${r.mono ? " font-family:'DM Mono',monospace; font-size:13px;" : ''}">${escapeHtml(r.v)}</span>
+            </div>`
         ).join('') + `</div>`;
     }
 
