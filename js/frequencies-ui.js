@@ -21,6 +21,8 @@ import { getVacLink } from './atc-info.js';
 import { makeCollapsible } from './collapsible.js';
 import { loadFreqSources, getAirportFreqs, getSiaAirac } from './freq-sia.js';
 import { loadSiaAux, getSiaAirfield, getSiaRunways, getSiaAuxAirac } from './sia-data.js';
+import { hasSiaEaip } from './freq-sia.js';
+import { openVac } from './vac-viewer.js';
 import { getDeclinationForIcao } from './magvar.js';
 
 /**
@@ -60,7 +62,7 @@ export async function showFrequenciesWidget(icao) {
     const ident = identityRows(icao, apt, sia, state.lang === 'fr');
     const runways = runwayRows(icao, apt, sia);
 
-    if (!freqs.length && !vac && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
+    if (!freqs.length && !vac && !hasSiaEaip(icao) && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
         // Rien à raconter sur ce terrain → on masque.
         container.style.display = 'none';
         return;
@@ -260,8 +262,18 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         ${sourceNote(source, !!sia, isFr)}
     </div>`;
 
-    // ---- DERNIÈRE LIGNE : lien vers le portail AIP officiel du pays ----
-    if (vac) {
+    // ---- DERNIÈRE LIGNE : carte VAC (visionneuse hors ligne) ou portail ----
+    const avecCarte = hasSiaEaip(icao);
+    if (avecCarte) {
+        html += `<button data-vac-open="${escapeHtml(icao)}"
+            style="display:flex; align-items:center; gap:8px; margin-top:6px; width:100%; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; color:var(--primary); font-size:12.5px; font-weight:600; cursor:pointer; transition:background 0.15s;"
+            onmouseover="this.style.background='rgba(56,189,248,0.15)'"
+            onmouseout="this.style.background='rgba(56,189,248,0.08)'">
+            <i data-lucide="map" style="width:14px;height:14px;"></i>
+            <span>${isFr ? 'Carte VAC officielle' : 'Official VAC chart'}</span>
+            <span style="margin-left:auto; font-size:10px; color:var(--text-muted); font-weight:500;">${isFr ? 'lisible hors ligne' : 'works offline'}</span>
+        </button>`;
+    } else if (vac) {
         html += `<a href="${escapeHtml(vac.url)}" target="_blank" rel="noopener noreferrer"
             style="display:flex; align-items:center; gap:8px; margin-top:6px; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; text-decoration:none; color:var(--primary); font-size:12.5px; font-weight:600; transition:background 0.15s;"
             onmouseover="this.style.background='rgba(56,189,248,0.15)'"
@@ -275,6 +287,11 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
 
     container.innerHTML = html;
     if (window.lucide) window.lucide.createIcons({ root: container });
+
+    container.querySelector('[data-vac-open]')?.addEventListener('click', function () {
+        this.disabled = true;
+        openVac(this.dataset.vacOpen).finally(() => { this.disabled = false; });
+    });
 }
 
 /** Mention de source du pied de page (fréquences + infos terrain).

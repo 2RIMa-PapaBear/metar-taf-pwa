@@ -147,5 +147,12 @@ export function getServiceFreq(serviceName) {
 /** Dernier cycle AIRAC chargé (pour le pied de page du widget). */
 export function getSiaAirac() { return _sia?.airac || null; }
 
+/** Ce terrain a-t-il une fiche eAIP AD-2 (donc une carte VAC PDF publiée) ?
+ * ≈143 terrains France — les autres (LFOM…) n'existent pas dans l'eAIP. */
+export function hasSiaEaip(icao) {
+    const code = String(icao || '').toUpperCase();
+    return Array.isArray(_sia?.airports?.[code]) && _sia.airports[code].length > 0;
+}
+
 /** Test only. */
 export function _setSources(sia, overrides, siaAa) { _sia = sia; _overrides = overrides; _siaAa = siaAa; }
