@@ -28,7 +28,12 @@ async function _fetchJsonCached(url, idbKey) {
     const cached = await _idbGet(idbKey);
     if (cached?.data && Date.now() - cached.ts < TTL_MS) return cached.data;
     try {
-        const res = await fetch(url + `?t=${cached?.ts || 0}`);
+        // ?v= (version du CONTENU, bumpée à chaque évolution intra-cycle) :
+        // une URL inédite ne peut être servie par AUCUN cache — HTTP
+        // heuristique compris (le ?t= seul n'y suffisait pas : même URL pour
+        // tout profil vierge → l'ancien fichier revenait pendant des heures).
+        const sep = url.includes('?') ? '&' : '?';
+        const res = await fetch(url + `${sep}t=${cached?.ts || 0}`);
         if (!res.ok) return cached?.data || null;
         const data = await res.json();
         _idbPut(idbKey, data);
@@ -84,10 +89,11 @@ export function loadFreqSources() {
             if (res.ok) _overrides = await res.json();
         } catch {   }
         const [sia, aa] = await Promise.all([
-            // v3 (05/09 soir) : champ charts ajouté (dossiers de cartes VAC) ;
-            // v2 = observations eAIP. La clé change à chaque évolution du
-            // CONTENU intra-cycle, sinon le cache 7 j sert l'ancien fichier.
-            _fetchJsonCached('data/freq-sia.json', 'sia:v3'),
+            // ?v=3 (05/09 soir) : champ charts (dossiers de cartes VAC) ;
+            // v2 = observations eAIP. L'URL EST VERSIONNÉE : à chaque
+            // évolution du contenu intra-cycle, bumper ce numéro (les caches
+            // HTTP/SW/IDB ne peuvent alors plus servir l'ancien fichier).
+            _fetchJsonCached('data/freq-sia.json?v=3', 'sia:v3'),
             _fetchJsonCached('data/freq-aa-sia.json', 'sia-aa'),
         ]);
         _sia = sia;
