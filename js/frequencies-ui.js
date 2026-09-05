@@ -218,9 +218,9 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
     if (ident.length) {
         html += sectionTitle('id-card', isFr ? 'Terrain' : 'Airfield');
         html += `<div style="display:flex; flex-direction:column; gap:2px;">` + ident.map(r =>
-            `<div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:3px 0; font-size:12px;">
+            `<div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 7px; padding:3px 0; font-size:12px;">
                 <span style="color:var(--text-muted); white-space:nowrap;">${escapeHtml(r.l)} :</span>
-                <span style="color:var(--text-color); font-weight:500; text-align:right;${r.mono ? " font-family:'DM Mono',monospace; font-size:13px;" : ''}">${escapeHtml(r.v)}</span>
+                <span style="color:var(--text-color); font-weight:500;${r.mono ? " font-family:'DM Mono',monospace; font-size:13px;" : ''}">${escapeHtml(r.v)}</span>
             </div>`
         ).join('') + `</div>`;
     }
