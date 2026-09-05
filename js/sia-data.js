@@ -33,6 +33,7 @@ const TTL_MS = 7 * 24 * 3600 * 1000;
 let _runways = null;      // { LFEQ: [ {d, len, wid, surf, main, brg, t1, t2}, … ] }
 let _airfields = null;    // [ {code, elevFt, magVar, …}, … ]
 let _byCode = null;       // Map code → terrain
+let _auxAirac = null;     // cycle AIRAC du fichier sia-airfields (infos terrain)
 let _loadPromise = null;
 
 // ----------------------------------------------------------------
@@ -94,10 +95,13 @@ export async function loadSiaAux() {
         };
         const [rw, af] = await Promise.all([
             use('sia-runways', 'data/sia-runways.json'),
-            use('sia-airfields', 'data/sia-airfields.json'),
+            // v2 (05/09) : rubriques AD ajoutées (horaires ATS, avitaillement,
+            // téléphone) — la clé change pour forcer le re-téléchargement.
+            use('sia-airfields:v2', 'data/sia-airfields.json'),
         ]);
         _runways = rw?.items || {};
         _airfields = Array.isArray(af?.items) ? af.items : [];
+        _auxAirac = af?.airac || null;
         _byCode = new Map(_airfields.map(t => [t.code, t]));
         return { runways: _runways, airfields: _airfields };
     })();
@@ -120,6 +124,11 @@ export function siaRunwayFor(icao, rwyName) {
     if (!list || !rwyName) return null;
     const n = String(rwyName).toUpperCase().split('/')[0].trim();
     return list.find(r => r.d.split('/').some(x => x.trim() === n)) || null;
+}
+
+/** Cycle AIRAC des données terrains/pistes officielles (ex. « 2026-09-03 »). */
+export function getSiaAuxAirac() {
+    return _auxAirac;
 }
 
 /** Terrain officiel (France) : {code, elevFt, magVar, magVarYear, …} ou null. */
