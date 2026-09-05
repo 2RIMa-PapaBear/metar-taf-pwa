@@ -11,8 +11,13 @@ const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 // Seuil à 4 (retour 28/08) : les cadres de routes longues et écrans
 // étroits descendent bas ; la base SIA officielle (212 Ko locaux) rend un
-// affichage bas-zoom trivial, openAIP reste clampé par la bbox 5°.
+// affichage bas-zoom trivial, la grille de cellules suit la vue entière
+// (cap MAX_VIEW_CELLS en garde-fou).
 const MIN_ZOOM = 4;
+
+// Cap de cellules 1° chargées par vue (garde-fou perf des vues
+// continentales) — une vue France z6 en fait ~70, ce cap ne la touche pas.
+const MAX_VIEW_CELLS = 300;
 
 const MAX_BASE_FT = 5000;
 
@@ -646,18 +651,32 @@ export function createAirspaceController(map) {
 
     async function loadForBounds(bounds) {
         const epoch = ++_loadEpoch;
-        const minLat = Math.floor(bounds.getSouth()), minLon = Math.floor(bounds.getWest());
+        let minLat = Math.floor(bounds.getSouth()), minLon = Math.floor(bounds.getWest());
         let maxLat = Math.ceil(bounds.getNorth()), maxLon = Math.ceil(bounds.getEast());
-        if (maxLat - minLat > 5) maxLat = minLat + 5;   // limite API openAIP (repli)
-        if (maxLon - minLon > 5) maxLon = minLon + 5;
+        // Les sources (cellules 1° servies par l'hébergeur + base SIA locale)
+        // n'ont AUCUNE limite de bbox : la grille suit la vue entière — plus
+        // d'ancrage à une fenêtre 5° héritée de l'API openAIP (à bas zoom,
+        // la moitié de la carte restait vierge). Seul garde-fou : un cap de
+        // cellules, réduit SYMÉTRIQUEMENT autour du centre (comme des
+        // tuiles : on couvre d'abord là où l'on regarde) pour que les vues
+        // continentales (z≤5) ne déploient pas des centaines de fetchs et
+        // des milliers de polygones d'un coup.
+        const spanLat = maxLat - minLat, spanLon = maxLon - minLon;
+        if (spanLat * spanLon > MAX_VIEW_CELLS) {
+            const s = Math.sqrt(MAX_VIEW_CELLS / (spanLat * spanLon));
+            const cutLat = Math.floor(spanLat * (1 - s) / 2);
+            const cutLon = Math.floor(spanLon * (1 - s) / 2);
+            minLat += cutLat; maxLat -= cutLat;
+            minLon += cutLon; maxLon -= cutLon;
+        }
         const viewKey = `${minLat}_${minLon}_${maxLat}_${maxLon}`;
         if (viewKey === lastBboxKey && loaded) return;
 
         // SOURCE FICHIER MONDIALE : la grille de cellules 1° de la vue est
         // chargée depuis NOTRE serveur (cache IndexedDB 7 j — un déplacement
         // en terrain connu n'importe plus rien). Les cellules SANS fichier
-        // (404 : pas encore crawlées) passent par l'API en repli, en UNE
-        // requête fusionnée à travers la file sérialisée.
+        // (404 : pas encore crawlées) passent par l'API en repli, par tuiles
+        // ≤ 5° à travers la file sérialisée.
         const { items: fileItems, missing } = await _loadCellsGrid(minLat, minLon, maxLat, maxLon);
         if (epoch !== _loadEpoch) return;
         lastBboxKey = viewKey; loaded = true;
@@ -677,12 +696,19 @@ export function createAirspaceController(map) {
             const mLat1 = Math.max(...missing.map(c => c[0])) + 1;
             const mLon0 = Math.min(...missing.map(c => c[1]));
             const mLon1 = Math.max(...missing.map(c => c[1])) + 1;
-            const items = await fetchOpenAipItems(`${BASE_URL}?bbox=${mLon0},${mLat0},${mLon1},${mLat1}&limit=200`);
-            if (epoch !== _loadEpoch) return;   // la vue a changé : abandonne
-            if (items) absorb(items);
-            if (byId.size) {
-                lastItems = dropZrt([...byId.values()]);
-                _render(lastItems);
+            // Repli API en TUILES ≤ 5° (limite openAIP), à travers la file
+            // sérialisée : la zone manquante peut maintenant être plus large
+            // que 5° puisque la vue n'est plus clampée.
+            for (let lat = mLat0; lat < mLat1; lat += 5) {
+                for (let lon = mLon0; lon < mLon1; lon += 5) {
+                    const items = await fetchOpenAipItems(`${BASE_URL}?bbox=${lon},${lat},${Math.min(lon + 5, mLon1)},${Math.min(lat + 5, mLat1)}&limit=200`);
+                    if (epoch !== _loadEpoch) return;   // la vue a changé : abandonne
+                    if (items) absorb(items);
+                    if (byId.size) {
+                        lastItems = dropZrt([...byId.values()]);
+                        _render(lastItems);
+                    }
+                }
             }
         }
     }
