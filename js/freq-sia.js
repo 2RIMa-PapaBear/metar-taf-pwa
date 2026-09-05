@@ -84,7 +84,9 @@ export function loadFreqSources() {
             if (res.ok) _overrides = await res.json();
         } catch {   }
         const [sia, aa] = await Promise.all([
-            _fetchJsonCached('data/freq-sia.json', 'sia'),
+            // v2 (05/09) : observations eAIP ajoutées (rem) — la clé change
+            // pour forcer le re-téléchargement malgré le cache 7 j.
+            _fetchJsonCached('data/freq-sia.json', 'sia:v2'),
             _fetchJsonCached('data/freq-aa-sia.json', 'sia-aa'),
         ]);
         _sia = sia;
@@ -127,7 +129,8 @@ export function getAirportFreqs(icao, openaipFreqs) {
             if (!merged.some(x => x.value === f.value)) merged.push(f);
         }
         return { source: 'sia', freqs: merged.map(f => ({
-            freq: parseFloat(f.value), name: f.name || '', type: f.type || '', hor: f.hor || null,
+            freq: parseFloat(f.value), name: f.name || '', type: f.type || '',
+            hor: f.hor || null, rem: f.rem || null,
             primary: /^(TWR|AFIS|APP)$/i.test(f.type || ''),
         })) };
     }

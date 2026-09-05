@@ -170,16 +170,24 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         HN: isFr ? 'Du coucher au lever du soleil' : 'Sunset to sunrise',
     };
 
-    // Construit les lignes de fréquences.
+    // Construit les lignes de fréquences. L'observation officielle eAIP
+    // (secteurs, fréquence supplétive, conditions…) différencie les
+    // fréquences multiples d'un même organisme — 2ᵉ ligne, texte complet
+    // au survol ( publié bilingue FR/EN par le SIA, FR en tête).
     const freqRow = (f) => {
         const isPrimary = f.primary;
         const freqStr = f.freq.toFixed(3);
         const hor = f.hor && HOR_CODES[f.hor] ? f.hor : null;
-        return `<div style="display:flex; align-items:center; gap:10px; padding:6px 12px; background:${isPrimary ? 'rgba(56,189,248,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:6px; border-left:3px solid ${isPrimary ? '#38BDF8' : 'rgba(148,163,184,0.3)'};">
-            <span style="font-family:'DM Mono',monospace; font-size:13.5px; font-weight:700; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:70px;">${freqStr}</span>
-            ${f.type ? `<span style="font-size:10px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:40px; text-align:center;">${escapeHtml(f.type)}</span>` : ''}
-            <span style="font-size:12px; color:var(--text-muted); flex:1;">${escapeHtml(f.name || '')}</span>
-            ${hor ? `<span title="${escapeHtml(HOR_CODES[f.hor])}" style="font-size:10px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text-dim); border:1px solid var(--border-color); border-radius:4px; padding:1px 6px;">${hor}</span>` : ''}
+        const rem = f.rem ? String(f.rem).trim() : '';
+        const remShort = rem.length > 92 ? rem.slice(0, 92).replace(/\s+\S*$/, '') + '…' : rem;
+        return `<div style="display:flex; flex-direction:column; gap:1px; padding:6px 12px; background:${isPrimary ? 'rgba(56,189,248,0.08)' : 'rgba(255,255,255,0.03)'}; border-radius:6px; border-left:3px solid ${isPrimary ? '#38BDF8' : 'rgba(148,163,184,0.3)'};">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-family:'DM Mono',monospace; font-size:13.5px; font-weight:700; color:${isPrimary ? '#38BDF8' : 'var(--text-color)'}; min-width:70px;">${freqStr}</span>
+                ${f.type ? `<span style="font-size:10px; background:rgba(255,255,255,0.08); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-weight:700; letter-spacing:0.5px; min-width:40px; text-align:center;">${escapeHtml(f.type)}</span>` : ''}
+                <span style="font-size:12px; color:var(--text-muted); flex:1;">${escapeHtml(f.name || '')}</span>
+                ${hor ? `<span title="${escapeHtml(HOR_CODES[f.hor])}" style="font-size:10px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text-dim); border:1px solid var(--border-color); border-radius:4px; padding:1px 6px;">${hor}</span>` : ''}
+            </div>
+            ${rem ? `<div title="${escapeHtml(rem)}" style="font-size:11px; color:var(--text-muted); line-height:1.45; padding-left:80px;">${escapeHtml(remShort)}</div>` : ''}
         </div>`;
     };
 
