@@ -4,7 +4,7 @@
 graphique des METAR/TAF, planification de vol, performances décollage et log de nav,
 dans une PWA installable qui fonctionne aussi hors ligne.
 
-🌐 **Application en ligne :** <http://papabear56.free.fr/>
+🌐 **Application en ligne :** <https://2rima-papabear.github.io/metar-taf-pwa/>
 
 ## Captures d'écran
 
@@ -37,7 +37,9 @@ dans une PWA installable qui fonctionne aussi hors ligne.
 ### Navigation
 - **Planificateur de vol** : recherche de terrain par code OACI (validation
   alphanumérique, ex. CNU8 ou K6RE), waypoints intelligents ou libres,
-  alternates, compagnie du trajet, autocomplétion. Le champ « Waypoints »
+  alternates, compagnie du trajet, autocomplétion. - **Log de nav PDF multi-pages** : au-delà de 10 tronçons, une page
+  « Détail des waypoints (suite) » prolonge le tableau (même gabarit).
+Le champ « Waypoints »
   affiche les **vrais noms** des repères (VOR, NDB, points de repère VFR).
 - **Carte régionale** (Leaflet) : route, étiquettes de tronçons
   (cap / distance / temps), espaces aériens — **base officielle SIA (XML
@@ -64,6 +66,9 @@ dans une PWA installable qui fonctionne aussi hors ligne.
   suppléantes — et codes d'horaires H24/HO…) et « Info terrain »
   (altitude, déclinaison, ouverture VFR/IFR, statut, pistes en clair,
   horaires du service et avitaillement en sous-sections repliables).
+- **Pastilles de la carte régionale** : clic = METAR + bouton
+  « Carte VAC » du terrain ; **clic droit = ajout au plan de vol** comme
+  waypoint.
 - **Carte VAC « Atterrissage à vue »** intégrée : Atlas-VAC officiel du
   SIA (421 terrains de France, AIRAC), visionneuse pdfjs avec zoom et
   pages, **consultable hors ligne** après première ouverture (cache
@@ -187,7 +192,7 @@ npm run pub -- "message du commit"   # commit + push + attente du déploiement
 - **2026-09-05** — FICHE TERRAIN v3 — feu vert pilote après aperçu PDF (Apercu_fiche_terrain.pdf, 3 terrains LFRN/LFRV/LFPF) : section Terrain en LIGNES LIBELL…
 - **2026-09-05** — FICHE TERRAIN v2 (retours pilote : ordre + lisibilité) : ① FRÉQUENCES en tête (sans sous-titre redondant) ② PISTES (seuils officiels affiché…
 - **2026-09-05** — FICHE TERRAIN COMPLÈTE dans l onglet « Fréquences & info terrain » (demande pilote, 4 arbitrages validés) : ① IDENTITÉ en chips — élévation,…
-<!-- docs:lastSha=cf17bb215553796d245a8c44d456c497c7594255 -->
+<!-- docs:lastSha=2298052f3f5deb8c0cd1e1b2a9aa58beed3e1cc2 -->
 
 
 

@@ -7,6 +7,7 @@ import { createPrecipController } from './radar-layer.js';
 import { createAirspaceController } from './airspaces.js';
 import { createRadioPointsController } from './radio-points-layer.js';
 import { getRunwayThresholds } from './runways-geo.js';
+import { hasVac, openVac } from './vac-viewer.js';
 
 let _map = null;
 let _precip = null;
@@ -225,6 +226,17 @@ async function _initOrRefresh() {
                     _map.closePopup();
                     document.dispatchEvent(new CustomEvent('add-waypoint', { detail: { icao } }));
                 });
+            }
+            // « Carte VAC » : visible uniquement si le terrain a une carte
+            // (liste asynchrone — le bouton est masqué par défaut et révélé
+            // à l'ouverture quand la liste est là).
+            const vacBtn = el?.querySelector('.mp-vac-btn');
+            if (vacBtn) {
+                vacBtn.addEventListener('click', () => {
+                    const icao = vacBtn.dataset.icao;
+                    if (icao) openVac(icao);
+                });
+                hasVac(vacBtn.dataset.icao).then(ok => { if (ok && vacBtn.isConnected) vacBtn.style.display = ''; }).catch(() => {});
             }
             // Éditeur de waypoint libre : Valider (création) / Renommer.
             const fwOk = el?.querySelector('.fw-ok-btn');
@@ -568,7 +580,7 @@ function _createFreeWaypoint(lat, lon, name, freq, kind) {
         weight: 2, opacity: 1, fillOpacity: 0.9,
     }).addTo(_map);
     marker.bindTooltip(escapeHtml(name), { permanent: true, direction: 'right', className: 'free-wp-label' });
-    marker.bindPopup(() => _freeWpPopupHtml(code), { maxWidth: 250, keepInView: true });
+    hit.bindPopup(() => _freeWpPopupHtml(code), { maxWidth: 250, keepInView: true });
     _freeWaypoints.set(code, { lat, lon, name, marker });
 
     // Insertion intelligente + recalcul du plan (handler add-waypoint d'app.js)
@@ -980,6 +992,14 @@ function _addAirportMarker(lat, lon, icao, name, cat, isCurrent, rawMetar = null
         opacity: 1,
         fillOpacity: 0.85,
     }).addTo(_map);
+    // Marqueur DOM léger superposé au cercle SVG : capte proprement les
+    // clics (droit inclus) mÃªme quand le path est recouvert par d'autres
+    // couches, et rend la pastille prioritaire sur le contextmenu carte.
+    const hit = L.marker([lat, lon], {
+        interactive: true,
+        keyboard: false,
+        icon: L.divIcon({ className: 'pin-hit', iconSize: [16, 16], iconAnchor: [8, 8] }),
+    }).addTo(_map);
 
     const label = isCurrent
         ? `<strong>${escapeHtml(icao)}</strong>${name ? ' — ' + escapeHtml(name) : ''}<br><em>${state.lang === 'fr' ? 'Terrain courant' : 'Current airport'}</em>`
@@ -987,7 +1007,7 @@ function _addAirportMarker(lat, lon, icao, name, cat, isCurrent, rawMetar = null
             ? `<strong>${escapeHtml(icao)}</strong>${name ? ' — ' + escapeHtml(name) : ''}<br><span style="color:${color};font-weight:700;">${cat.cat}</span>`
             : `<strong>${escapeHtml(icao)}</strong>${name ? ' — ' + escapeHtml(name) : ''}<br><span style="color:#94A3B8;font-weight:700;">${state.lang === 'fr' ? 'Sans METAR' : 'No METAR'}</span>`;
 
-    marker.bindTooltip(label, { permanent: false, direction: 'top' });
+    hit.bindTooltip(label, { permanent: false, direction: 'top' });
 
     // Popup au clic (voisins — le terrain courant est déjà dans l'app).
     // Avec METAR : détail décodé + message brut. Sans METAR : popup réduit,
@@ -1010,7 +1030,8 @@ function _addAirportMarker(lat, lon, icao, name, cat, isCurrent, rawMetar = null
                     : (isFr ? 'Charger ce terrain' : 'Load this airport')}</button>
                 ${isNav ? `<button class="mp-dest-btn" data-icao="${escapeHtml(icao)}" title="${isFr ? 'Définir ce terrain comme destination de la navigation' : 'Set this airfield as the navigation destination'}">${isFr ? 'Définir comme destination' : 'Set as destination'}</button>` : ''}
             </div>
-            ${hasDest ? `<div class="mp-btns"><button class="mp-waypoint-btn" data-icao="${escapeHtml(icao)}" title="${isFr ? 'Ajouter ce terrain comme waypoint intermédiaire du plan de navigation' : 'Add this airfield as a waypoint to the flight plan'}">+ Waypoint</button></div>` : ''}`;
+            ${hasDest ? `<div class="mp-btns"><button class="mp-waypoint-btn" data-icao="${escapeHtml(icao)}" title="${isFr ? 'Ajouter ce terrain comme waypoint intermédiaire du plan de navigation' : 'Add this airfield as a waypoint to the flight plan'}">+ Waypoint</button></div>` : ''}
+            <div class="mp-btns"><button class="mp-vac-btn" data-icao="${escapeHtml(icao)}" style="display:none;" title="${isFr ? 'Ouvrir la carte VAC (Atterrissage à vue) de ce terrain' : 'Open the VAC chart of this airfield'}">${isFr ? 'Carte VAC' : 'VAC chart'}</button></div>`;
 
         if (rawMetar) {
             const dec = _decodeMetarForPopup(rawMetar);
@@ -1022,7 +1043,7 @@ function _addAirportMarker(lat, lon, icao, name, cat, isCurrent, rawMetar = null
                 ['T/Td', (dec.temp || dec.dew) ? `${dec.temp ?? '—'} / ${dec.dew ?? '—'}` : null],
                 ['QNH', dec.qnh],
             ] : [];
-            marker.bindPopup(`
+            hit.bindPopup(`
                 <div class="mp-inner">
                     <div class="mp-title"><strong>${escapeHtml(icao)}</strong>${name ? ' · ' + escapeHtml(name) : ''}</div>
                     ${cat ? `<div class="mp-cat" style="background:${catColor};">${cat.cat}</div>` : ''}
@@ -1032,18 +1053,38 @@ function _addAirportMarker(lat, lon, icao, name, cat, isCurrent, rawMetar = null
                     <pre class="mp-raw">${escapeHtml(rawMetar)}</pre>
                     ${btnsHtml}
                 </div>
-            `, { maxWidth: 280, className: 'metar-popup', keepInView: true });
+            `, { maxWidth: 300, className: 'metar-popup', keepInView: true });
         } else {
-            marker.bindPopup(`
+            hit.bindPopup(`
                 <div class="mp-inner">
                     <div class="mp-title"><strong>${escapeHtml(icao)}</strong>${name ? ' · ' + escapeHtml(name) : ''}</div>
                     <div class="mp-cat" style="background:#94A3B8;">${isFr ? 'Sans METAR' : 'No METAR'}</div>
                     ${btnsHtml}
                 </div>
-            `, { maxWidth: 280, className: 'metar-popup', keepInView: true });
+            `, { maxWidth: 300, className: 'metar-popup', keepInView: true });
         }
     }
 
+    // CLIC DROIT sur une pastille voisine = AJOUT AU PLAN DE VOL (retour
+    // pilote 06/09 : le clic droit créait un repère libre à la place —
+    // l'événement remontait à la carte). stopPropagation : la carte ne
+    // crée PAS de repère ; sans destination, on ouvre le popup (un
+    // waypoint n'a de sens qu'entre départ et arrivée).
+    if (!isCurrent) {
+        hit.on('contextmenu', (e) => {
+            L.DomEvent.stopPropagation(e);
+            const toInputVal = (document.getElementById('route-to-input')?.value || '').trim().toUpperCase();
+            const isNav = document.body.classList.contains('mode-nav');
+            const hasDest = isNav && /^[A-Z][A-Z0-9]{3}$/.test(toInputVal) && toInputVal !== icao.toUpperCase();
+            if (hasDest) {
+                document.dispatchEvent(new CustomEvent('add-waypoint', { detail: { icao } }));
+            } else {
+                hit.openPopup();
+            }
+        });
+    }
+
+    marker.hit = hit;
     if (isCurrent) _airportMarkers.push(marker);
     else _neighborMarkers.push(marker);
 }
@@ -1052,9 +1093,10 @@ function _clearAirportMarkers() {
     _airportMarkers.forEach(m => _map.removeLayer(m));
     _airportMarkers = [];
 }
+function _clearHitMarkers(arr) { arr.forEach(m => _map.removeLayer(m)); }
 
 function _clearNeighborMarkers() {
-    _neighborMarkers.forEach(m => _map.removeLayer(m));
+    _neighborMarkers.forEach(m => { _map.removeLayer(m.hit || m); });
     _neighborMarkers = [];
     _displayedNeighborsIcao.clear();
     _metarByIcao = {};

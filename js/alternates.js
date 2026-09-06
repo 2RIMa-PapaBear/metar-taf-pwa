@@ -54,9 +54,13 @@ export function _distToSegmentNm(p, a, b) {
     const atd = Math.atan2(Math.sin(d13) * Math.cos(th13 - th12), Math.cos(d13));
     const segLen = _angDist(a.lat, a.lon, b.lat, b.lon);
     const side = Math.sign(sinXtd) || 1;
-    if (atd < 0) return { nm: _haversineNm(p.lat, p.lon, a.lat, a.lon), side };
-    if (atd > segLen) return { nm: _haversineNm(p.lat, p.lon, b.lat, b.lon), side };
-    return { nm: Math.abs(xtd) * R_NM, side };
+    // atdNm/segLenNm : POSITION LE LONG DE LA ROUTE (pour répartir les
+    // alternates — un point au-delà du segment est ramené à l'extrémité).
+    const atdNm = Math.max(0, Math.min(atd, segLen)) * R_NM;
+    const segLenNm = segLen * R_NM;
+    if (atd < 0) return { nm: _haversineNm(p.lat, p.lon, a.lat, a.lon), side, atdNm, segLenNm };
+    if (atd > segLen) return { nm: _haversineNm(p.lat, p.lon, b.lat, b.lon), side, atdNm, segLenNm };
+    return { nm: Math.abs(xtd) * R_NM, side, atdNm, segLenNm };
 }
 
 /**
@@ -99,6 +103,37 @@ function _corridorAirports(minLat, minLon, maxLat, maxLon) {
     return getAirportsInBbox(minLat, minLon, maxLat, maxLon)
         .map(a => ({ code: _validIcao(a.icao), name: a.name || '', lat: a.lat, lon: a.lon }))
         .filter(a => a.code && Number.isFinite(a.lat) && Number.isFinite(a.lon));
+}
+
+/**
+ * SÉLECTION RÉPARTIE le long du trajet (retour pilote 06/09 : ne pas
+ * concentrer la sélection près du départ/arrivée). La route est découpée
+ * en maxRows tronçons égaux ; 1er passage : le MEILLEUR candidat de
+ * CHAQUE tronçon (viabilité puis écart à la route) ; 2ᵉ passage :
+ * complément avec les meilleurs restants, tous tronçons confondus.
+ * Retour : maxRows terrains au plus, dans l'ordre du vol (position
+ * croissante le long de la route). Fonction pure — testée sous Node.
+ */
+export function _pickSpread(rows, maxRows, routeLen) {
+    const catPriority = { VFR: 0, MVFR: 1, IFR: 2, LIFR: 3 };
+    const mieux = (x, y) => (catPriority[x.cat.cat] ?? 9) - (catPriority[y.cat.cat] ?? 9) || x.offsetNm - y.offsetNm;
+    const bin = (r) => Math.min(maxRows - 1, Math.floor((r.atdNm / (routeLen || 1)) * maxRows));
+    const pris = new Set();
+    const choisis = [];
+    for (let b = 0; b < maxRows && choisis.length < maxRows; b++) {
+        let meilleur = null;
+        for (const r of rows) {
+            if (pris.has(r.code) || bin(r) !== b) continue;
+            if (!meilleur || mieux(r, meilleur) < 0) meilleur = r;
+        }
+        if (meilleur) { pris.add(meilleur.code); choisis.push(meilleur); }
+    }
+    for (const r of rows) {
+        if (choisis.length >= maxRows) break;
+        if (!pris.has(r.code)) { pris.add(r.code); choisis.push(r); }
+    }
+    choisis.sort((a, b) => a.atdNm - b.atdNm);
+    return choisis;
 }
 
 /**
@@ -150,17 +185,27 @@ export async function getEnRouteAlternates(routePts, maxOffsetNm = 25, maxRows =
         // ---- Couloir : distance à la polyligne ≤ maxOffsetNm ; on écarte
         // aussi les terrains confondus avec un point de la route (départ,
         // arrivée, waypoints) même sans code OACI commun.
+        // Longueurs cumulées des segments : position le long de la route.
+        const segLens = [];
+        let routeLen = 0;
+        for (let i = 0; i < routePts.length - 1; i++) {
+            const L = _angDist(routePts[i].lat, routePts[i].lon, routePts[i + 1].lat, routePts[i + 1].lon) * R_NM;
+            segLens.push(L);
+            routeLen += L;
+        }
         const kept = [];
         for (const c of candidates) {
             if (c.code && routeIcaos.has(c.code)) continue;
             if (routePts.some(p => _haversineNm(c.lat, c.lon, p.lat, p.lon) < 1.5)) continue;
-            let best = null;
+            let best = null, bestPos = 0;
+            let cumul = 0;
             for (let i = 0; i < routePts.length - 1; i++) {
                 const d = _distToSegmentNm(c, routePts[i], routePts[i + 1]);
-                if (!best || d.nm < best.nm) best = d;
+                if (!best || d.nm < best.nm) { best = d; bestPos = cumul + d.atdNm; }
+                cumul += segLens[i];
             }
             if (best.nm <= maxOffsetNm) {
-                kept.push({ ...c, offsetNm: Math.round(best.nm), side: best.side });
+                kept.push({ ...c, offsetNm: Math.round(best.nm), side: best.side, atdNm: bestPos });
             }
         }
         if (!kept.length) return null;
@@ -201,7 +246,7 @@ export async function getEnRouteAlternates(routePts, maxOffsetNm = 25, maxRows =
 
         const catPriority = { VFR: 0, MVFR: 1, IFR: 2, LIFR: 3 };
         rows.sort((a, b) => (catPriority[a.cat.cat] ?? 9) - (catPriority[b.cat.cat] ?? 9) || a.offsetNm - b.offsetNm);
-        return rows.slice(0, maxRows);
+        return _pickSpread(rows, maxRows, routeLen);
     } catch (e) {
         console.warn('En-route alternates load failed:', e);
         return null;

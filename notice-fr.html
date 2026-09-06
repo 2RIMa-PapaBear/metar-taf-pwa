@@ -111,7 +111,8 @@
         .demo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 500; color: #555; vertical-align: middle; }
         .demo-btn svg { width: 14px; height: 14px; }
         h1 svg, h2 svg, h3 svg { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; }
-        .btn-back svg, .btn-floating-toc svg { width: 14px; height: 14px; }
+        .btn-back svg { width: 14px; height: 14px; }
+        .btn-floating-toc svg { width: 15px; height: 15px; }
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -146,25 +147,27 @@
         }
         .btn-floating-toc {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--primary);
-            color: #ffffff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
+            bottom: 24px;
+            right: 24px;
+            display: inline-flex;
             align-items: center;
-            font-size: 22px;
+            gap: 7px;
+            background: var(--panel);
+            color: #555;
+            padding: 7px 13px;
             text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-weight: 500;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
             z-index: 1000;
         }
         .btn-floating-toc:hover {
-            background-color: #00695C;
-            transform: scale(1.05);
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7fc;
         }
         .toc {
             background: #f0f7ff;
@@ -222,7 +225,8 @@
         .demo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 500; color: #555; vertical-align: middle; }
         .demo-btn svg { width: 14px; height: 14px; }
         h1 svg, h2 svg, h3 svg { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; }
-        .btn-back svg, .btn-floating-toc svg { width: 14px; height: 14px; }
+        .btn-back svg { width: 14px; height: 14px; }
+        .btn-floating-toc svg { width: 15px; height: 15px; }
         .btn-back { display: none; }
             .btn-floating-toc { display: none; }
             body { background: white; }
@@ -614,7 +618,7 @@
 <p>Le bouton dossier de la barre « Départ → Destination » propose <strong>Sauvegarder (JSON)</strong> — format natif fidèle à 100 % (repères nommés, altitude, TAS, conso, vol de nuit) —, l'<strong>export GPX</strong> (GPS universel : SkyDemon, Garmin…) et <strong>KML</strong> (Google Earth), puis <strong>Importer un plan</strong> (.json, .gpx, .kml). Le dossier de sauvegarde est choisi à la première utilisation puis mémorisé. À l'import, chaque point portant un code OACI connu redevient ce terrain ; les autres deviennent des repères libres nommés, et l'ordre du fichier est respecté.</p>
 
 <h3>Météo sur la route</h3>
-<p>C'est la <strong>carte régionale</strong> (sous le METAR du terrain) qui la joue, automatiquement : chaque terrain des alentours — et donc ceux qui jalonnent votre route en mode Navigation — porte une <strong>pastille ronde colorée</strong> donnant sa catégorie de vol calculée depuis son METAR : <strong>verte</strong> = VFR, <strong>bleue</strong> = VFR marginal, <strong>rouge</strong> = conditions IFR, <strong>grise</strong> = pas de donnée. Le terrain affiché a une pastille ambre plus grosse. Un <strong>clic sur une pastille</strong> ouvre le METAR du terrain : idéal pour voir si la météo se dégrade vers l'étape suivante.</p>
+<p>C'est la <strong>carte régionale</strong> (sous le METAR du terrain) qui la joue, automatiquement : chaque terrain des alentours — et donc ceux qui jalonnent votre route en mode Navigation — porte une <strong>pastille ronde colorée</strong> donnant sa catégorie de vol calculée depuis son METAR : <strong>verte</strong> = VFR, <strong>bleue</strong> = VFR marginal, <strong>rouge</strong> = conditions IFR, <strong>grise</strong> = pas de donnée. Le terrain affiché a une pastille ambre plus grosse. Un <strong>clic sur une pastille</strong> ouvre le METAR du terrain — idéal pour voir si la météo se dégrade vers l'étape suivante. Dans ce panneau, le bouton <strong>« Carte VAC »</strong> ouvre la carte « Atterrissage à vue » du terrain dans l'application. Et un <strong>clic droit sur une pastille</strong> ajoute ce terrain au plan de vol comme waypoint (s'il existe déjà une destination).</p>
 
 <h3>Profil d'élévation</h3>
 <p>Échantillonne le <strong>profil d'élévation du terrain</strong> le long de la route pour vérifier le respect de la règle VFR (500 ft / 1000 ft de clearance). Les <strong>espaces aériens traversés</strong> y figurent aussi : à l'écran, survolez la bande d'altitude pour lire le secteur et sa fréquence ; sur le log de nav PDF, chaque traversée est délimitée par des traits verticaux (même bleu que la carte) avec le <strong>nom du secteur et sa fréquence</strong> en vertical entre les limites.</p>
@@ -644,7 +648,7 @@
 <p>Le bouton <i data-lucide="volume-2" class="li-ic"></i> lit le METAR à voix haute (synthèse vocale du navigateur), façon lecture ATIS.</p>
 
 <h3>Log de nav imprimable</h3>
-<p>Dans le panneau « Calcul de navigation », le bouton <strong>« Imprimer le log de nav »</strong> génère le log A5 (3 à 4 pages : log de nav, calculs de navigation, performances et terrain, centrage si l'avion est configuré). Une <strong>modale de vérification</strong> rappelle les valeurs calculées automatiquement à contrôler avant tout usage en vol ; après confirmation, le PDF <strong>s'ouvre dans un onglet</strong> — le bouton Imprimer du visualiseur est à portée de main (repli : téléchargement direct si l'onglet est bloqué).</p>
+<p>Dans le panneau « Calcul de navigation », le bouton <strong>« Imprimer le log de nav »</strong> génère le log A5 (3 à 4 pages : log de nav, calculs de navigation, performances et terrain, centrage si l'avion est configuré — au-delà de 10 tronçons, une page supplémentaire « Détail des waypoints (suite) » poursuit le tableau dans la même mise en page). Une <strong>modale de vérification</strong> rappelle les valeurs calculées automatiquement à contrôler avant tout usage en vol ; après confirmation, le PDF <strong>s'ouvre dans un onglet</strong> — le bouton Imprimer du visualiseur est à portée de main (repli : téléchargement direct si l'onglet est bloqué).</p>
 
 <h3>Partage par lien</h3>
 <p>Le bouton <i data-lucide="share-2" class="li-ic"></i> génère un <strong>permalien</strong> contenant le terrain, le message brut et l'heure d'arrivée. Un QR code permet de l'ouvrir sur mobile.</p>
@@ -1360,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.scrollBehavior = 'smooth';
 });
 </script>
-<a href="#toc" class="btn-floating-toc" title="Retour à la table des matières"><i data-lucide="chevron-up"></i> TdM</a>
+<a href="#toc" class="btn-floating-toc" title="Retour à la table des matières"><i data-lucide="chevron-up"></i> Sommaire</a>
     <script src="vendor/lucide.min.js"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
 </body>

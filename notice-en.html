@@ -111,7 +111,8 @@
         .demo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 500; color: #555; vertical-align: middle; }
         .demo-btn svg { width: 14px; height: 14px; }
         h1 svg, h2 svg, h3 svg { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; }
-        .btn-back svg, .btn-floating-toc svg { width: 14px; height: 14px; }
+        .btn-back svg { width: 14px; height: 14px; }
+        .btn-floating-toc svg { width: 15px; height: 15px; }
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -146,25 +147,27 @@
         }
         .btn-floating-toc {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--primary);
-            color: #ffffff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
+            bottom: 24px;
+            right: 24px;
+            display: inline-flex;
             align-items: center;
-            font-size: 22px;
+            gap: 7px;
+            background: var(--panel);
+            color: #555;
+            padding: 7px 13px;
             text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-weight: 500;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
             z-index: 1000;
         }
         .btn-floating-toc:hover {
-            background-color: #00695C;
-            transform: scale(1.05);
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7fc;
         }
         .toc {
             background: #f0f7ff;
@@ -573,7 +576,7 @@
 <p>The folder button in the "Departure → Destination" bar offers <strong>Save (JSON)</strong> — a 100% faithful native format (named markers, altitude, TAS, fuel burn, night flight) — plus <strong>GPX export</strong> (universal GPS: SkyDemon, Garmin…) and <strong>KML</strong> (Google Earth), then <strong>Import a plan</strong> (.json, .gpx, .kml). The save folder is chosen on first use and remembered. On import, any point carrying a known ICAO code becomes that airfield; others become named free markers, and the file's order is preserved.</p>
 
 <h3>Weather along the route</h3>
-<p>This is the <strong>regional map</strong> (below the airfield's METAR) doing it, automatically: every nearby airfield — including those along your route in Navigation mode — carries a <strong>coloured round pin</strong> showing its flight category computed from its METAR: <strong>green</strong> = VFR, <strong>blue</strong> = marginal VFR, <strong>red</strong> = IFR conditions, <strong>grey</strong> = no data. The displayed airfield has a larger amber pin. <strong>Click a pin</strong> to open that airfield's METAR — handy to spot deteriorating weather toward your next leg.</p>
+<p>This is the <strong>regional map</strong> (below the airfield's METAR) doing it, automatically: every nearby airfield — including those along your route in Navigation mode — carries a <strong>coloured round pin</strong> showing its flight category computed from its METAR: <strong>green</strong> = VFR, <strong>blue</strong> = marginal VFR, <strong>red</strong> = IFR conditions, <strong>grey</strong> = no data. The displayed airfield has a larger amber pin. <strong>Click a pin</strong> to open that airfield's METAR — handy to spot deteriorating weather toward your next leg. In that panel, the <strong>"VAC chart"</strong> button opens the airfield's visual approach chart inside the app. And a <strong>right-click on a pin</strong> adds that airfield to the flight plan as a waypoint (once a destination exists).</p>
 
 <h3>Elevation Profile</h3>
 <p>Samples the <strong>terrain elevation profile</strong> along the route to verify compliance with VFR clearance rules (500 ft / 1000 ft). <strong>Airspaces crossed</strong> are shown too: on screen, hover the altitude band to read the sector and its frequency; on the PDF nav log, each crossing is bounded by vertical lines (same blue as the map) with the <strong>sector name and frequency</strong> written vertically between the bounds.</p>
@@ -603,7 +606,7 @@
 <p>The <i data-lucide="volume-2" class="li-ic"></i> button reads the METAR aloud (browser speech synthesis), ATIS-style.</p>
 
 <h3>Printable Nav Log</h3>
-<p>In the "Flight plan" panel, the <strong>"Print nav log"</strong> button generates the A5 log (3-4 pages: nav log, navigation computations, performance &amp; terrain, weight &amp; balance if the aircraft is configured). A <strong>verification modal</strong> lists the automatically computed values to check before any in-flight use; once confirmed, the PDF <strong>opens in a browser tab</strong> — the viewer's Print button is one click away (fallback: direct download if the tab is blocked).</p>
+<p>In the "Flight plan" panel, the <strong>"Print nav log"</strong> button generates the A5 log (3-4 pages: nav log, navigation computations, performance &amp; terrain, weight &amp; balance if the aircraft is configured — beyond 10 legs, an extra "Leg details (continued)" page extends the table in the same layout). A <strong>verification modal</strong> lists the automatically computed values to check before any in-flight use; once confirmed, the PDF <strong>opens in a browser tab</strong> — the viewer's Print button is one click away (fallback: direct download if the tab is blocked).</p>
 
 <h3>Share by Link</h3>
 <p>The <i data-lucide="share-2" class="li-ic"></i> button generates a <strong>permalink</strong> containing the airfield, raw message and arrival time. A QR code lets you open it on mobile.</p>
@@ -1319,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.style.scrollBehavior = 'smooth';
 });
 </script>
-<a href="#toc" class="btn-floating-toc" title="Back to table of contents"><i data-lucide="chevron-up"></i> TOC</a>
+<a href="#toc" class="btn-floating-toc" title="Back to table of contents"><i data-lucide="chevron-up"></i> Contents</a>
     <script src="vendor/lucide.min.js"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
 </body>

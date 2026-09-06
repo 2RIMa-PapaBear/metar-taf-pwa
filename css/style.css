@@ -727,7 +727,8 @@ body.mode-local #alternates-container { display: none !important; }
     font-family: 'DM Mono', monospace; font-size: 10px; color: #94A3B8;
     white-space: pre-wrap; word-break: break-all; max-height: 90px; overflow-y: auto;
 }
-.mp-inner .mp-btns { display: flex; gap: 6px; margin-top: 6px; }
+.mp-inner .mp-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.mp-inner .mp-btns .mp-load-btn, .mp-inner .mp-btns .mp-dest-btn { flex: 1 1 130px; }
 .mp-inner .mp-load-btn {
     width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
     background: rgba(56,189,248,0.15); color: #38BDF8; font-weight: 700; font-size: 11px;
@@ -758,6 +759,15 @@ body.mode-local #alternates-container { display: none !important; }
     white-space: nowrap;
 }
 .mp-inner .mp-waypoint-btn:hover { background: rgba(251,191,36,0.3); }
+/* « Carte VAC » : même gabarit que les autres, bleu ciel comme le bouton
+ * Carte VAC de la fiche terrain. */
+.mp-inner .mp-vac-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(56,189,248,0.15); color: #38BDF8; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(56,189,248,0.4); transition: background 0.15s;
+    white-space: nowrap;
+}
+.mp-inner .mp-vac-btn:hover { background: rgba(56,189,248,0.3); }
 
 /* ---- Waypoints libres (clic droit) & bandeaux transitoires ---- */
 .regional-map-body { position: relative; }
@@ -2623,3 +2633,7 @@ html.theme-light .neighbors-loading { background: rgba(255, 255, 255, 0.9); colo
 .wd-check-btn.wd-checking svg { animation: wd-check-spin 0.9s linear infinite; }
 .wd-check-btn:disabled { opacity: 0.85; cursor: wait; }
 @keyframes wd-check-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Zone de clic des pastilles de la carte régionale : disque transparent
+ * superposé au cercle SVG (clic gauche = panneau, clic droit = waypoint). */
+.pin-hit { background: transparent; border-radius: 50%; }

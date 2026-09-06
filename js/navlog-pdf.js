@@ -424,7 +424,12 @@ export function drawNavLogPdf(jsPDFCtor, d) {
     _footer(doc, !(d.calc?.isFr === false || d.perf?.isFr === false));
 
     // ---- Page 2 : « Calcul de navigation » (bloc écran du planificateur) ----
-    if (d.calc) _drawCalcPage(doc, d.calc);
+    if (d.calc) {
+        _drawCalcPage(doc, d.calc);
+        // Page de continuation du tableau waypoints (> 10 tronçons) :
+        // même gabarit que la page 2, insérée juste après.
+        if (d.calc._legsContinuation?.length) _drawLegsContinuation(doc, d.calc);
+    }
 
     // ---- Page 3 : « Performances et terrain » ----
     if (d.perf) _drawPerfPage(doc, d.perf);
@@ -548,9 +553,16 @@ function _drawCalcPage(doc, c) {
     }
 
     // ---- Tableau Détail des waypoints (multi-waypoints uniquement) ----
-    const legs = (c.isMultiLeg && Array.isArray(c.legs)) ? c.legs : [];
-    if (legs.length) {
-        y = section(`${fr ? 'Détail des waypoints' : 'Leg details'} (${legs.length})`, y);
+    // > MAX_LEGS_PAGE tronçons : la page principale montre les premiers
+    // SANS total (mention « suite page suivante ») et une page de
+    // CONTINUATION reprend le même gabarit pour le reste (retour
+    // pilote 06/09 : au-delà de 10, les waypoints étaient tassés).
+    const MAX_LEGS_PAGE = 10;
+    const allLegs = (c.isMultiLeg && Array.isArray(c.legs)) ? c.legs : [];
+    const hasMore = allLegs.length > MAX_LEGS_PAGE;
+    const legs = hasMore ? allLegs.slice(0, MAX_LEGS_PAGE) : allLegs;
+    if (allLegs.length) {
+        y = section(`${fr ? 'Détail des waypoints' : 'Leg details'} (${allLegs.length}${hasMore ? ` - 1/${Math.ceil(allLegs.length / MAX_LEGS_PAGE)}` : ''})`, y);
         // Colonnes compactées à GAUCHE et textes alignés à gauche — même
         // règle que le tableau « Chargement » de la page Centrage : le blanc
         // résiduel va à droite, après la dernière colonne (Fréq).
@@ -589,16 +601,25 @@ function _drawCalcPage(doc, c) {
             }
         });
         // Ligne TOTAL (gras, bleu, filet supérieur — comme tr.total à l'écran).
-        const totBase = headBot + (legs.length + 1) * rowH - 3.5;
-        doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
-        doc.line(L, headBot + legs.length * rowH, R, headBot + legs.length * rowH);
-        doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, BLUE);
-        doc.text(fr ? 'TOTAL' : 'TOTAL', L + 1.5, totBase);
-        const tots = [`${c.distanceNm ?? '—'} NM`, '—', c.timeLabel || '—', `${c.fuel?.tripL ?? '—'} L`];
-        tots.forEach((v, i) => doc.text(String(v), COLR[i], totBase));
-        doc.text('—', COLR[4], totBase);
-        y = headBot + (legs.length + 1) * rowH + 10;
-    }
+        if (hasMore) {
+            // Suite sur la page suivante : pas de total ici.
+            const sBase = headBot + legs.length * rowH - 3.5;
+            doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); _setInk(doc, MUTED);
+            doc.text(fr ? `Suite des tronçons (${allLegs.length - legs.length}) page suivante` : `More legs (${allLegs.length - legs.length}) on next page`, L + 1.5, sBase);
+            y = headBot + legs.length * rowH + 8;
+            c._legsContinuation = allLegs.slice(MAX_LEGS_PAGE);
+        } else {
+            const totBase = headBot + (legs.length + 1) * rowH - 3.5;
+            doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
+            doc.line(L, headBot + legs.length * rowH, R, headBot + legs.length * rowH);
+            doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, BLUE);
+            doc.text(fr ? 'TOTAL' : 'TOTAL', L + 1.5, totBase);
+            const tots = [`${c.distanceNm ?? '—'} NM`, '—', c.timeLabel || '—', `${c.fuel?.tripL ?? '—'} L`];
+            tots.forEach((v, i) => doc.text(String(v), COLR[i], totBase));
+            doc.text('—', COLR[4], totBase);
+            y = headBot + (legs.length + 1) * rowH + 10;
+        }
+        }
 
     // ---- Note de bas de page (référence POH, comme à l'écran) ----
     // Ancrée en bas du cadre : avec la mise en page compacte, le tableau des
@@ -623,6 +644,73 @@ function _drawCalcPage(doc, c) {
 // (elevation-chart.js) et alternates à ± 50 NM de la route (alternates.js).
 // Mêmes bandeau/cadre/cellules que la page 2 pour former un document cohérent.
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Page 2-bis — « Détail des waypoints (suite) » : même bandeau/cadre
+// que la page 2, tronçons restants puis ligne TOTAL. Insérée après la page
+// « Calcul de navigation » quand la route dépasse 10 tronçons.
+// ---------------------------------------------------------------------------
+function _drawLegsContinuation(doc, c) {
+    const fr = c.isFr !== false;
+    const L = 16.4, R = 402.7, MID = (L + R) / 2;
+
+    doc.addPage([PAGE.w, PAGE.h], 'portrait');
+    doc.setFont('helvetica', 'normal');
+
+    // Bandeau + cadre (identiques pages 1-2) + ligne mono from -> to.
+    doc.setFillColor(17, 24, 39);
+    doc.rect(16.4, 14.3, 386.3, 16.2, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.doc); _setInk(doc, [255, 255, 255]);
+    doc.text(fr ? 'Détail des waypoints (suite)' : 'Leg details (continued)', MID, 25.2, { align: 'center' });
+    doc.setDrawColor(...INK); doc.setLineWidth(0.8);
+    doc.rect(15, 29.9, 388.6, 551.9, 'S');
+    doc.setFont('courier', 'normal'); doc.setFontSize(8); _setInk(doc, MUTED);
+    const first = (c.legs && c.legs[0]) || {};
+    const last = (c.legs && c.legs[c.legs.length - 1]) || {};
+    doc.text(String(first.from || c.fromIcao || '') + '-' + String(last.to || c.toIcao || ''), L + 1.5, 45);
+
+    // Tableau : memes colonnes/en-tetes/filets que la page 2.
+    const legs = c._legsContinuation || [];
+    const COLR = [L + 95, L + 140, L + 182, L + 230, L + 272];
+    const FREQ_W = R - 5 - COLR[4];
+    const HEADS = fr ? ['Tronçon', 'Dist', 'Cap', 'ETE', 'Conso', 'Fréq']
+                     : ['Leg', 'Dist', 'Hdg', 'ETE', 'Fuel', 'Freq'];
+    let y = 60;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); _setInk(doc, MUTED);
+    doc.text(HEADS[0].toUpperCase(), L + 1.5, y + 8, { charSpace: 0.4 });
+    for (let i = 1; i < HEADS.length; i++) doc.text(HEADS[i].toUpperCase(), COLR[i - 1], y + 8, { charSpace: 0.4 });
+    const headBot = y + 11;
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.5);
+    doc.line(L, headBot, R, headBot);
+
+    const FOOT_TOP = 581.8 - 24;
+    let rowH = Math.min(13.5, Math.floor((FOOT_TOP - headBot) / (legs.length + 1)));
+    if (rowH < 10) rowH = 10;
+    legs.forEach((lg, i) => {
+        const base = headBot + i * rowH + rowH - 3.5;
+        doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, INK);
+        doc.text(String(lg.from) + '-' + String(lg.to), L + 1.5, base);
+        const vals = [lg.dist + ' NM', String(lg.hdg ?? '').padStart(3, '0') + '°', lg.eteLabel, lg.fuelL + ' L'];
+        doc.setFont('courier', 'normal');
+        vals.forEach((v, k) => doc.text(String(v ?? '-'), COLR[k], base));
+        if (lg.freq) { _setInk(doc, BLUE); doc.text(_trunc(doc, lg.freq, FREQ_W), COLR[4], base); }
+        if (i < legs.length - 1) {
+            doc.setDrawColor(...BANDL); doc.setLineWidth(0.3);
+            doc.line(L, headBot + (i + 1) * rowH, R, headBot + (i + 1) * rowH);
+        }
+    });
+    // Ligne TOTAL (identique page 2).
+    const totBase = headBot + legs.length * rowH + rowH - 3.5;
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
+    doc.line(L, headBot + legs.length * rowH, R, headBot + legs.length * rowH);
+    doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, BLUE);
+    doc.text('TOTAL', L + 1.5, totBase);
+    const tots = [(c.distanceNm ?? '-') + ' NM', '-', c.timeLabel || '-', (c.fuel && c.fuel.tripL != null ? c.fuel.tripL + ' L' : '-')];
+    tots.forEach((v, i) => doc.text(String(v), COLR[i], totBase));
+    doc.text('-', COLR[4], totBase);
+
+    _footer(doc, fr);
+}
+
 function _drawPerfPage(doc, p) {
     const fr = p.isFr !== false;
     doc.addPage([PAGE.w, PAGE.h], 'portrait');
