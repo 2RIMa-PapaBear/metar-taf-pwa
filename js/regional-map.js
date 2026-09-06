@@ -463,7 +463,7 @@ function _mountZoomAirfieldButton(bar) {
  * Clic sur le repère → Renommer / + Plan / Supprimer.
  * ================================================================ */
 
-let _freeWaypoints = new Map();   // 'ZZAA' → { lat, lon, name, marker }
+let _freeWaypoints = new Map();   // 'ZZAA' → { lat, lon, name, marker, hit }
 let _freeWpSeq = 1;
 
 // Coordonnées en degrés-minutes aviation (ex. « 4851N 00221W ») — nom par
@@ -580,8 +580,24 @@ function _createFreeWaypoint(lat, lon, name, freq, kind) {
         weight: 2, opacity: 1, fillOpacity: 0.9,
     }).addTo(_map);
     marker.bindTooltip(escapeHtml(name), { permanent: true, direction: 'right', className: 'free-wp-label' });
+    // Marqueur DOM superposé au cercle SVG — même remède que les pastilles
+    // (da0feda1) : le clic sur un path SVG recouvert par les couches et le
+    // point d'étape de la route n'est pas fiable, c'est le HIT qui porte le
+    // popup d'édition (Renommer / + Plan / Supprimer).
+    const hit = L.marker([lat, lon], {
+        interactive: true,
+        keyboard: false,
+        icon: L.divIcon({ className: 'pin-hit', iconSize: [16, 16], iconAnchor: [8, 8] }),
+    }).addTo(_map);
     hit.bindPopup(() => _freeWpPopupHtml(code), { maxWidth: 250, keepInView: true });
-    _freeWaypoints.set(code, { lat, lon, name, marker });
+    // Clic droit : raccourci « + Plan » comme les pastilles — utile quand le
+    // repère a été retiré du champ Waypoints ; sinon ouvre l'éditeur.
+    hit.on('contextmenu', (e) => {
+        L.DomEvent.stopPropagation(e);
+        if (!_freeWpInPlan(code)) document.dispatchEvent(new CustomEvent('add-waypoint', { detail: { icao: code } }));
+        else hit.openPopup();
+    });
+    _freeWaypoints.set(code, { lat, lon, name, marker, hit });
 
     // Insertion intelligente + recalcul du plan (handler add-waypoint d'app.js)
     // + annonce du code créé (l'import d'un plan recompose l'ordre du fichier).
@@ -611,6 +627,7 @@ function _deleteFreeWaypoint(code) {
     const wp = _freeWaypoints.get(code);
     if (!wp) return;
     _map?.removeLayer(wp.marker);
+    _map?.removeLayer(wp.hit);
     _freeWaypoints.delete(code);
     const wpInput = document.getElementById('fp-waypoints');
     if (wpInput && wpInput.value.trim()) {
