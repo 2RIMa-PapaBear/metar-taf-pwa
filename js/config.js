@@ -14,7 +14,11 @@
  * ================================================================ */
 
 export const config = {
-    PROXY_URL: '',
+    // Relais CORS Cloudflare (URL publique, aucune donnée secrète) : valeur
+    // PAR DÉFAUT pour tous les canaux — le miroir Pages n'a pas de
+    // config.local.js (jamais déployé), il lui faut le relais (météo, cartes
+    // VAC). config.local.js peut toujours surcharger.
+    PROXY_URL: 'https://meteo-relais.papabear56.workers.dev',
     OPENAIP_API_KEY: '',
     // Clé corsproxy.io — repli météo du miroir public quand aviationweather.gov
     // bloque CORS (fréquent : leurs backends n'envoient pas toujours ACAO).
