@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Visualiseur METAR/TAF — Météo aéronautique en temps réel</title>
+    <meta name="description" content="Décodez et visualisez graphiquement les messages météo aéronautiques METAR et TAF. Prévisions aérodrome, plafond, visibilité, vent, catégorie VFR/IFR. Outil gratuit pour pilotes.">
+    <meta name="keywords" content="METAR, TAF, météo aéronautique, visualiseur METAR, décodeur TAF, VFR, IFR, plafond, visibilité, vent, aviation météo, météo aéroport, OACI, pilote">
+    <meta name="author" content="PapaBear">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#020617">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="METAR/TAF">
+    <link rel="canonical" href="">
+    <meta property="og:title" content="Visualiseur METAR/TAF — Météo aéronautique en temps réel">
+    <meta property="og:description" content="Décodez et visualisez graphiquement les messages météo aéronautiques METAR et TAF. Outil gratuit pour pilotes.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:locale:alternate" content="en_GB">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Visualiseur METAR/TAF — Météo aéronautique">
+    <meta name="twitter:description" content="Décodez et visualisez les messages METAR/TAF. Outil gratuit pour pilotes.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon.ico">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="modulepreload" href="js/app.js?v=99.254">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"
+            integrity="sha384-ZHM8wxIpZLrn5eRq7p0QQvd4+K4Ve51xqJgNw1MqVv329Jntjpjal7C1C4rnZSSx"
+            crossorigin="anonymous" defer></script>
+    <script src="vendor/lucide.min.js?v=99.254" defer></script>
+    <script src="vendor/geomag.js?v=99.254" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=99.254">
+    <link rel="stylesheet" href="css/wind-compass-styles.css?v=99.254">
+    <script>
+        // Anti-flash mode nuit : applique la classe AVANT le premier rendu
+        // pour éviter une explosion de lumière blanche destructrice pour la
+        // vision nocturne déjà adaptée du pilote. Doit rester synchrone et
+        // bloquant (pas de module, pas d'async).
+        try { if (localStorage.getItem('night-mode-enabled') === '1') document.documentElement.classList.add('night-mode'); } catch (e) {}
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Visualiseur METAR/TAF",
+      "description": "Décodez et visualisez graphiquement les messages météo aéronautiques METAR et TAF. Outil gratuit pour pilotes.",
+      "applicationCategory": "NavigationApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "author": { "@type": "Person", "name": "PapaBear" },
+      "inLanguage": ["fr", "en"]
+    }
+    </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Aller au contenu principal</a>
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="sr-announcements"></div>
+<div class="container">
+    <aside class="side-column side-column-left card" aria-label="Aéroports favoris">
+        <h3 id="lbl-favoris-title"><i data-lucide="star" class="icon-sm"></i> Favoris</h3>
+        <div id="favorites-list"></div>
+        <button id="btn-add-favorite" class="btn-primary btn-add-favorite"></button>
+    </aside>
+    
+    <div class="center-column">
+    <header class="card">
+        <div class="header-row">
+            <div class="header-title-block">
+                <h1 id="ui-title">Visualiseur METAR/TAF</h1>
+                <span class="header-subtitle">Aviation Weather Decoder</span>
+            </div>
+            <div class="header-controls" style="display:flex; gap:10px; align-items:center;">
+                <!-- Ordre demandé par le pilote : FR/ANG — Local/Navigation —
+                     Briefing express — Partager — Surveillance — Thème — Notice. -->
+                <div class="lang-switcher" role="group" aria-label="Paramètres">
+                <button id="btn-lang-toggle" class="btn-lang-toggle" aria-label="Basculer entre français et anglais">
+                    <div class="flag-fr" aria-hidden="true"></div>
+                    <div class="flag-en" aria-hidden="true"></div>
+                    <div class="flag-line" aria-hidden="true"></div>
+                </button>
+                </div>
+                <div id="flight-mode-toggle" class="flight-mode-toggle" role="switch" aria-label="Mode de vol" aria-pressed="false" data-mode="local" title="Basculer entre vol local et navigation">
+                    <span class="seg seg-local" id="seg-local">Local</span>
+                    <span class="seg seg-nav" id="seg-nav">Navigation</span>
+                    <span class="seg-slider"></span>
+                </div>
+                <button id="btn-cockpit-mode" class="btn-cockpit-mode" title="Briefing express (vue cockpit)" aria-label="Briefing express" aria-pressed="false">
+                    <i data-lucide="maximize-2" class="icon-sm"></i>
+                </button>
+                <button id="btn-share" class="btn-share" title="Partager ce briefing" aria-label="Partager">
+                    <i data-lucide="share-2" class="icon-sm"></i>
+                </button>
+                <button id="btn-watchdog" class="btn-watchdog" title="Surveillance des favoris" aria-label="Surveillance favoris" aria-pressed="false">
+                    <i data-lucide="bell" class="icon-sm"></i>
+                </button>
+                <button id="btn-theme" class="btn-theme" title="Passer en thème clair" aria-label="Basculer thème clair/sombre" aria-pressed="false">
+                    <i data-lucide="sun" class="theme-ic-light icon-sm"></i>
+                    <i data-lucide="moon" class="theme-ic-dark icon-sm" style="display:none;"></i>
+                    <span class="theme-lbl">Clair</span>
+                </button>
+                <button id="btn-notice" class="btn-help" title="Ouvrir la notice complète" onclick="window.location.href = document.documentElement.lang === 'en' ? 'notice-en.html' : 'notice-fr.html'">
+					<i data-lucide="book-open" class="icon-sm"></i> <span id="lbl-notice">Notice</span>
+				</button>
+            </div>
+        </div>
+
+        <div class="hpp-group search-group">
+            <label for="icaoInput" class="sr-only">Code OACI de l'aéroport</label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="icaoInput" placeholder="ex: LFPG ou Paris" autocomplete="off" aria-autocomplete="list">
+                <div id="search-history" class="search-history hidden">
+                    <div class="search-history-title" id="search-history-title">Recherches récentes</div>
+                    <div id="history-items" class="history-items"></div>
+                </div>
+            </div>
+            <button id="btn-fetch-metar" class="btn-fetch-metar" aria-label="Télécharger METAR">
+                <i data-lucide="download-cloud" stroke-width="2.5" class="icon-sm"></i> METAR
+            </button>
+            <button id="btn-fetch-taf" class="btn-fetch-taf" aria-label="Télécharger TAF">
+                <i data-lucide="file-text" stroke-width="2.5" class="icon-sm"></i> TAF
+            </button>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-backdrop" id="highlights" aria-hidden="true"></div>
+            <textarea id="tafInput" class="editor-textarea" spellcheck="false" aria-label="Zone de saisie du message"></textarea>
+        </div>
+
+        <div class="info-bar">
+            <span id="lbl-info" role="status" aria-live="polite" aria-atomic="true"></span>
+            <div id="lbl-warning" role="alert" aria-live="assertive"></div>
+        </div>
+
+        <div id="metar-dashboard" class="metar-dashboard">
+            <aside id="go-nogo-banner" class="dashboard-cell go-nogo" role="status" aria-live="polite" aria-atomic="true" style="display:none;"></aside>
+            <div id="wind-compass-container" class="dashboard-cell"></div>
+            <div id="flight-cat-badge" class="dashboard-cell" role="status" aria-live="polite"></div>
+        </div>
+
+        <!-- Widgets données décryptées (Vent / Visi+Plafond / T°+Td+givrage / QNH) -->
+        <div id="decrypted-widgets" class="decrypted-widgets" hidden>
+            <div id="widget-wind" class="dashboard-cell widget-card" data-icon="wind"></div>
+            <div id="widget-visi" class="dashboard-cell widget-card" data-icon="eye"></div>
+            <div id="widget-temp" class="dashboard-cell widget-card" data-icon="thermometer"></div>
+            <div id="widget-qnh"  class="dashboard-cell widget-card" data-icon="gauge"></div>
+        </div>
+    </header>
+
+    <!-- Barre de navigation Départ → Destination : carte autonome, visible
+         dès l'activation du mode Navigation (plus besoin d'ouvrir la carte). -->
+    <aside id="route-planner" class="card route-planner" aria-label="Route de navigation">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+            <i data-lucide="plane-takeoff" style="width:14px;height:14px;"></i>
+            <span id="lbl-route-from">Départ</span>
+        </div>
+        <span id="route-from-display" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--secondary);font-size:14px;">—</span>
+        <i data-lucide="arrow-right" style="width:16px;height:16px;color:var(--text-muted);flex-shrink:0;"></i>
+        <label for="route-to-input" style="font-size:11px;color:var(--text-muted);font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;">
+            <i data-lucide="plane-landing" style="width:14px;height:14px;"></i>
+            <span id="lbl-route-to">Destination</span>
+        </label>
+        <div class="route-to-wrapper">
+            <input type="text" id="route-to-input" placeholder="ex : LFPO ou Poitiers" autocomplete="off" aria-autocomplete="list" style="text-transform:uppercase;font-family:'DM Mono',monospace;font-size:14px;font-weight:600;background:var(--input-bg);border:1px solid var(--border-color);color:var(--primary);border-radius:6px;padding:6px 10px;width:100%;outline:none;">
+        </div>
+        <div class="plan-io-wrapper">
+            <button id="plan-io-btn" class="plan-io-btn" title="Sauvegarder / importer le plan de vol (JSON, GPX, KML)" aria-haspopup="menu" aria-expanded="false">
+                <i data-lucide="folder-open" style="width:16px;height:16px;"></i>
+            </button>
+            <div id="plan-io-menu" class="plan-io-menu" role="menu">
+                <button data-act="save-json" role="menuitem"><i data-lucide="save" style="width:13px;height:13px;"></i> Sauvegarder (JSON)</button>
+                <button data-act="save-gpx" role="menuitem"><i data-lucide="download" style="width:13px;height:13px;"></i> Exporter GPX</button>
+                <button data-act="save-kml" role="menuitem"><i data-lucide="download" style="width:13px;height:13px;"></i> Exporter KML</button>
+                <button data-act="import" role="menuitem"><i data-lucide="folder-open" style="width:13px;height:13px;"></i> Importer un plan…</button>
+            </div>
+        </div>
+        <div id="route-to-name" class="route-to-name"></div>
+    </aside>
+
+    <aside id="flight-window-banner" class="card flight-window" role="status" aria-live="polite" style="display:none;"></aside>
+
+    <aside id="takeoff-widget" class="card takeoff-panel" style="display:none;"></aside>
+
+    <aside id="wb-widget" class="card wb-panel" style="display:none;"></aside>
+
+    <aside id="frequencies-widget" class="card frequencies-panel" style="display:none;"></aside>
+    <aside id="airfield-widget" class="card frequencies-panel" style="display:none;"></aside>
+
+    <aside id="alternates-container" class="card alternates-panel" style="display:none;">
+        <div class="alternates-header" id="alternates-toggle">
+            <i data-lucide="shuffle" class="icon-sm"></i>
+            <span id="lbl-alternates">Alternates viables — terrains de déroutement</span>
+            <i data-lucide="chevron-down" class="alternates-chevron" style="width:18px;height:18px;margin-left:auto;"></i>
+        </div>
+        <div id="alternates-body" class="alternates-body">
+            <div id="alternates-list"></div>
+        </div>
+    </aside>
+
+    <aside id="flight-planner-panel" class="card flight-planner-panel" style="display:none;"></aside>
+
+    <aside id="regional-map-panel" class="card regional-map-panel">
+        <div class="regional-map-header" id="regional-map-toggle">
+            <i data-lucide="map" class="icon-sm"></i>
+            <span id="lbl-regional-map">Carte régionale — radar & terrains voisins</span>
+            <i data-lucide="chevron-down" class="regional-map-chevron" style="width:18px;height:18px;margin-left:auto;"></i>
+        </div>
+        <div id="regional-map-body" class="regional-map-body">
+            <div id="regional-map" class="regional-map"></div>
+            <div class="regional-map-legend">
+                <span class="map-legend-item"><span class="map-dot" style="background:#4ADE80;"></span> VFR</span>
+                <span class="map-legend-item"><span class="map-dot" style="background:#38BDF8;"></span> MVFR</span>
+                <span class="map-legend-item"><span class="map-dot" style="background:#F87171;"></span> IFR</span>
+                <span class="map-legend-item"><span class="map-dot" style="background:#D946EF;"></span> LIFR</span>
+                <span class="map-legend-item"><span class="map-dot" style="background:#94A3B8;"></span> <span id="lbl-no-metar">Sans METAR</span></span>
+                <span class="map-legend-item"><span class="map-dot" style="background:#FBBF24;"></span> <span id="lbl-current-apt">Terrain courant</span></span>
+            </div>
+            <div id="elevation-profile-container" style="display:none; margin-top:10px; padding:8px; background:var(--inner-bg); border:1px solid var(--border-color); border-radius:8px;">
+                <span id="elev-route-label" style="display:none;"></span>
+            </div>
+        </div>
+    </aside>
+
+    <main id="main-content" class="card">
+        <div class="graph-container" id="graphScroll" role="region" aria-label="Graphique météorologique">
+            <canvas id="tafCanvas" class="taf-canvas" role="img" aria-label="Visualisation graphique"></canvas>
+            <div id="canvas-description" class="sr-only" aria-live="polite"></div>
+        </div>
+        
+        <div id="alertes-meteo" class="alertes-container" style="display: none;"></div>
+        
+        <div class="audio-controls">
+            <div id="dep-dest-toggle" class="dep-dest-toggle">
+                <button class="dep-dest-btn active" data-side="dep">🛫 <span id="lbl-dep-btn">Départ</span></button>
+                <button class="dep-dest-btn" data-side="dest">🛬 <span id="lbl-dest-btn">Destination</span></button>
+            </div>
+            <button id="btn-read-metar" class="btn-secondary"></button>
+            <button id="btn-stop-audio" class="btn-secondary"></button>
+        </div>
+    </main>
+    
+    <aside class="card aero-legend-bar" aria-label="Information heures aéronautiques">
+        <span id="lbl-aero-hours">Heures Aéronautiques</span>
+    </aside>
+
+    <aside class="card legend-bar legend-bar-bottom" role="complementary">
+        <div class="legend-item"><span class="tag-cloud" aria-hidden="true">NSC / NCD</span> <span id="leg-clr">Clair</span></div>
+        <div class="legend-item"><span class="tag-cloud" aria-hidden="true">FEW</span> <span id="leg-few">Peu</span></div>
+        <div class="legend-item"><span class="tag-cloud" aria-hidden="true">SCT</span> <span id="leg-sct">Épars</span></div>
+        <div class="legend-item"><span class="tag-cloud tag-ceil" aria-hidden="true">BKN</span> <span id="leg-bkn">Fragmenté</span></div>
+        <div class="legend-item"><span class="tag-cloud tag-ceil" aria-hidden="true">OVC</span> <span id="leg-ovc">Couvert</span></div>
+        <div class="legend-item"><span class="tag-cloud tag-ceil" aria-hidden="true">VV</span> <span id="leg-vv">Invisible</span></div>
+    </aside>
+
+    <footer class="footer-wrap">
+        <div class="footer">
+            <div>© PapaBear - Web version 3.0 · <span id="app-build">v?</span> | <span id="lbl-source">Source des données :</span> <a href="https://aviationweather.gov" target="_blank" rel="noopener noreferrer">AviationWeather.gov</a> · Service de l'Information Aéronautique — Données originales téléchargées sur <a href="https://www.sia.aviation-civile.gouv.fr/" target="_blank" rel="noopener noreferrer">sia.aviation-civile.gouv.fr</a><span id="sia-airac"></span></div>
+            <div id="footer-warning" class="warning">Avertissement : Cet outil est fourni à titre purement indicatif. Ne pas utiliser pour la préparation des vols.</div>
+        </div>
+    </footer>
+    </div>
+    
+    <aside class="side-column side-column-right card" aria-label="Historique des recherches">
+        <h3 id="history-title-text"><i data-lucide="history" class="icon-sm"></i> Historique récent</h3>
+        <div id="search-history-container">
+            <div id="search-history-list"></div>
+        </div>
+    </aside>
+</div>
+
+<div id="canvasTooltip" class="canvas-tooltip" role="tooltip"></div>
+
+    <script type="module" src="js/app.js?v=99.254"></script>
+    <script type="module" src="js/gps.js?v=99.254"></script>
+    <script src="vendor/jspdf.umd.min.js?v=99.254" defer></script>
+    <link rel="stylesheet" href="vendor/leaflet.min.css?v=99.254">
+    <script src="vendor/leaflet.min.js?v=99.254" defer></script>
+</body>
+</html>

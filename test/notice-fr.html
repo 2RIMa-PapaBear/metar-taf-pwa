@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice d'utilisation - METAR/TAF Visualizer</title>
+    <style>
+        :root {
+            --primary: #0288D1;
+            --text: #333;
+            --bg: #f9fafb;
+            --panel: #ffffff;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--panel);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h2 {
+            color: #00695C;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2E7D32;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Reproductions FIDÈLES des contrôles de l'en-tête de l'application
+         * (mêmes icônes Lucide, même mini-drapeau, même segment Local/Nav). */
+        .demo-lang { position: relative; display: inline-block; width: 22px; height: 16px; border-radius: 3px; overflow: hidden; vertical-align: -3px; }
+        .demo-flag-fr, .demo-flag-en, .demo-flag-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .demo-flag-fr { background: url('https://flagcdn.com/w40/fr.png') no-repeat center center; background-size: cover; clip-path: polygon(0 0, 100% 0, 0 100%); }
+        .demo-flag-en { background: url('https://flagcdn.com/w40/gb.png') no-repeat center center; background-size: cover; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+        .demo-flag-line { background: linear-gradient(to top left, transparent 49.5%, rgba(255,255,255,0.4) 49.5%, rgba(255,255,255,0.4) 50.5%, transparent 50.5%); }
+        .demo-seg { display: inline-flex; border: 1px solid #cbd5e1; border-radius: 8px; padding: 2px; vertical-align: middle; background: #f8fafc; }
+        .demo-seg span { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; color: #64748b; }
+        .demo-seg span.on { background: #0288D1; color: #fff; }
+
+        /* Reproductions des visuels de la carte régionale (mêmes couleurs,
+         * mêmes symboles SIA que l'application). */
+        .pin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); vertical-align: -2px; }
+        .rwy { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 2px; }
+
+        /* Icônes Lucide inline (harmonisation totale avec l'application :
+         * chaque emoji qui désignait un bouton/une pastille est remplacé
+         * par le visuel RÉEL de l'app). */
+        .li-ic { width: 14px; height: 14px; vertical-align: -2px; }
+        .pin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); vertical-align: -2px; }
+        .demo-select { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; color: #555; }
+        .rp-sym svg { vertical-align: middle; }
+        .demo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 500; color: #555; vertical-align: middle; }
+        .demo-btn svg { width: 14px; height: 14px; }
+        h1 svg, h2 svg, h3 svg { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; }
+        .btn-back svg { width: 14px; height: 14px; }
+        .btn-floating-toc svg { width: 15px; height: 15px; }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel);
+            color: #555;
+            padding: 5px 12px;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+            font-size: 12px;
+            height: 26px;
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+        }
+        .btn-back:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7fc;
+        }
+        .btn-back:active {
+            background: #e7f2fa;
+        }
+        .btn-back svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+        .btn-back:hover svg {
+            transform: none;
+        }
+        .btn-floating-toc {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--panel);
+            color: #555;
+            padding: 7px 13px;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-weight: 500;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+            z-index: 1000;
+        }
+        .btn-floating-toc:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7fc;
+        }
+        .toc {
+            background: #f0f7ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        @media print {
+    
+        /* Reproductions FIDÈLES des contrôles de l'en-tête de l'application
+         * (mêmes icônes Lucide, même mini-drapeau, même segment Local/Nav). */
+        .demo-lang { position: relative; display: inline-block; width: 22px; height: 16px; border-radius: 3px; overflow: hidden; vertical-align: -3px; }
+        .demo-flag-fr, .demo-flag-en, .demo-flag-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .demo-flag-fr { background: url('https://flagcdn.com/w40/fr.png') no-repeat center center; background-size: cover; clip-path: polygon(0 0, 100% 0, 0 100%); }
+        .demo-flag-en { background: url('https://flagcdn.com/w40/gb.png') no-repeat center center; background-size: cover; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+        .demo-flag-line { background: linear-gradient(to top left, transparent 49.5%, rgba(255,255,255,0.4) 49.5%, rgba(255,255,255,0.4) 50.5%, transparent 50.5%); }
+        .demo-seg { display: inline-flex; border: 1px solid #cbd5e1; border-radius: 8px; padding: 2px; vertical-align: middle; background: #f8fafc; }
+        .demo-seg span { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; color: #64748b; }
+        .demo-seg span.on { background: #0288D1; color: #fff; }
+
+        /* Reproductions des visuels de la carte régionale (mêmes couleurs,
+         * mêmes symboles SIA que l'application). */
+        .pin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); vertical-align: -2px; }
+        .rwy { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 2px; }
+
+        /* Icônes Lucide inline (harmonisation totale avec l'application :
+         * chaque emoji qui désignait un bouton/une pastille est remplacé
+         * par le visuel RÉEL de l'app). */
+        .li-ic { width: 14px; height: 14px; vertical-align: -2px; }
+        .pin { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); vertical-align: -2px; }
+        .demo-select { display: inline-flex; align-items: center; gap: 4px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; color: #555; }
+        .rp-sym svg { vertical-align: middle; }
+        .demo-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; padding: 4px 9px; font-size: 12px; font-weight: 500; color: #555; vertical-align: middle; }
+        .demo-btn svg { width: 14px; height: 14px; }
+        h1 svg, h2 svg, h3 svg { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; }
+        .btn-back svg { width: 14px; height: 14px; }
+        .btn-floating-toc svg { width: 15px; height: 15px; }
+        .btn-back { display: none; }
+            .btn-floating-toc { display: none; }
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            table { font-size: 0.9em; }
+        }
+
+        /* ============================================================
+         * MAQUETTES (mockups) — Reproduction fidèle des bannières réelles
+         * ============================================================
+         * Thème dark cohérent avec l'application, pour que le pilote
+         * reconnaisse immédiatement les éléments décrits dans la notice.
+         * ============================================================ */
+        .mockup { margin: 24px 0; }
+        .mockup-caption {
+            text-align: center;
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+        }
+        .mockup-stage {
+            background: #020617;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #F8FAFC;
+        }
+
+        /* --- Bannière GO / NO-GO --- */
+        .mck-gonogo {
+            border-radius: 10px;
+            border: 1px solid;
+            border-left-width: 5px;
+            padding: 16px 20px;
+        }
+        .mck-gonogo-header { display: flex; align-items: center; gap: 14px; }
+        .mck-gonogo-icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; border: 3px solid;
+        }
+        .mck-gonogo-verdict { font-size: 22px; font-weight: 900; letter-spacing: 1px; line-height: 1.1; }
+        .mck-gonogo-sub { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+        .mck-gonogo-cat {
+            text-align: center; padding: 6px 14px;
+            background: rgba(0,0,0,0.35); border-radius: 8px; margin-left: auto;
+        }
+        .mck-gonogo-cat-lbl { font-size: 9px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; }
+        .mck-gonogo-cat-val { font-size: 18px; font-weight: 800; }
+        .mck-reasons { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .mck-reason {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 11px; border-radius: 6px; font-size: 12.5px;
+        }
+        .mck-reason-icon { font-size: 16px; flex-shrink: 0; }
+        .mck-go   { border-color: #10B981; background: rgba(16,185,129,0.08); }
+        .mck-go .mck-gonogo-icon { background: rgba(16,185,129,0.13); border-color: #10B981; color: #10B981; }
+        .mck-go .mck-gonogo-verdict, .mck-go .mck-gonogo-cat-val { color: #10B981; }
+        .mck-caution { border-color: #F59E0B; background: rgba(245,158,11,0.08); }
+        .mck-caution .mck-gonogo-icon { background: rgba(245,158,11,0.13); border-color: #F59E0B; color: #F59E0B; }
+        .mck-caution .mck-gonogo-verdict, .mck-caution .mck-gonogo-cat-val { color: #F59E0B; }
+        .mck-nogo { border-color: #EF4444; background: rgba(239,68,68,0.08); }
+        .mck-nogo .mck-gonogo-icon { background: rgba(239,68,68,0.13); border-color: #EF4444; color: #EF4444; }
+        .mck-nogo .mck-gonogo-verdict, .mck-nogo .mck-gonogo-cat-val { color: #EF4444; }
+        .mck-r-danger { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+        .mck-r-caution { background: rgba(245,158,11,0.1); color: #FCD34D; }
+        .mck-r-ok { background: rgba(16,185,129,0.1); color: #6EE7B7; }
+
+        /* --- Bannière créneau de vol --- */
+        .mck-window {
+            border-radius: 10px; border: 1px solid; border-left-width: 4px;
+            padding: 14px 18px;
+        }
+        .mck-window-content { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .mck-w-icon {
+            width: 42px; height: 42px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; border: 2px solid; flex-shrink: 0;
+        }
+        .mck-w-status { font-weight: 800; font-size: 13px; letter-spacing: 0.5px; }
+        .mck-w-detail { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+        .mck-w-times { display: flex; gap: 16px; margin-left: auto; flex-wrap: wrap; }
+        .mck-w-time { text-align: center; }
+        .mck-w-time-lbl { color: #94A3B8; text-transform: uppercase; font-size: 9px; letter-spacing: 1px; }
+        .mck-w-time-val { font-family: 'Courier New', monospace; font-weight: 700; color: #F8FAFC; font-size: 14px; }
+        .mck-w-open { border-color: #10B981; background: rgba(16,185,129,0.12); }
+        .mck-w-open .mck-w-icon { background: rgba(16,185,129,0.13); border-color: #10B981; }
+        .mck-w-open .mck-w-status { color: #10B981; }
+        .mck-w-closing { border-color: #F59E0B; background: rgba(245,158,11,0.12); }
+        .mck-w-closing .mck-w-icon { background: rgba(245,158,11,0.13); border-color: #F59E0B; }
+        .mck-w-closing .mck-w-status { color: #F59E0B; }
+        .mck-w-night { border-color: #EF4444; background: rgba(239,68,68,0.12); }
+        .mck-w-night .mck-w-icon { background: rgba(239,68,68,0.13); border-color: #EF4444; }
+        .mck-w-night .mck-w-status { color: #EF4444; }
+
+        /* --- Carte régionale (schéma) --- */
+        .mck-map {
+            border-radius: 8px; overflow: hidden; border: 1px solid #1E293B;
+            position: relative; height: 220px;
+            background:
+                linear-gradient(135deg, #0a1525 0%, #0d1830 100%);
+        }
+        .mck-map-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .mck-map-route {
+            position: absolute; top: 30%; left: 15%; width: 60%; height: 0;
+            border-top: 2.5px dashed #FBBF24; transform: rotate(18deg); transform-origin: left center;
+        }
+        .mck-map-pin {
+            position: absolute; transform: translate(-50%, -50%);
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid #fff; box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        .mck-map-pin-lg { width: 22px; height: 22px; border-width: 3px; }
+        .mck-pin-vfr { background: #4ADE80; }
+        .mck-pin-mvfr { background: #38BDF8; }
+        .mck-pin-ifr { background: #F87171; }
+        .mck-pin-lifr { background: #D946EF; }
+        .mck-pin-current { background: #FBBF24; }
+        .mck-map-label {
+            position: absolute; transform: translate(-50%, 12px);
+            font-size: 9px; color: #94A3B8; font-family: monospace; white-space: nowrap;
+        }
+        .mck-map-radar {
+            position: absolute; top: 55%; left: 45%;
+            width: 90px; height: 60px; border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(96,165,250,0.25), rgba(74,222,128,0.2) 50%, transparent 70%);
+            filter: blur(2px);
+        }
+        .mck-map-legend {
+            display: flex; gap: 14px; flex-wrap: wrap;
+            padding: 8px 4px 0; font-size: 11px; color: #94A3B8;
+        }
+        .mck-ml-item { display: flex; align-items: center; gap: 5px; }
+        .mck-ml-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back"><i data-lucide="arrow-left"></i> Retour à l'application</a>
+        <h1><i data-lucide="book-open"></i> NOTICE D'UTILISATION — METAR/TAF Visualizer</h1>
+<h2>Guide complet pour pilotes VFR et IFR</h2>
+<hr />
+<h2 id="toc"><i data-lucide="list"></i> TABLE DES MATIÈRES</h2>
+<ol>
+<li><a href="#demarrage">Démarrage rapide</a></li>
+<li><a href="#interface">Interface et fonctionnalités</a></li>
+<li><a href="#decision">Aide à la décision</a></li>
+<li><a href="#situation">Conscience situationnelle</a></li>
+<li><a href="#navigation">Navigation cross-country</a></li>
+<li><a href="#frequences">Fréquences et info terrain</a></li>
+<li><a href="#confort">Confort &amp; Personnalisation</a></li>
+<li><a href="#decryptage-metar">Décryptage METAR</a></li>
+<li><a href="#decryptage-taf">Décryptage TAF</a></li>
+<li><a href="#minima-vfr">Minima VFR (VMC)</a></li>
+<li><a href="#exemples">Exemples pratiques</a></li>
+<li><a href="#glossaire">Glossaire aviation</a></li>
+<li><a href="#conseils">Conseils d'utilisation</a></li>
+</ol>
+<hr />
+
+<!-- ====================== DÉMARRAGE RAPIDE ====================== -->
+<h2 id="demarrage"><i data-lucide="rocket"></i> DÉMARRAGE RAPIDE</h2>
+<h3>Première utilisation</h3>
+<ol>
+<li>Saisissez un <strong>code OACI</strong> (ex: <code>LFPG</code>) ou un <strong>nom de terrain</strong> (ex: <code>Paris</code>) dans la barre de recherche.</li>
+<li>Cliquez sur <strong>« METAR »</strong> (observation temps réel) ou <strong>« TAF »</strong> (prévision).</li>
+<li>Le graphique et tous les widgets se dessinent automatiquement : tableau de bord (vent, catégorie de vol, GO/NO-GO), créneau de vol, carte régionale, performances de décollage, fréquences.</li>
+</ol>
+<div class="success">
+<p><strong>Astuce</strong> : vous pouvez aussi coller directement un message METAR ou TAF brut dans la zone d'édition. L'outil le décodera et l'affichera.</p>
+</div>
+
+<h3>Curseur d'arrivée</h3>
+<p>Cliquez-glissez sur le graphique pour régler votre <strong>heure d'arrivée prévue</strong> (UTC). Toutes les prévisions TAF se recalculent à cet instant. Double-clic pour réinitialiser.</p>
+
+<!-- ====================== INTERFACE ====================== -->
+<h2 id="interface"><i data-lucide="layout-dashboard"></i> INTERFACE ET FONCTIONNALITÉS</h2>
+
+<h3>Recherche et autocomplétion</h3>
+<ul>
+<li><strong>Recherche intelligente</strong> : tapez un code OACI (<code>LFPO</code>) ou un nom de ville/terrain (<code>Toulouse</code>, <code>Orly</code>).</li>
+<li><strong>Autocomplétion</strong> sur plus de <strong>17 000 aéroports</strong> mondiaux.</li>
+<li><strong>Terrain le plus proche</strong> : si un terrain n'a pas de METAR/TAF, l'outil affiche automatiquement celui du terrain voisin (avec avertissement).</li>
+</ul>
+
+<h3>Éditeur de message brut</h3>
+<p>La zone d'édition affiche le message METAR/TAF brut avec <strong>coloration syntaxique</strong>. Vous pouvez le modifier manuellement — l'affichage se met à jour en temps réel.</p>
+
+<h3>Tableau de bord (3 cellules)</h3>
+<p>Sous la barre de recherche, trois cellules s'affichent automatiquement :</p>
+<table>
+<thead><tr><th>Cellule</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><strong><i data-lucide="wind" class="li-ic"></i> Boussole du vent</strong></td><td>Rose des vents avec vent moyen, rafales, direction. Sélection automatique de la meilleure piste. Cliquez sur une bulle de piste pour forcer le choix.</td></tr>
+<tr><td><strong><span class="pin" style="background:#4ADE80"></span> Catégorie de vol</strong></td><td>Badge VFR / MVFR / IFR / LIFR calculé à partir du plafond et de la visibilité.</td></tr>
+<tr><td><strong><i data-lucide="check-circle" class="li-ic" style="color:#4ADE80"></i> GO / NO-GO</strong></td><td>Verdict synthétique de décision de vol (voir « Aide à la décision »).</td></tr>
+</tbody>
+</table>
+
+<h3>Favoris et historique</h3>
+<ul>
+<li><strong>Favoris</strong> (colonne de gauche) : ajoutez vos aéroports fréquents d'un clic sur l'icône étoile.</li>
+<li><strong>Historique</strong> (colonne de droite) : vos dernières recherches, pour un accès rapide.</li>
+</ul>
+
+<h3>Boutons de l'en-tête</h3>
+<table>
+<thead><tr><th>Bouton</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><span class="demo-lang"><span class="demo-flag-fr"></span><span class="demo-flag-en"></span><span class="demo-flag-line"></span></span> <small>FR/ANG</small></td><td>Bascule langue français / anglais</td></tr>
+<tr><td><span class="demo-seg"><span class="on">Local</span><span>Navigation</span></span></td><td>Bascule entre vol local et navigation cross-country</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="maximize-2"></i></span></td><td>Briefing express : vue cockpit épurée (verdict, vent, créneau en grand)</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="share-2"></i></span></td><td>Partager : génère un lien / QR code du briefing</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="bell"></i></span></td><td>Surveillance : surveillance automatique des favoris avec notifications</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="sun"></i><i data-lucide="moon"></i> <small>Clair / Sombre</small></span></td><td>Bascule toute l'interface (widgets, graphiques, carte) entre thème sombre et thème clair</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="book-open"></i> Notice</span></td><td>Ouvre cette notice</td></tr>
+</tbody>
+</table>
+
+<h3>Ma flotte d'avions</h3>
+<p>Vous volez rarement sur un seul type d'avion. La gestion de <strong>flotte</strong> vous permet d'enregistrer vos avions, chacun avec ses distances de référence issues du manuel de vol (POH) :</p>
+<ul>
+<li><strong>Ajout d'un avion</strong> : cliquez sur le bouton « Ma flotte » (icône avion, dans le widget de décollage). Saisissez le nom, l'immatriculation, le type et les distances de roulement / franchissement 50 ft.</li>
+<li><strong>Autocomplétion</strong> : pendant la saisie du nom/modèle, l'outil propose automatiquement les avions les plus courants (Cessna, Piper, Robin, Diamond, Cirrus…) avec leurs distances de référence pré-remplies. <em>Vérifiez toujours avec le POH de votre avion.</em></li>
+<li><strong>Avion actif</strong> : un avion est sélectionné comme actif pour le calcul des performances. Basculez entre vos avions d'un clic.</li>
+<li><strong>Marge de sécurité</strong> : chaque avion a sa propre marge (%) appliquée aux distances calculées.</li>
+<li><strong>Sauvegarde</strong> : votre flotte est stockée dans votre navigateur.</li>
+</ul>
+
+<h3>Centrage et centrogramme</h3>
+<p>Chaque avion de la flotte peut recevoir sa configuration de <strong>masse et centrage</strong> (issue de la fiche de pesée et du manuel de vol), exploitée par un widget dédié du dashboard et par une page du log de nav PDF :</p>
+<ul>
+<li><strong>Configuration (fenêtre Flotte)</strong> : dépliez la section « Centrage » de la fiche avion. Choisissez les <strong>unités de saisie</strong> de l'avion (masse kg/lbs, bras mm/m/ft/in — celles de sa fiche de pesée), saisissez la <strong>masse à vide</strong> et son <strong>CG</strong>, le MTOW, la <strong>densité carburant</strong> (défaut 0,72 kg/L — avgas), les <strong>postes de chargement</strong> (pilote, passagers 1/2/3, bagages, carburant… chacun avec son bras et un max : <strong>en kg pour les postes, en litres pour le poste carburant</strong> — capacité) et les <strong>points de l'enveloppe</strong> de centrage (polygone masse × bras, saisissez-la jusqu'à la masse la plus basse documentée). Un aperçu du centrogramme se met à jour en direct.</li>
+<li><strong>Widget « Centrage » du dashboard</strong> : sous « Performance décollage », pour l'avion actif configuré. Saisissez le chargement du jour ; le <strong>carburant embarqué</strong> et l'<strong>essence consommée</strong> sont pré-remplis depuis le plan de navigation (modifiables). Le centrogramme affiche les points <strong style="color:#34D399;">Décollage</strong> (chargement complet), <strong style="color:#FBBF24;">Arrivée</strong> (carburant moins consommé) et <strong style="color:#F87171;">ZFW</strong> (zéro carburant), avec le point à vide en gris, la ligne MTOW et l'enveloppe. Un bandeau verdict indique si tout est dans l'enveloppe (avec les marges avant/arrière) ou hors limites.</li>
+<li><strong>Log de nav PDF</strong> : un avion configuré ajoute une page « Centrage » (tableau de chargement avec moments + centrogramme + CG aux trois points). Les avions non configurés gardent un log à 3 pages.</li>
+<li><strong>Unités</strong> : la saisie et l'affichage se font dans les unités de l'avion ; le stockage interne est unique (kg et mm) pour éviter toute erreur de mélange.</li>
+<li><em>Le centrogramme est une aide à la préparation : la fiche de pesée et le manuel de vol restent la référence légale.</em></li>
+</ul>
+
+<!-- ====================== AIDE À LA DÉCISION ====================== -->
+<h2 id="decision"><i data-lucide="circle-check"></i> AIDE À LA DÉCISION</h2>
+
+<h3>Bannière GO / NO-GO</h3>
+<p>La fonctionnalité centrale : une bannière qui <strong>croise toutes les données disponibles</strong> et affiche un verdict en un coup d'œil.</p>
+<table>
+<thead><tr><th>Verdict</th><th>Couleur</th><th>Signification</th></tr></thead>
+<tbody>
+<tr><td><strong>GO</strong></td><td><i data-lucide="check-circle" class="li-ic" style="color:#4ADE80"></i> Vert</td><td>Tous les paramètres sont au vert — vous pouvez voler sereinement</td></tr>
+<tr><td><strong>PRUDENCE</strong></td><td><i data-lucide="alert-triangle" class="li-ic" style="color:#F59E0B"></i> Orange</td><td>Vol possible mais soyez vigilant — un ou plusieurs paramètres sont limites</td></tr>
+<tr><td><strong>NO-GO</strong></td><td><i data-lucide="x-octagon" class="li-ic" style="color:#EF4444"></i> Rouge</td><td>Vol déconseillé ou interdit — un paramètre critique est dépassé</td></tr>
+</tbody>
+</table>
+<p><strong>Critères évalués automatiquement</strong> :</p>
+<ol>
+<li>Nuit aéronautique</li>
+<li>Conditions IFR / LIFR (plafond et visibilité)</li>
+<li>Alertes danger de vos minima perso (rouge) → NO-GO</li>
+<li>Conditions MVFR → PRUDENCE</li>
+<li>Alertes warning de vos minima perso (orange) → PRUDENCE</li>
+<li>Densité altitude élevée (performance dégradée)</li>
+<li>Vent traversier (selon la piste active)</li>
+<li>Tendance QNH baissière (dégradation imminente)</li>
+<li>SIGMET / AIRMET actifs sur la zone</li>
+</ol>
+<div class="success"><p><strong>Transparence</strong> : le verdict liste toujours toutes les raisons. Aucune décision opaque.</p></div>
+<p><strong>Bouton <i data-lucide="settings" class="li-ic"></i> dans l'en-tête du GO / NO-GO</strong> : ouvre le panneau de configuration de vos <strong>minima VFR personnels</strong> (plafond, visibilité, vent, rafales, température, QNH) — voir ci-dessous.</p>
+
+<h3>Calculateur de densité altitude</h3>
+<p>La <strong>densité altitude</strong> est l'altitude à laquelle l'atmosphère standard (ISA) aurait la même densité que l'air réel. C'est elle qui détermine les performances réelles de l'avion : taux de montée, distance de décollage, distance d'atterrissage.</p>
+<p>Calculée à partir de l'élévation du terrain, du QNH et de la température réelle (OAT).</p>
+
+<h3>Tendance QNH (3 h)</h3>
+<p>Chaque METAR contient le <strong>QNH</strong> (la pression, ramenée au niveau de la mer — le « Q1021 » en fin de message). En comparant les observations des 3 dernières heures, l'outil affiche la <strong>tendance</strong> : stable, en hausse (amélioration probable) ou en baisse.</p>
+<p>Une <strong>baisse rapide — plus de 2 hPa par heure</strong> — signale qu'une dépression arrive ou se creuse : c'est typiquement ce qui précède un renforcement du vent, des plafonds qui s'abaissent et des précipitations. Cette raison apparaît alors dans la bannière GO / NO-GO.</p>
+<p><em>Exemple : 14 h Q1018 → 15 h Q1015 → 16 h Q1011 = −7 hPa en 2 h (≈ 3,5 hPa/h) : alerte « baisse rapide ».</em> C'est un indice précieux, pas une certitude — la décision reste celle du pilote.</p>
+
+<h3>Widget performances de décollage</h3>
+<p>Estime vos <strong>distances de décollage corrigées</strong> (roulement + franchissement 50 ft) en fonction de la densité altitude, du revêtement et de votre avion actif. Compare le résultat à la <strong>longueur de piste disponible</strong> avec le <strong>schéma en coupe de la piste</strong> (avion au seuil, roulement, montée au 50 ft, marge ou manque).</p>
+<ul>
+<li>Longueur de piste détectée automatiquement (modifiable manuellement).</li>
+<li>Application de votre marge de sécurité personnalisée.</li>
+<li>Alerte si la distance calculée dépasse la piste disponible.</li>
+</ul>
+
+<h3>Minima VFR personnels</h3>
+<p>Le bouton <i data-lucide="settings" class="li-ic"></i> dans l'en-tête du GO / NO-GO ouvre la configuration de vos seuils personnels :</p>
+<ul>
+<li>Plafond, visibilité, vent, rafales (seuil warning + danger)</li>
+<li>Température (haute + basse) et QNH (haut + bas)</li>
+<li>Activation/désactivation individuelle de chaque paramètre</li>
+<li>Sauvegarde dans le navigateur, restauration automatique</li>
+</ul>
+
+<!-- ====================== CONSCIENCE SITUATIONNELLE ====================== -->
+<h2 id="situation"><i data-lucide="map"></i> CONSCIENCE SITUATIONNELLE</h2>
+
+<h3>Créneau de vol jour VFR</h3>
+<p>Bannière qui affiche les <strong>heures de lever et coucher du soleil</strong> (UTC et locales), le statut du créneau de vol (ouvert / bientôt fermé / nuit) et un <strong>compte à rebours</strong> avant la tombée de la nuit. Mise à jour en direct toutes les minutes.</p>
+<table>
+<thead><tr><th>Statut</th><th>Couleur</th><th>Signification</th></tr></thead>
+<tbody>
+<tr><td>Créneau ouvert</td><td><i data-lucide="check-circle" class="li-ic" style="color:#4ADE80"></i> Vert</td><td>Vous êtes en plein jour VFR</td></tr>
+<tr><td>Bientôt fermé</td><td><i data-lucide="alert-triangle" class="li-ic" style="color:#F59E0B"></i> Orange</td><td>La nuit approche (moins de 30 min avant coucher)</td></tr>
+<tr><td>Nuit aéronautique</td><td><i data-lucide="x-octagon" class="li-ic" style="color:#EF4444"></i> Rouge</td><td>Vol de nuit — qualifications requises</td></tr>
+</tbody>
+</table>
+
+<h3>Carte régionale interactive</h3>
+<p>Ouvrez le panneau « Carte régionale » pour afficher :</p>
+<table>
+<thead><tr><th>Calque</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><span class="demo-select">Satellite ▾</span></td><td><strong>Fond de carte</strong> : satellite, plan, sombre ou relief — sélecteur « Satellite » de la barre d'outils</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="cloud-rain"></i> Radar</span></td><td>Précipitations en temps réel — <strong>décoché par défaut</strong> ; bouton lecture/pause et curseur horloge une fois activé</td></tr>
+<tr><td><span class="pin" style="background:#FBBF24; width:15px; height:15px;"></span> <span class="rwy" style="background:#4ADE80"></span><span class="rwy" style="background:#94A3B8"></span><span class="rwy" style="background:#D6A24A"></span></td><td><strong>Terrain courant</strong> : pastille ambre au centre ; pistes tracées selon le revêtement (vert = herbe, gris = béton, ocre = terre)</td></tr>
+<tr><td><span class="pin" style="background:#4ADE80"></span> <span class="pin" style="background:#38BDF8"></span> <span class="pin" style="background:#F87171"></span> <span class="pin" style="background:#94A3B8"></span></td><td><strong>Terrains voisins</strong> : tous les terrains de la zone visible (jusqu'à l'échelle de la France, conservés quand vous vous déplacez) ; jusqu'à <strong>150 pastilles colorées</strong> VFR / MVFR / IFR / LIFR (vert, bleu, rouge, violet) — au-delà et sans METAR, pastilles grises</td></tr>
+<tr><td><span class="demo-btn"><i data-lucide="hexagon"></i> Espaces</span></td><td><strong>Espaces aériens</strong> : données officielles françaises (SIA), complétées à l'international — CTR, TMA, SIV, ATZ, zones R·P·D… sous-cases par famille dans le menu « Espaces » ; cliquez une zone pour la surligner et lire secteur, altitudes et fréquence (décoché par défaut)</td></tr>
+<tr><td><span class="rp-sym"><svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle"><polygon points="9,1 16.5,5.3 16.5,13.7 9,18 1.5,13.7 1.5,5.3" fill="none" stroke="#60A5FA" stroke-width="1.8"/><circle cx="9" cy="9" r="1.4" fill="#60A5FA"/></svg> <svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle"><path d="M9 0.8 L9 6" stroke="#4ADE80" stroke-width="1.6"/><circle cx="9" cy="11" r="5.2" fill="none" stroke="#4ADE80" stroke-width="1.8"/><circle cx="9" cy="11" r="1.6" fill="#4ADE80"/></svg> <svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle"><path d="M9 1.5 L16 14 L2 14 Z" fill="none" stroke="#2563EB" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 5.2 L13.3 12.4 L4.7 12.4 Z" fill="#2563EB" opacity="0.5"/></svg></span></td><td><strong>Radiophares &amp; points VFR</strong> : VOR, NDB et points de repère VFR — symboles des cartes aéro, case par case dans le menu « Espaces » ; utilisables comme waypoints du plan</td></tr>
+<tr><td><span class="rp-sym"><svg width="18" height="18" viewBox="0 0 18 18" style="vertical-align:middle"><path d="M9 7.5 L9 16.5" stroke="#F87171" stroke-width="1.6"/><path d="M9 7 L9 1.5 M9 7 L4 10 M9 7 L14 10" stroke="#F87171" stroke-width="1.7" stroke-linecap="round"/><circle cx="9" cy="7" r="1.3" fill="#F87171"/></svg></span></td><td><strong>Obstacles</strong> : éoliennes, pylônes, mâts, châteaux d'eau, cheminées… partout en France et outre-mer — icône par type ; au clic : hauteur, altitude du sommet et balisage lumineux (visible à partir d'un zoom régional, décoché par défaut)</td></tr>
+</tbody>
+</table>
+<p><strong>Barre d'outils</strong> (une ligne) : Radar (lecture et curseur horloge inclus) · Espaces · Terrain · Cadrer plan · Plein cadre. Le radar et les couches s'allument à la demande — rien ne s'affiche sans votre clic.</p>
+<p><strong>Clic sur un terrain voisin</strong> : le popup montre son METAR décodé (vent, visibilité, plafond, T/Td, QNH) et propose trois actions — <strong>Charger ce terrain</strong> (change le terrain observé ; en mode Navigation il devient <strong>« Définir comme départ »</strong> et relance le plan), <strong>Définir comme destination</strong> et <strong>+ Waypoint</strong> (mode Navigation). Les terrains sans METAR offrent les mêmes actions.</p>
+<p><strong>Intérêt</strong> : si les terrains voisins tombent en MVFR/IFR, méfiance — le temps se ferme.</p>
+<p><strong>Bouton « Terrain »</strong> : zoome directement sur le terrain courant pour voir les pistes en détail.</p>
+
+<h3>SIGMET / AIRMET</h3>
+<p>Les <strong>SIGMET</strong> (phénomènes dangereux : orages, givrage sévère, turbulence) et <strong>AIRMET</strong> (modérés) actifs près de votre terrain sont détectés et alimentent directement la bannière GO / NO-GO.</p>
+
+<h3>Niveau de givrage</h3>
+<p>Évalue le <strong>niveau de congélation</strong> (isotherme 0°C) et le risque de givrage si les nuages s'étendent au-dessus.</p>
+
+<!-- ====================== NAVIGATION ====================== -->
+<h2 id="navigation"><i data-lucide="plane"></i> NAVIGATION CROSS-COUNTRY</h2>
+
+<h3>Mode Vol local / Navigation</h3>
+<p>Le bouton toggle <strong><span class="demo-seg"><span class="on">Local</span><span>Navigation</span></span></strong> adapte l'affichage :</p>
+<table>
+<thead><tr><th>Mode</th><th>Affichage</th></tr></thead>
+<tbody>
+<tr><td><span class="demo-seg"><span class="on">Local</span></span></td>
+<td><strong>Vol local</strong></td><td>Observation METAR temps réel, vent/piste active, densité altitude, créneau jour, dégradation imminente</td></tr>
+<tr><td><span class="demo-seg"><span>Navigation</span></span></td>
+<td><strong>Navigation</strong></td><td>Prévision TAF à l'heure d'arrivée (HPP), alternates viables, météo en route</td></tr>
+</tbody>
+</table>
+<p>À l'activation du mode Navigation, la <strong>barre « Départ → Destination »</strong> apparaît sous l'en-tête, la carte régionale s'ouvre et le curseur se place dans le champ Destination : tout est prêt pour saisir votre nav.</p>
+
+<h3>Comparateur d'alternates</h3>
+<p>En mode Navigation, l'outil liste automatiquement les <strong>terrains de déroutement</strong> autour de votre destination, avec leur catégorie de vol, visibilité, plafond et vent — triés par viabilité pour une décision rapide.</p>
+
+<h3>Barre Départ → Destination</h3>
+<p>Le champ Destination accepte un <strong>code OACI</strong> (LFPO) ou un <strong>nom de terrain / de ville</strong> (« Poitiers ») : la liste propose les terrains avec leur <strong>distance depuis votre départ</strong>, les plus proches d'abord. Le nom du terrain retenu s'affiche sous la barre — un garde-fou contre le mauvais code. Changer de destination <strong>remet le plan à zéro</strong> : les waypoints de la route précédente sont retirés (vos repères posés sur la carte restent disponibles).</p>
+
+<h3>Planificateur de vol</h3>
+<p>Dès qu'une destination valide est saisie, le panneau « Calcul de navigation » recalcule à chaque changement :</p>
+<ul>
+<li><strong>Distance orthodromique</strong> et cap vrai/magnétique (déclinaison automatique)</li>
+<li><strong>Vent au sol et en croisière</strong></li>
+<li><strong>Vitesse sol et temps estimé</strong> par tronçon et cumulés</li>
+<li><strong>Carburant estimé + réserves légales</strong> (jour/nuit VFR)</li>
+</ul>
+
+<h3>Waypoints et repères</h3>
+<p>Cinq façons d'ajouter une étape :</p>
+<ul>
+<li><strong>Popup d'un terrain</strong> sur la carte : bouton « + Waypoint » ;</li>
+<li><strong>Bouton « + Waypoint »</strong> de la barre de la carte, puis clic à l'endroit voulu ;</li>
+<li><strong>Clic droit</strong> n'importe où sur la carte ;</li>
+<li>champ <strong>« Waypoints »</strong> du plan : codes OACI ou <strong>noms des repères</strong> séparés par des espaces — les VOR, NDB et points de repère VFR ajoutés au plan s'y affichent sous leur vrai nom (ex. BNE, LOR, E2), les codes techniques restant invisibles ;</li>
+<li>clic sur un repère déjà posé → « + Plan ».</li>
+</ul>
+<p>Chaque ajout est <strong>inséré à la meilleure position</strong> : l'outil teste tous les emplacements possibles et garde le trajet total le plus court — un intermédiaire se glisse ainsi automatiquement <em>avant</em> une étape plus lointaine. L'ordre des étapes déjà saisies est toujours respecté.</p>
+<p><strong>Repères libres</strong> : un point posé hors de tout aérodrome connu porte par défaut <strong>ses coordonnées</strong> (ex. 4851N 00221W). Nommez-le à la création, ou plus tard via le <strong>crayon</strong> de la liste des étapes ou le clic sur le repère (Renommer). Un point posé à proximité d'un aérodrome connu devient simplement cette étape, nommée comme l'aérodrome.</p>
+<p><strong>Gestion</strong> : la liste des étapes du plan affiche numéro, code et nom, avec le <strong>crayon</strong> (renommage des repères) et la <strong>croix</strong> pour retirer une étape. Sur la carte, le clic sur un point d'étape propose aussi « Retirer du plan » — et « Renommer » pour les repères. Départ, arrivée et étapes portent leur <strong>code OACI en étiquette</strong> (vert / rouge / ambre), les repères leur nom.</p>
+
+<h3>Sauvegarder et importer un plan</h3>
+<p>Le bouton dossier de la barre « Départ → Destination » propose <strong>Sauvegarder (JSON)</strong> — format natif fidèle à 100 % (repères nommés, altitude, TAS, conso, vol de nuit) —, l'<strong>export GPX</strong> (GPS universel : SkyDemon, Garmin…) et <strong>KML</strong> (Google Earth), puis <strong>Importer un plan</strong> (.json, .gpx, .kml). Le dossier de sauvegarde est choisi à la première utilisation puis mémorisé. À l'import, chaque point portant un code OACI connu redevient ce terrain ; les autres deviennent des repères libres nommés, et l'ordre du fichier est respecté.</p>
+
+<h3>Météo sur la route</h3>
+<p>C'est la <strong>carte régionale</strong> (sous le METAR du terrain) qui la joue, automatiquement : chaque terrain des alentours — et donc ceux qui jalonnent votre route en mode Navigation — porte une <strong>pastille ronde colorée</strong> donnant sa catégorie de vol calculée depuis son METAR : <strong>verte</strong> = VFR, <strong>bleue</strong> = VFR marginal, <strong>rouge</strong> = conditions IFR, <strong>grise</strong> = pas de donnée. Le terrain affiché a une pastille ambre plus grosse. Un <strong>clic sur une pastille</strong> ouvre le METAR du terrain — idéal pour voir si la météo se dégrade vers l'étape suivante. Dans ce panneau, le bouton <strong>« Carte VAC »</strong> ouvre la carte « Atterrissage à vue » du terrain dans l'application. Et un <strong>clic droit sur une pastille</strong> ajoute ce terrain au plan de vol comme waypoint (s'il existe déjà une destination).</p>
+
+<h3>Profil d'élévation</h3>
+<p>Échantillonne le <strong>profil d'élévation du terrain</strong> le long de la route pour vérifier le respect de la règle VFR (500 ft / 1000 ft de clearance). Les <strong>espaces aériens traversés</strong> y figurent aussi : à l'écran, survolez la bande d'altitude pour lire le secteur et sa fréquence ; sur le log de nav PDF, chaque traversée est délimitée par des traits verticaux (même bleu que la carte) avec le <strong>nom du secteur et sa fréquence</strong> en vertical entre les limites.</p>
+
+<!-- ====================== FRÉQUENCES ====================== -->
+<h2 id="frequences"><i data-lucide="radio-tower"></i> FRÉQUENCES ET INFO TERRAIN</h2>
+
+<h3>Onglet « Fréquences »</h3>
+<p>Les <strong>fréquences radio officielles</strong> du terrain (officielles SIA en France, complétées à l'international) : Tour, Sol, Approche, ATIS, A/A… Chaque ligne porte son <strong>observation officielle</strong> (secteurs d'approche, fréquence supplétive, SIV couvert) et un <strong>code d'horaires</strong> (H24, HO sur demande…) expliqué au survol.</p>
+
+<h3>Onglet « Info terrain »</h3>
+<p>La fiche du terrain : <strong>altitude, déclinaison (officielle millésimée), ouverture aux vols VFR/IFR, statut</strong>, <strong>pistes en clair</strong> (QFU, cap vrai, longueur × largeur, revêtement, altitude des seuils), et deux <strong>sous-sections repliables</strong> : <em>Horaires du service</em> (AFIS/ATS avec téléphone de l'exploitant) et <em>Avitaillement</em> (automate, horaires, paiement).</p>
+
+<h3>Carte VAC « Atterrissage à vue »</h3>
+<p>Le bouton en bas de l'onglet Info terrain ouvre la <strong>carte VAC officielle</strong> (officielle SIA — tous les terrains de métropole, y compris les plus petits) <strong>dans l'application</strong> : zoom, navigation des pages (les cartes récentes sont multipages) — et chaque carte consultée est <strong>enregistrée sur l'appareil</strong> pour lecture hors ligne. Terrains sans VAC : lien vers le portail AIP du pays.</p>
+
+<!-- ====================== CONFORT ====================== -->
+<h2 id="confort"><i data-lucide="moon"></i> CONFORT &amp; PERSONNALISATION</h2>
+
+<h3>Thème sombre / clair</h3>
+<p>Le bouton <strong>lune / soleil</strong> de l'en-tête bascule toute l'interface entre <strong>thème sombre</strong> (par défaut) et <strong>thème clair</strong> : textes, widgets, graphiques et tracés de la carte suivent immédiatement — pratique en plein jour sur l'écran du club ou selon votre préférence.</p>
+
+<h3>Briefing express (vue cockpit)</h3>
+<p>Le bouton <i data-lucide="maximize-2" class="li-ic"></i> réduit l'interface en une seule colonne centrée montrant uniquement l'essentiel en grand format : verdict GO/NO-GO, catégorie de vol, vent/piste active, créneau de vol. Pensé pour une <strong>lecture rapide à 2 m</strong>.</p>
+
+<h3>Lecture audio</h3>
+<p>Le bouton <i data-lucide="volume-2" class="li-ic"></i> lit le METAR à voix haute (synthèse vocale du navigateur), façon lecture ATIS.</p>
+
+<h3>Log de nav imprimable</h3>
+<p>Dans le panneau « Calcul de navigation », le bouton <strong>« Imprimer le log de nav »</strong> génère le log A5 (3 à 4 pages : log de nav, calculs de navigation, performances et terrain, centrage si l'avion est configuré — au-delà de 9 tronçons le log de nav se poursuit sur une page « VFR Flight Log (suite) » à la même trame — tableau rempli de lignes vierges et cadres Check Croisière / Point Tournant / Vent Arrière conservés — et le tableau des calculs remplit toute la page avant qu'une page « Détail des waypoints (suite) » ne prenne le relais). Une <strong>modale de vérification</strong> rappelle les valeurs calculées automatiquement à contrôler avant tout usage en vol ; après confirmation, le PDF <strong>s'ouvre dans un onglet</strong> — le bouton Imprimer du visualiseur est à portée de main (repli : téléchargement direct si l'onglet est bloqué).</p>
+
+<h3>Partage par lien</h3>
+<p>Le bouton <i data-lucide="share-2" class="li-ic"></i> génère un <strong>permalien</strong> contenant le terrain, le message brut et l'heure d'arrivée. Un QR code permet de l'ouvrir sur mobile.</p>
+
+<h3>Surveillance des favoris (watchdog)</h3>
+<p>Le bouton <i data-lucide="bell" class="li-ic"></i> (surveillance) active une <strong>surveillance en arrière-plan</strong> de vos terrains favoris. Toutes les 15 min (configurable), l'outil recalcule la catégorie de vol de chaque favori et envoie une <strong>notification navigateur</strong> si un terrain dégrade vers PRUDENCE ou NO-GO. L'onglet doit rester ouvert.</p>
+
+<hr />
+
+<h2><i data-lucide="search"></i> DÉCRYPTAGE METAR (L'ESSENTIEL)</h2>
+<p>L'application décode tout automatiquement — voici simplement les clés pour lire un message brut d'un coup d'œil.</p>
+<p><strong>Exemple annoté :</strong></p>
+<pre>LFRV 061230Z 24012KT 9999 FEW035 18/12 Q1021 NOSIG</pre>
+<table>
+<thead><tr><th>Groupe</th><th>Signification</th><th>Points clés</th></tr></thead>
+<tbody>
+<tr><td><code>LFRV</code></td><td>Terrain</td><td>code OACI</td></tr>
+<tr><td><code>061230Z</code></td><td>Date-heure</td><td>le 6 du mois à 12 h 30 <strong>Z (UTC)</strong> — retranchez 1 h en hiver, 2 h en été, pour l'heure locale</td></tr>
+<tr><td><code>24012KT</code></td><td>Vent</td><td>240° à 12 kt — <code>24015G25</code> = rafales à 25 kt, <code>00000</code> = vent calme, <code>VRB</code> = variable</td></tr>
+<tr><td><code>9999</code></td><td>Visibilité</td><td>en mètres : <code>9999</code> = 10 km ou plus, <code>8000</code> = 8 km… <code>CAVOK</code> = visi ≥ 10 km, pas de nuage sous 5 000 ft, pas de temps significatif</td></tr>
+<tr><td><code>-RA</code>, <code>TS</code>…</td><td>Temps présent</td><td>placé entre visi et nuages : <code>-RA</code> pluie faible, <code>RA</code> pluie, <code>TS</code> orage, <code>BR</code> brume, <code>FG</code> brouillard, <code>SN</code> neige (les plus courants)</td></tr>
+<tr><td><code>FEW035</code></td><td>Nuages</td><td>quantité + base en centaines de pieds : <code>FEW</code> peu, <code>SCT</code> épars, <code>BKN</code> fragmenté, <code>OVC</code> couvert — <code>FEW035</code> = base 3 500 ft ; <code>NSC</code> = rien de significatif</td></tr>
+<tr><td><code>18/12</code></td><td>Temp. / rosée</td><td>18 °C, point de rosée 12 °C — un écart faible signale brume et risque de givrage carburateur</td></tr>
+<tr><td><code>Q1021</code></td><td>QNH</td><td>pression ramenée au niveau de la mer : 1021 hPa (<code>Q0998</code> = sous 1000, dégradation probable)</td></tr>
+<tr><td><code>NOSIG</code></td><td>Tendance</td><td>pas de changement prévu à 2 h ; <code>TEMPO</code> = temporaire, <code>BECMG</code> = évolution durable</td></tr>
+</tbody>
+</table>
+<p>Les codes plus rares sont dans le <a href="#glossaire">glossaire</a>. Le tableau de bord de l'application traduit chaque message : catégorie de vol, vent et piste en service, minima, tendances.</p>
+
+<h2><i data-lucide="calendar"></i> DÉCRYPTAGE TAF</h2>
+<h3>Structure générale</h3>
+<p><strong>TAF</strong> = Terminal Aerodrome Forecast (prévision aérodrome)</p>
+<pre><code>TAF LFPG 060500Z 0606/0712 27015KT 9999 SCT040
+     BECMG 0609/0611 BKN020
+     TEMPO 0615/0618 4000 SHRA BKN012 SCT020CB
+     BECMG 0702/0704 34010KT 8000 BKN015
+</code></pre>
+<p><strong>Décomposition</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Valeur</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td><code>TAF</code></td>
+<td>Prévision</td>
+</tr>
+<tr>
+<td><strong>OACI</strong></td>
+<td><code>LFPG</code></td>
+<td>Aéroport</td>
+</tr>
+<tr>
+<td><strong>Émission</strong></td>
+<td><code>060500Z</code></td>
+<td>Émis le 06 à 05:00 UTC</td>
+</tr>
+<tr>
+<td><strong>Validité</strong></td>
+<td><code>0606/0712</code></td>
+<td>Du 06 à 06h au 07 à 12h UTC (30h)</td>
+</tr>
+<tr>
+<td><strong>Conditions de base</strong></td>
+<td><code>27015KT 9999 SCT040</code></td>
+<td>Valable toute la période sauf changements</td>
+</tr>
+</tbody>
+</table>
+<h3>Groupes de changement</h3>
+<p><strong>BECMG</strong> (BECoMinG) : Changement permanent</p>
+<pre><code>BECMG 0609/0611 BKN020
+│││││ ││││││││ │││││└─ Nouveaux nuages BKN à 2000 ft
+│││││ │││││└└└─ Jusqu'à 06j 11h UTC
+│││││ └└└└────── À partir de 06j 09h UTC
+└└└└└────────── Changement progressif sur cette période
+</code></pre>
+<p>Le changement devient <strong>permanent</strong> après la fin de la période.</p>
+<p><strong>TEMPO</strong> (TEMPOrary) : Changement temporaire</p>
+<pre><code>TEMPO 0615/0618 4000 SHRA BKN012
+│││││ ││││││││ ││││ ││││ │││││└─ Nuages BKN à 1200 ft
+│││││ ││││││││ ││││ ││││ └└└└└── Averses de pluie
+│││││ ││││││││ ││││ └└└└──────── Visibilité 4000m
+│││││ │││││└└└──────────────── Jusqu'à 06j 18h UTC
+│││││ └└└└────────────────────── À partir de 06j 15h UTC
+└└└└└────────────────────────── Conditions temporaires (&lt; 1h à la fois)
+</code></pre>
+<p>Les conditions reviennent à la <strong>normale</strong> après.</p>
+<p><strong>PROB30/40</strong> : Probabilité de changement</p>
+<pre><code>PROB40 0620/0624 2000 +TSRA BKN008CB
+│││││││││││││││ ││││ │││││ ││││││└─ CB à 800 ft
+│││││││││││││││ ││││ │││││ └└└└└└── Orage violent avec pluie
+│││││││││││││││ ││││ └└└└──────── Visibilité 2000m
+│││││││││││││││ └└└└────────────── Jusqu'à 06j 24h UTC (minuit)
+│││││││││││└└└──────────────────── À partir de 06j 20h UTC
+└└└└└└────────────────────────── 40% de probabilité
+</code></pre>
+<p><strong>FM</strong> (FroM) : Changement brutal à un instant précis</p>
+<pre><code>FM061500 34020G35KT 3000 SHRA BKN010
+││││││││ ││││││││││ ││││ ││││ │││││└─ Nuages BKN à 1000 ft
+││││││││ ││││││││││ ││││ ││││ └└└└└── Averses
+││││││││ ││││││││││ ││││ └└└└──────── Visibilité 3000m
+││││││││ ││││││││││ └└└└────────────── Vent 340° 20kt G35kt
+││││││││ └└└└└└─────────────────────── Rafales 35 kt
+└└└└└└└└──────────────────────────────── À partir du 06 à 15:00 UTC précises
+</code></pre>
+<h3>Exemple TAF complet commenté</h3>
+<pre><code>TAF LFPG 060500Z 0606/0712 27015KT 9999 SCT040
+     BECMG 0609/0611 BKN020
+     TEMPO 0615/0618 4000 SHRA BKN012 SCT020CB
+     BECMG 0702/0704 34010KT 8000 BKN015
+</code></pre>
+<p><strong>Traduction</strong> :</p>
+<p><strong>06j 06h → 06j 09h</strong> : Vent 270° 15kt, vis ≥10km, nuages épars 4000 ft<br />
+→ <i data-lucide="check" class="li-ic"></i> <strong>VFR excellent</strong></p>
+<p><strong>06j 09h → 06j 11h</strong> : Changement progressif vers nuages fragmentés 2000 ft<br />
+→ <i data-lucide="triangle-alert" class="li-ic"></i> <strong>VFR marginal</strong> (plafond qui baisse)</p>
+<p><strong>06j 11h → 06j 15h</strong> : Nuages BKN 2000 ft (maintenu)<br />
+→ <i data-lucide="triangle-alert" class="li-ic"></i> <strong>VFR marginal</strong></p>
+<p><strong>06j 15h → 06j 18h</strong> : Temporairement : vis 4000m, averses, BKN 1200 ft, CB 2000 ft<br />
+→ <i data-lucide="x" class="li-ic"></i> <strong>IFR</strong> (plafond &lt; 1500 ft + vis &lt; 5km + orages)</p>
+<p><strong>06j 18h → 07j 02h</strong> : Retour BKN 2000 ft (pas d'averses)<br />
+→ <i data-lucide="triangle-alert" class="li-ic"></i> <strong>VFR marginal</strong></p>
+<p><strong>07j 02h → 07j 04h</strong> : Changement vent 340° 10kt, vis 8km, BKN 1500 ft<br />
+→ <i data-lucide="x" class="li-ic"></i> <strong>IFR</strong> (plafond &lt; 1500 ft)</p>
+<p><strong>07j 04h → 07j 12h</strong> : Maintien de ces conditions<br />
+→ <i data-lucide="x" class="li-ic"></i> <strong>IFR</strong></p>
+<hr />
+<h2><i data-lucide="gauge"></i> MINIMA VFR (VMC)</h2>
+<h3>Conditions VMC en espace aérien contrôlé</h3>
+<p><strong>VMC</strong> = Visual Meteorological Conditions (conditions météo de vol à vue)</p>
+<h4>Classes A, B, C, D, E (≥ FL100 / 3000m AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibilité</strong></td>
+<td>≥ 8 km</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (horizontale)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (verticale)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h4>Classes A, B, C, D, E (&lt; FL100 / 3000m AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibilité</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (horizontale)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (verticale)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h4>Classe G (&lt; 900m / 3000ft AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibilité</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages</strong></td>
+<td>Hors des nuages et en vue du sol</td>
+</tr>
+<tr>
+<td><strong>Plafond</strong></td>
+<td>Aucun minimum réglementaire*</td>
+</tr>
+</tbody>
+</table>
+<p>*Mais bon sens : rester suffisamment haut pour planer en cas de panne moteur !</p>
+<h4>Classe G (&gt; 900m / 3000ft AMSL)</h4>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibilité</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (horizontale)</strong></td>
+<td>≥ 1500 m</td>
+</tr>
+<tr>
+<td><strong>Distance des nuages (verticale)</strong></td>
+<td>≥ 300 m (1000 ft)</td>
+</tr>
+</tbody>
+</table>
+<h3>VFR spécial (SVFR)</h3>
+<p><strong>Conditions</strong> :
+- Autorisation ATC obligatoire
+- En zone de contrôle (CTR) uniquement
+- Visibilité ≥ 1500 m (parfois 800 m de nuit si habilité)
+- Hors des nuages
+- En vue du sol</p>
+<p><strong>Utilisation typique</strong> :
+- Départ/arrivée d'un aérodrome en conditions météo dégradées
+- Transit à travers une CTR avec météo sous VMC</p>
+<h3>Minima recommandés pilotes VFR</h3>
+<p>Au-delà des minima réglementaires, voici les <strong>seuils pratiques</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Conditions</th>
+<th>Visibilité</th>
+<th>Plafond</th>
+<th>Remarques</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VFR confortable</strong></td>
+<td>≥ 10 km</td>
+<td>≥ 3000 ft</td>
+<td>Idéal pour navigation</td>
+</tr>
+<tr>
+<td><strong>VFR marginal</strong></td>
+<td>5-8 km</td>
+<td>1500-3000 ft</td>
+<td>Navigation possible mais vigilance</td>
+</tr>
+<tr>
+<td><strong>VFR limite</strong></td>
+<td>5 km</td>
+<td>1500 ft</td>
+<td>Minima réglementaires, peu de marge</td>
+</tr>
+<tr>
+<td><strong>SVFR requis</strong></td>
+<td>1.5-5 km</td>
+<td>&lt; 1500 ft</td>
+<td>Autorisation ATC obligatoire</td>
+</tr>
+<tr>
+<td><strong>IFR</strong></td>
+<td>&lt; 5 km</td>
+<td>&lt; 1500 ft</td>
+<td>Vol IFR obligatoire</td>
+</tr>
+</tbody>
+</table>
+<h3>Règles de vol VFR de nuit</h3>
+<p><strong>En France (VFR de nuit autorisé avec qualification)</strong> :</p>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visibilité</strong></td>
+<td>≥ 5 km</td>
+</tr>
+<tr>
+<td><strong>Plafond</strong></td>
+<td>≥ 1500 ft</td>
+</tr>
+<tr>
+<td><strong>Pilote qualifié</strong></td>
+<td>Qualification VFR nuit obligatoire</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important</strong> : Le VFR de nuit n'est <strong>PAS autorisé</strong> dans tous les pays européens !</p>
+<hr />
+<h2><i data-lucide="file-text"></i> EXEMPLES PRATIQUES</h2>
+<h3>Exemple 1 : VFR excellent (CAVOK)</h3>
+<pre><code>METAR LFPG 061200Z 27010KT CAVOK 18/08 Q1020 NOSIG
+</code></pre>
+<p><strong>Analyse</strong> :
+- <i data-lucide="check" class="li-ic"></i> Visibilité ≥ 10 km
+- <i data-lucide="check" class="li-ic"></i> Pas de nuages &lt; 5000 ft
+- <i data-lucide="check" class="li-ic"></i> Pas de temps significatif
+- <i data-lucide="check" class="li-ic"></i> Vent faible/modéré (10 kt)
+- <i data-lucide="check" class="li-ic"></i> Pression stable (1020 hPa - anticyclone)</p>
+<p><strong>Verdict</strong> : <span class="pin" style="background:#4ADE80"></span> <strong>VFR EXCELLENT</strong> - Idéal pour vol de navigation</p>
+<hr />
+<h3>Exemple 2 : VFR marginal (plafond bas)</h3>
+<pre><code>METAR LFPO 061200Z 34012KT 9999 SCT012 BKN025 11/09 Q1008
+</code></pre>
+<p><strong>Analyse</strong> :
+- <i data-lucide="check" class="li-ic"></i> Visibilité excellente (≥10 km)
+- <i data-lucide="triangle-alert" class="li-ic"></i> Plafond à 2500 ft (BKN025)
+- <i data-lucide="triangle-alert" class="li-ic"></i> Nuages épars dès 1200 ft
+- <i data-lucide="triangle-alert" class="li-ic"></i> Écart T-Td faible (2°C) → humidité élevée
+- <i data-lucide="triangle-alert" class="li-ic"></i> Pression en baisse (1008 hPa)</p>
+<p><strong>Verdict</strong> : <span class="pin" style="background:#38BDF8"></span> <strong>VFR MARGINAL</strong> - Vol local OK, navigation avec prudence</p>
+<hr />
+<h3>Exemple 3 : IFR (visibilité réduite)</h3>
+<pre><code>METAR LFRV 061200Z 00000KT 3000 BR SCT004 BKN010 10/09 Q1011
+</code></pre>
+<p><strong>Analyse</strong> :
+- <i data-lucide="x" class="li-ic"></i> Visibilité 3000m (&lt; 5 km)
+- <i data-lucide="x" class="li-ic"></i> Plafond 1000 ft (BKN010)
+- <i data-lucide="x" class="li-ic"></i> Nuages épars dès 400 ft
+- Brume (BR)
+- <i data-lucide="triangle-alert" class="li-ic"></i> Vent calme + écart T-Td 1°C → brouillard possible</p>
+<p><strong>Verdict</strong> : <span class="pin" style="background:#F87171"></span> <strong>IFR</strong> - Vol VFR interdit, IFR ou attendre amélioration</p>
+<hr />
+<h3>Exemple 4 : IFR sévère (orage)</h3>
+<pre><code>METAR LFPO 061200Z 27025G40KT 2000 +TSRA BKN008 SCT015CB 15/13 Q0998
+</code></pre>
+<p><strong>Analyse</strong> :
+- <i data-lucide="x" class="li-ic"></i> Visibilité 2000m (très réduite)
+- <i data-lucide="x" class="li-ic"></i> Plafond 800 ft (très bas)
+- Orage violent avec pluie forte (+TSRA)
+- Cumulonimbus (CB)
+- Vent fort avec rafales (25G40 kt)
+- Pression en baisse rapide (998 hPa - dépression)</p>
+<p><strong>Verdict</strong> : <span class="pin" style="background:#F87171"></span> <strong>IFR SÉVÈRE + CONDITIONS DANGEREUSES</strong><br />
+→ Vol déconseillé même en IFR (cisaillement, turbulence, foudre)</p>
+<hr />
+<h3>Exemple 5 : TAF avec évolution</h3>
+<pre><code>TAF LFPG 061200Z 0612/0718 27015KT 9999 SCT040
+     BECMG 0615/0617 BKN020
+     TEMPO 0618/0624 5000 SHRA BKN012
+     BECMG 0703/0705 34010KT CAVOK
+</code></pre>
+<p><strong>Analyse chronologique</strong> :</p>
+<p><strong>06j 12h → 06j 15h</strong> :
+- Vent 270° 15kt
+- Vis ≥ 10 km
+- Nuages épars 4000 ft
+- <span class="pin" style="background:#4ADE80"></span> <strong>VFR EXCELLENT</strong></p>
+<p><strong>06j 15h → 06j 17h</strong> (BECMG) :
+- Passage progressif à nuages fragmentés 2000 ft
+- <span class="pin" style="background:#38BDF8"></span> <strong>VFR MARGINAL</strong> en fin de période</p>
+<p><strong>06j 17h → 06j 18h</strong> :
+- Nuages BKN 2000 ft
+- <span class="pin" style="background:#38BDF8"></span> <strong>VFR MARGINAL</strong></p>
+<p><strong>06j 18h → 07j 00h</strong> (TEMPO) :
+- Temporairement : vis 5km, averses, BKN 1200 ft
+- <span class="pin" style="background:#F87171"></span> <strong>IFR temporaire</strong> (&lt; 1h à la fois)
+- Entre deux averses : retour VFR marginal</p>
+<p><strong>07j 00h → 07j 03h</strong> :
+- BKN 2000 ft (sans averses)
+- <span class="pin" style="background:#38BDF8"></span> <strong>VFR MARGINAL</strong></p>
+<p><strong>07j 03h → 07j 05h</strong> (BECMG) :
+- Passage progressif vers CAVOK
+- Vent tourne 340° 10kt
+- <span class="pin" style="background:#4ADE80"></span> <strong>VFR EXCELLENT</strong> en fin de période</p>
+<p><strong>07j 05h → 07j 18h</strong> :
+- CAVOK maintenu
+- <span class="pin" style="background:#4ADE80"></span> <strong>VFR EXCELLENT</strong></p>
+<p><strong>Décision vol</strong> :
+- <i data-lucide="check" class="li-ic"></i> Départ avant 15h ou après 05h : excellent
+- <i data-lucide="triangle-alert" class="li-ic"></i> 15h-18h : marginal, prévoir plan B
+- <i data-lucide="x" class="li-ic"></i> 18h-03h : IFR temporaire, vol VFR déconseillé</p>
+<hr />
+<h2><i data-lucide="book-open"></i> GLOSSAIRE AVIATION</h2>
+<h3>Termes météo</h3>
+<table>
+<thead>
+<tr>
+<th>Terme</th>
+<th>Définition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AMSL</strong></td>
+<td>Above Mean Sea Level (au-dessus niveau mer)</td>
+</tr>
+<tr>
+<td><strong>ASDA</strong></td>
+<td>Accelerate-Stop Distance Available</td>
+</tr>
+<tr>
+<td><strong>CAVOK</strong></td>
+<td>Ceiling And Visibility OK (vis ≥10km, pas nuages &lt;5000ft, pas temps significatif)</td>
+</tr>
+<tr>
+<td><strong>CB</strong></td>
+<td>Cumulonimbus (nuage d'orage)</td>
+</tr>
+<tr>
+<td><strong>CTR</strong></td>
+<td>Control Zone (zone de contrôle)</td>
+</tr>
+<tr>
+<td><strong>FL</strong></td>
+<td>Flight Level (niveau de vol)</td>
+</tr>
+<tr>
+<td><strong>IMC</strong></td>
+<td>Instrument Meteorological Conditions (conditions météo IFR)</td>
+</tr>
+<tr>
+<td><strong>METAR</strong></td>
+<td>METeorological Aerodrome Report (observation)</td>
+</tr>
+<tr>
+<td><strong>NOSIG</strong></td>
+<td>No Significant change (pas de changement)</td>
+</tr>
+<tr>
+<td><strong>QNH</strong></td>
+<td>Pression atmosphérique au niveau de la mer (réglage altimètre)</td>
+</tr>
+<tr>
+<td><strong>SVFR</strong></td>
+<td>Special VFR (VFR spécial en CTR)</td>
+</tr>
+<tr>
+<td><strong>TAF</strong></td>
+<td>Terminal Aerodrome Forecast (prévision)</td>
+</tr>
+<tr>
+<td><strong>TCU</strong></td>
+<td>Towering Cumulus (cumulus bourgeonnant)</td>
+</tr>
+<tr>
+<td><strong>UTC</strong></td>
+<td>Universal Time Coordinated (temps universel)</td>
+</tr>
+<tr>
+<td><strong>VMC</strong></td>
+<td>Visual Meteorological Conditions (conditions météo VFR)</td>
+</tr>
+</tbody>
+</table>
+<h3>Abréviations nuages</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Anglais</th>
+<th>Français</th>
+<th>Couverture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SKC</strong></td>
+<td>Sky Clear</td>
+<td>Ciel clair</td>
+<td>0/8</td>
+</tr>
+<tr>
+<td><strong>FEW</strong></td>
+<td>Few</td>
+<td>Peu de nuages</td>
+<td>1-2/8</td>
+</tr>
+<tr>
+<td><strong>SCT</strong></td>
+<td>Scattered</td>
+<td>Épars</td>
+<td>3-4/8</td>
+</tr>
+<tr>
+<td><strong>BKN</strong></td>
+<td>Broken</td>
+<td>Fragmenté</td>
+<td>5-7/8</td>
+</tr>
+<tr>
+<td><strong>OVC</strong></td>
+<td>Overcast</td>
+<td>Couvert</td>
+<td>8/8</td>
+</tr>
+<tr>
+<td><strong>NSC</strong></td>
+<td>No Significant Cloud</td>
+<td>Pas de nuages significatifs</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>VV</strong></td>
+<td>Vertical Visibility</td>
+<td>Visibilité verticale</td>
+<td>Ciel obscurci</td>
+</tr>
+</tbody>
+</table>
+<h3>Conversions utiles</h3>
+<table>
+<thead>
+<tr>
+<th>De</th>
+<th>À</th>
+<th>Formule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Knots → km/h</strong></td>
+<td>kt × 1.852</td>
+<td>10 kt = 18.5 km/h</td>
+</tr>
+<tr>
+<td><strong>km/h → Knots</strong></td>
+<td>km/h ÷ 1.852</td>
+<td>20 km/h ≈ 11 kt</td>
+</tr>
+<tr>
+<td><strong>Pieds → Mètres</strong></td>
+<td>ft × 0.3048</td>
+<td>1000 ft = 305 m</td>
+</tr>
+<tr>
+<td><strong>Mètres → Pieds</strong></td>
+<td>m × 3.281</td>
+<td>300 m ≈ 1000 ft</td>
+</tr>
+<tr>
+<td><strong>°F → °C</strong></td>
+<td>(°F - 32) × 5/9</td>
+<td>86°F = 30°C</td>
+</tr>
+<tr>
+<td><strong>°C → °F</strong></td>
+<td>°C × 9/5 + 32</td>
+<td>20°C = 68°F</td>
+</tr>
+<tr>
+<td><strong>inHg → hPa</strong></td>
+<td>inHg × 33.8639</td>
+<td>29.92 inHg = 1013 hPa</td>
+</tr>
+<tr>
+<td><strong>hPa → inHg</strong></td>
+<td>hPa ÷ 33.8639</td>
+<td>1013 hPa = 29.92 inHg</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2><i data-lucide="lightbulb"></i> CONSEILS D'UTILISATION</h2>
+<h3>Avant le vol</h3>
+<ol>
+<li><strong>Consultez plusieurs sources</strong> :</li>
+<li>METAR de l'aérodrome de départ</li>
+<li>METAR de l'aérodrome d'arrivée</li>
+<li>TAF des deux aérodromes</li>
+<li>METAR des aérodromes de dégagement</li>
+<li>
+<p>Cartes météo (TEMSI, WINTEM)</p>
+</li>
+<li>
+<p><strong>Analysez l'évolution</strong> :</p>
+</li>
+<li>Comparez METAR et TAF</li>
+<li>Vérifiez la tendance (NOSIG, BECMG, TEMPO)</li>
+<li>
+<p>Identifiez l'heure critique (passage IFR/VFR)</p>
+</li>
+<li>
+<p><strong>Calculez vos marges</strong> :</p>
+</li>
+<li>Si conditions proches des minima → prévoir dégagement</li>
+<li>Si tendance à la dégradation → partir tôt ou annuler</li>
+<li>Si TEMPO/PROB → planifier arrivée hors période critique</li>
+</ol>
+<h3>Pendant le vol</h3>
+<ol>
+<li><strong>Mettez à jour régulièrement</strong> :</li>
+<li>ATIS (Automatic Terminal Information Service)</li>
+<li>Nouveau METAR toutes les 30 min</li>
+<li>
+<p>Contacts radio avec les stations</p>
+</li>
+<li>
+<p><strong>Soyez prudent</strong> :</p>
+</li>
+<li>Si conditions se dégradent → demi-tour ou dégagement</li>
+<li>Ne jamais pénétrer dans les nuages en VFR</li>
+<li>Garder une marge de sécurité (fuel, visibilité, plafond)</li>
+</ol>
+<h3>Interprétation graphique</h3>
+<p><strong>Bandes colorées</strong> :
+- <i data-lucide="check-circle" class="li-ic" style="color:#4ADE80"></i> <strong>Vert (VFR)</strong> : Vol confortable
+- <span class="pin" style="background:#38BDF8"></span> <strong>Bleu (MVFR)</strong> : Vigilance accrue, prévoir plan B
+- <span class="pin" style="background:#F87171"></span> <strong>Rouge (IFR)</strong> : Vol VFR impossible
+- <span class="pin" style="background:#D946EF"></span> <strong>Magenta (LIFR)</strong> : Conditions très dégradées</p>
+<p><strong>Courbe solaire</strong> :
+- Lever/coucher du soleil visibles sur le graphique
+- Planifier pour éviter de voler au crépuscule (visibilité réduite)
+- VFR de nuit : vérifier qualification et minima</p>
+<h3>Limites de l'outil</h3>
+<p><strong>Ce que fait l'outil</strong> :
+- <i data-lucide="check" class="li-ic"></i> Affiche graphiquement les conditions météo et leur évolution temporelle
+- <i data-lucide="check" class="li-ic"></i> Parse automatiquement METAR/TAF et calcule la catégorie de vol
+- <i data-lucide="check" class="li-ic"></i> <strong>Verdict GO / NO-GO synthétique</strong> croisant tous les paramètres
+- <i data-lucide="check" class="li-ic"></i> Calcule la <strong>densité altitude</strong> (performances réelles de l'avion)
+- <i data-lucide="check" class="li-ic"></i> Analyse la <strong>tendance de pression QNH</strong> (détection de dégradation)
+- <i data-lucide="check" class="li-ic"></i> Affiche les <strong>SIGMET/AIRMET</strong> actifs
+- <i data-lucide="check" class="li-ic"></i> Calcule le <strong>créneau de vol jour VFR</strong> et alerte en cas de nuit aéro
+- <i data-lucide="check" class="li-ic"></i> <strong>Carte régionale</strong> : radar précipitations + catégories voisines
+- <i data-lucide="check" class="li-ic"></i> <strong>Comparateur d'alternates</strong> et météo de route (mode Navigation)
+- <i data-lucide="check" class="li-ic"></i> <strong>Planificateur de vol</strong> : caps, temps, carburant, relief — avec waypoints insérés au trajet le plus court et repères nommés posés au pointeur
+- <i data-lucide="check" class="li-ic"></i> Génère un <strong>log de nav A5 imprimable</strong> (ouvert dans un onglet, prêt à imprimer)</p>
+<p><strong>Ce que l'outil ne fait PAS (encore)</strong> :
+- <i data-lucide="x" class="li-ic"></i> Ne remplace pas le briefing météo officiel
+- <i data-lucide="x" class="li-ic"></i> Ne prend pas de décision à votre place (le verdict est une aide, pas un ordre)
+- <i data-lucide="x" class="li-ic"></i> N'intègre pas encore les NOTAMs (à venir)
+- <i data-lucide="x" class="li-ic"></i> Les SIGMET/AIRMET couvrent principalement les États-Unis pour l'instant</p>
+<p><strong>La décision finale</strong> reste celle du <strong>commandant de bord</strong> !</p>
+<hr />
+<h2><i data-lucide="phone"></i> RESSOURCES COMPLÉMENTAIRES</h2>
+<h3>Sites météo aviation (France)</h3>
+<ul>
+<li><strong>Météo France Aviation</strong> : https://aviation.meteo.fr</li>
+<li><strong>SIA (Service Information Aéronautique)</strong> : https://www.sia.aviation-civile.gouv.fr</li>
+<li><strong>OLIVIA</strong> : Briefing météo avant vol (payant)</li>
+</ul>
+<h3>Sites météo aviation (International)</h3>
+<ul>
+<li><strong>Aviation Weather Center (USA)</strong> : https://www.aviationweather.gov</li>
+<li><strong>NOAA</strong> : https://www.weather.gov</li>
+<li><strong>Windy</strong> : https://www.windy.com (cartes interactives)</li>
+</ul>
+<h3>Applications mobiles</h3>
+<ul>
+<li><strong>Mach7</strong> (France)</li>
+<li><strong>Windy</strong> (international)</li>
+<li><strong>ForeFlight</strong> (payant, très complet)</li>
+<li><strong>SkyDemon</strong> (payant, navigation + météo)</li>
+</ul>
+<h3>Formation</h3>
+<ul>
+<li>Cours de navigation VFR (licence PPL)</li>
+<li>Formation météorologie aéronautique</li>
+<li>Stage IFR (pour compréhension avancée)</li>
+</ul>
+<hr />
+<h2><i data-lucide="triangle-alert"></i> AVERTISSEMENT LÉGAL</h2>
+<p>Cette application est un <strong>outil d'aide à la décision</strong> uniquement.</p>
+<p><strong>Elle ne remplace en AUCUN cas</strong> :
+- Un briefing météo officiel
+- La consultation des NOTAM
+- L'analyse complète des conditions de vol
+- Le jugement du pilote commandant de bord</p>
+<p><strong>Le pilote reste seul responsable</strong> de la sécurité du vol et des décisions prises.</p>
+<p>En cas de doute : <strong>rester au sol</strong> ou consulter un instructeur.</p>
+<hr />
+<p><strong>Version</strong> : 2.0<br />
+<strong>Date</strong> : Juillet 2026<br />
+<strong>Auteur</strong> : PapaBear</p>
+<p><strong>Vol sûr et ciel bleu !</strong></p>
+        <a href="index.html" class="btn-back"><i data-lucide="arrow-left"></i> Retour à l'application</a>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toc = document.querySelector('ol'); 
+    if (!toc) return;
+
+    const headings = Array.from(document.querySelectorAll('h2, h3'));
+    
+    toc.querySelectorAll('li a').forEach((link, i) => {
+        const text = link.textContent.trim().toLowerCase();
+        // Ignore le suffixe entre parenthèses (ex. "(Nouveau)") pour le matching.
+        const matchKey = text.split('(')[0].trim();
+
+        const target = headings.find(h => h.textContent.toLowerCase().includes(matchKey));
+        
+        if (target) {
+            const sectionId = 'chapitre-' + i;
+            target.id = sectionId; 
+            
+            link.href = '#' + sectionId;
+            link.style.color = 'var(--primary)';
+            link.style.textDecoration = 'none';
+            link.style.fontWeight = '500';
+        }
+    });
+
+    document.documentElement.style.scrollBehavior = 'smooth';
+});
+</script>
+<a href="#toc" class="btn-floating-toc" title="Retour à la table des matières"><i data-lucide="chevron-up"></i> Sommaire</a>
+    <script src="vendor/lucide.min.js"></script>
+    <script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

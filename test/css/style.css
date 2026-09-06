@@ -1,0 +1,2639 @@
+/* ================================================================
+ * VARIABLES GLOBALES & THEME UNIFIÉ (Flat Dark Dashboard)
+ * ================================================================ */
+:root {
+    --primary: #38BDF8;      
+    --secondary: #2DD4BF;    
+    --danger: #EF4444;       
+    
+    --bg-color: #020617;     
+    --panel-bg: #0F172A;     
+    --inner-bg: #0F172A;     
+    --input-bg: #0F172A;     
+    
+    --text-color: #F8FAFC;   
+    --text-muted: #94A3B8;   
+    --text-dim: rgba(255,255,255,0.5); 
+    
+    --focus-ring: #38BDF8;
+    --focus-ring-width: 3px;
+    
+    --border-color: rgba(255, 255, 255, 0.15); 
+    --border-hover: rgba(255, 255, 255, 0.25); 
+    
+    --shadow: rgba(0,0,0,0.5);
+    --hover-bg: rgba(56, 189, 248, 0.08); 
+    --hover-bg-strong: rgba(56, 189, 248, 0.15); 
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+* { box-sizing: border-box; }
+
+*:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: 2px; }
+
+.skip-link { position: absolute; top: -100px; left: 0; background: var(--primary); color: #000; padding: 12px 20px; text-decoration: none; font-weight: bold; z-index: 10000; border-radius: 0 0 4px 0; }
+.skip-link:focus { top: 0; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+.lucide { vertical-align: middle; display: inline-block; }
+.icon-sm { width: 16px; height: 16px; margin-right: 6px; }
+.icon-md { width: 20px; height: 20px; margin-right: 8px; }
+.alert-emoji { width: 18px; height: 18px; margin-right: 4px; flex-shrink: 0; }
+
+body { 
+    font-family: 'DM Sans', 'Segoe UI', sans-serif; 
+    color: var(--text-color); 
+    margin: 0; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    background: 
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(45, 212, 191, 0.04) 0%, transparent 50%),
+        var(--bg-color);
+    background-attachment: fixed;
+}
+.container { max-width: 1200px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 180px 1fr 180px; gap: 20px; flex: 1; align-items: start; }
+.side-column { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 15px !important; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.side-column::-webkit-scrollbar { width: 5px; }
+.side-column::-webkit-scrollbar-track { background: transparent; }
+.side-column::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.side-column::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+.side-column.card { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px) saturate(140%); -webkit-backdrop-filter: blur(12px) saturate(140%); border: 1px solid var(--border-color); }
+.side-column h3 { font-size: 11px; margin: 0 0 15px 0; display: flex; align-items: center; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.center-column { display: flex; flex-direction: column; gap: 15px; min-width: 0; }
+
+@media (max-width: 1100px) { .container { grid-template-columns: 1fr; } .side-column { position: static; max-height: none; } }
+
+/* Sur mobile, les sidebars sont repliables (fermées par défaut).
+   Le titre devient un bouton toggle (curseur + chevron). */
+@media (max-width: 800px) {
+    .side-column { padding: 10px 12px; }
+    .side-column h3 {
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 0;
+        user-select: none;
+    }
+    .side-column h3::after {
+        content: '▾';
+        margin-left: auto;
+        font-size: 12px;
+        transition: transform 0.2s;
+    }
+    /* Contenu replié par défaut. */
+    .side-column > div,
+    .side-column > button {
+        display: none;
+    }
+    /* Quand le titre est cliqué, on déploie. */
+    .side-column.expanded > div,
+    .side-column.expanded > button {
+        display: block;
+    }
+    .side-column.expanded h3::after {
+        transform: rotate(180deg);
+    }
+}
+
+@media (pointer: coarse) {
+    .btn-help, .fav-load-btn, .fav-remove-btn, .history-item, .autocomplete-item, .rwy-bubble {
+        min-height: 44px; 
+    }
+    .rwy-bubble {
+        display: flex; align-items: center; justify-content: center;
+    }
+}
+
+.card { 
+    background: rgba(15, 23, 42, 0.65); 
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-radius: var(--radius-lg); 
+    box-shadow: 0 4px 20px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.05); 
+    padding: 15px; 
+    border: 1px solid var(--border-color); 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+header.card { padding: 20px 24px 18px; position: relative; overflow: hidden; }
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; z-index: 1; }
+.header-title-block { display: flex; flex-direction: column; gap: 3px; }
+.header-row h1 { margin: 0; font-size: 1.35rem; font-weight: 700; color: #ffffff; letter-spacing: -0.3px; }
+.header-subtitle { font-size: 11px; font-weight: 500; color: var(--primary); letter-spacing: 1.5px; text-transform: uppercase; }
+
+.lang-switcher { display: flex; gap: 10px; align-items: center; }
+.btn-lang-toggle { position: relative; width: 45px; height: 30px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); cursor: pointer; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s; overflow: hidden; flex-shrink: 0; background: transparent; }
+.btn-lang-toggle:hover { transform: translateY(-2px); border-color: var(--border-hover); }
+.flag-fr { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://flagcdn.com/w40/fr.png') no-repeat center center; background-size: cover; clip-path: polygon(0 0, 100% 0, 0 100%); }
+.flag-en { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://flagcdn.com/w40/gb.png') no-repeat center center; background-size: cover; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
+.flag-line { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top left, transparent 49.5%, rgba(255,255,255,0.4) 49.5%, rgba(255,255,255,0.4) 50.5%, transparent 50.5%); pointer-events: none; }
+
+.btn-help { background: var(--inner-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 7px 13px; border-radius: var(--radius-md); font-size: 12px; font-weight: 500; transition: all 0.2s; backdrop-filter: blur(4px); display: flex; align-items: center;}
+.btn-help:hover { background: var(--hover-bg-strong); color: #fff; cursor: pointer; border-color: var(--border-hover);}
+
+.hpp-group.search-group { flex: 1 1 100%; min-width: 0; margin-top: 4px; background: var(--inner-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 5px 5px 5px 12px; display: flex; align-items: center; gap: 8px;}
+#icaoInput { flex: 1 1 0%; min-width: 50px; text-align: left; text-transform: uppercase; background: transparent; border: none; color: var(--primary); font-family: 'DM Mono', monospace; font-size: 16px; font-weight:500; letter-spacing: 1px; outline: none; }
+#icaoInput::placeholder { color: var(--text-dim); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+.btn-fetch-metar, .btn-fetch-taf { border-radius: var(--radius-sm); padding: 9px 18px; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: white; border: none; cursor: pointer; transition: all 0.25s cubic-bezier(0.22,1,0.36,1); display: flex; align-items: center; text-transform: uppercase; position: relative; overflow: hidden;}
+.btn-fetch-metar { background: #0284C7; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
+.btn-fetch-metar:hover { background: #0369A1; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(2, 132, 199, 0.6), 0 0 15px rgba(56, 189, 248, 0.4); }
+.btn-fetch-taf { background: #0F766E; box-shadow: 0 2px 8px rgba(15, 118, 110, 0.4); }
+.btn-fetch-taf:hover { background: #115E59; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(15, 118, 110, 0.6), 0 0 15px rgba(45, 212, 191, 0.4); }
+.btn-fetch-metar:active, .btn-fetch-taf:active { transform: translateY(0); }
+
+/* Effet d'ondulation (ripple) au clic */
+.ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.4); transform: scale(0); animation: rippleExpand 0.6s ease-out; pointer-events: none; }
+@keyframes rippleExpand { to { transform: scale(4); opacity: 0; } }
+
+.editor-container { display: grid; grid-template-areas: "stack"; width: 100%; height: 120px; min-height: 80px; max-height: 250px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--input-bg); overflow: hidden; margin-top: 15px; resize: vertical; }
+.editor-backdrop, .editor-textarea { grid-area: stack; width: 100%; height: 100%; margin: 0; padding: 12px; border: none; font-family: 'DM Mono', monospace; font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.editor-backdrop::-webkit-scrollbar, .editor-textarea::-webkit-scrollbar { width: 5px; }
+.editor-backdrop::-webkit-scrollbar-track, .editor-textarea::-webkit-scrollbar-track { background: transparent; }
+.editor-backdrop::-webkit-scrollbar-thumb, .editor-textarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.editor-backdrop { z-index: 1; background-color: transparent; color: transparent; pointer-events: none; }
+.editor-textarea { z-index: 2; color: #E2E8F0; background: transparent; caret-color: var(--primary); resize: none; outline: none;}
+.editor-textarea::selection { background: rgba(56, 189, 248, 0.3); color: transparent; }
+
+.time-badge-row { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 15px auto 0 auto; flex-wrap: wrap; position: relative; z-index: 10; }
+.hpp-group.time-group-centered { background: var(--inner-bg); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 10px; position: relative; }
+.hpp-group label { font-size: 13px; color: var(--text-muted); font-weight: 500;}
+
+#hppInput { width: 70px; text-align: center; font-family: 'DM Mono', monospace; font-weight:500; background: transparent; border: none; color: var(--primary); outline: none; padding: 6px; }
+
+.hpp-group.time-group-centered:hover::after {
+    content: attr(data-local-time);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(15, 23, 42, 0.95);
+    color: #38BDF8;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    pointer-events: none;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+    z-index: 100;
+}
+.hpp-group.time-group-centered:not([data-local-time]):hover::after,
+.hpp-group.time-group-centered[data-local-time=""]:hover::after { display: none; }
+@keyframes fadeIn { to { opacity: 1; } }
+
+#lbl-info { font-weight: 400; color: #bae6fd; margin-top: 6px; display: block; font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 8px;}
+
+.metar-dashboard { display: none; grid-template-columns: 1fr 1.3fr 1fr; gap: 15px; width: 100%; margin-top: 15px; }
+.metar-dashboard.visible { display: grid; }
+.dashboard-cell { background: var(--inner-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; min-height: 200px; display: flex; flex-direction: column; }
+.dash-title { font-size: 10px; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+
+#wind-compass-container { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#wind-compass-container svg { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25)); }
+
+.vfr-card { border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; justify-content: space-between; color: white; position: relative; overflow: hidden; flex: 1;}
+
+.vfr-watermark-icon { 
+    position: absolute; 
+    left: 65%; 
+    top: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 140px; 
+    height: 140px; 
+    color: #ffffff; 
+    opacity: 0.15; 
+    pointer-events: none; 
+}
+
+.vfr-cat { font-size: 44px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.3); font-family: 'DM Sans', sans-serif; display: flex; align-items: center; }
+
+/* ===== WIDGETS DONNÉES DÉCRYPTÉES ===== */
+.decrypted-widgets { display: none; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; margin-top: 15px; }
+.decrypted-widgets.visible { display: grid; }
+.widget-card { position: relative; overflow: hidden; min-height: 140px; }
+.widget-watermark { position: absolute; right: -10px; bottom: -15px; width: 90px; height: 90px; color: var(--text-color); opacity: 0.06; pointer-events: none; }
+.widget-title { font-size: 10px; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1; }
+.widget-title .widget-title-icon { width: 14px; height: 14px; }
+.widget-body { display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; flex: 1; }
+.widget-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight:500; color: var(--text-color); line-height: 1.2; }
+.widget-value .widget-unit { font-size: 13px; color: var(--text-muted); font-weight: 400; margin-left: 3px; }
+.widget-sub { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-muted); }
+.widget-row { display: flex; align-items: center; gap: 8px; }
+.widget-row .widget-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; min-width: 64px; }
+.widget-row .widget-data { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--text-color); }
+/* Ligne « Temp : 15°C  Rosée : 13°C » : deux groupes justifiés bord à bord.
+   Libellés et valeurs à la même taille (11 px), comme le widget perf décollage.
+   En bureau le widget ne fait que ~176 px (grille ×4) ; si les valeurs sont
+   très larges (hiver −12°C), le 2e groupe passe proprement à la ligne. */
+.widget-row.widget-inline { justify-content: space-between; flex-wrap: wrap; gap: 2px 6px; }
+.widget-inline .widget-ig { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
+.widget-row.widget-inline .widget-label { min-width: 0; letter-spacing: 0; }
+.widget-row.widget-inline .widget-data { font-size: 11px; }
+/* Bloc « Givrage cellule / carbu » : libellé sur sa propre ligne,
+   olive résultat juste en dessous. */
+.widget-row.widget-stack { flex-direction: column; align-items: flex-start; gap: 4px; }
+.widget-arrow { display: inline-flex; align-items: center; transition: transform 0.3s ease; }
+.widget-arrow svg { display: block; width: 30px; height: 30px; }
+.widget-pill { display: inline-flex; align-items: center; max-width: 100%; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.3; }
+.widget-pill.icing-ok      { background: rgba(74, 222, 128, 0.15);  color: var(--cat-vfr); }
+.widget-pill.icing-caution { background: rgba(251, 191, 36, 0.18);  color: #FBBF24; }
+.widget-pill.icing-danger  { background: rgba(248, 113, 113, 0.18); color: var(--cat-ifr); }
+.widget-pill.icing-descent { background: rgba(249, 115, 22, 0.18);  color: #F97316; }
+.widget-footnote { font-size: 10.5px; color: var(--text-muted); line-height: 1.35; }
+.widget-empty { color: var(--text-dim); font-style: italic; font-size: 13px; }
+@media (max-width: 800px) { .decrypted-widgets { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .decrypted-widgets { grid-template-columns: 1fr; } }
+
+.vfr-chip { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 11px; backdrop-filter: blur(4px); letter-spacing: 0.5px; width: 100%; margin: 0; }
+.vfr-chip-label { color: rgba(255,255,255,0.7); font-weight: 600; text-transform: uppercase; font-size: 10px; }
+.vfr-chip-value { color: #ffffff; font-weight: 700; }
+
+@media (max-width: 800px) { .metar-dashboard { grid-template-columns: 1fr; } }
+
+.dash-alert-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); margin-bottom: 6px; }
+.dash-alert-row.danger { background: rgba(239, 68, 68, 0.12); border-left: 3px solid #EF4444; color: #FCA5A5; }
+.dash-alert-row.warning { background: rgba(245, 158, 11, 0.12); border-left: 3px solid #F59E0B; color: #FCD34D; }
+.dash-alert-row .alert-label { color: #F8FAFC; font-size: 11px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.dash-alerts-ok { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; color: #FFFFFF; background: rgba(16, 185, 129, 0.12); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); font-size: 12px; font-weight: 600; margin-top: 5px; padding: 10px; text-align: center; }
+
+.graph-container { flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: flex-start; width: 100%; cursor: crosshair; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.graph-container::-webkit-scrollbar { height: 6px; }
+.graph-container::-webkit-scrollbar-track { background: transparent; }
+.graph-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.graph-container::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+canvas { background-color: transparent; display: block; transition: opacity 0.3s ease; }
+
+.canvas-loading { opacity: 0.3; pointer-events: none; filter: blur(2px); }
+
+.canvas-tooltip { 
+    position: fixed; 
+    background: rgba(15, 23, 42, 0.95); 
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px); 
+    border: 1px solid rgba(56, 189, 248, 0.4); 
+    color: #F8FAFC; 
+    padding: 8px 12px; 
+    border-radius: var(--radius-sm); 
+    font-family: 'DM Sans', sans-serif; 
+    font-size: 13px; 
+    font-weight: 700; 
+    pointer-events: none; 
+    opacity: 0; 
+    transform: translate(-50%, -120%); 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); 
+    transition: opacity 0.1s ease; 
+    z-index: 2000; 
+    white-space: nowrap; 
+}
+
+.legend-bar { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; padding: 12px; font-size: 0.85rem; background: var(--panel-bg); border-top: 1px solid var(--border-color); }
+.legend-item { display: flex; align-items: center; gap: 8px; color: var(--text-color); }
+.aero-legend-bar { display: flex; justify-content: center; padding: 10px; font-size: 0.9rem; font-weight: 500; color: var(--text-muted); background-color: var(--inner-bg); border-bottom: 1px solid var(--border-color); margin-bottom: -15px; border-radius: 8px 8px 0 0; }
+.tag-cloud { font-family: 'DM Mono', monospace; font-weight:500; background-color: rgba(74, 222, 128, 0.12); color: #4ADE80; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(74, 222, 128, 0.25); font-size: 12px;}
+.tag-ceil { background-color: rgba(248, 113, 113, 0.12); color: #F87171; border: 1px solid rgba(248, 113, 113, 0.25); }
+
+#favorites-list { display: flex; flex-direction: column; gap: 6px; }
+.favorite-item { display: flex; align-items: center; gap: 2px; background: var(--inner-bg); border-radius: var(--radius-sm); border: 1px solid var(--border-color); transition: all 0.2s; }
+.favorite-item:hover { background: var(--input-bg); border-color: var(--border-hover); }
+.fav-load-btn { background: transparent; color: var(--primary); border: none; padding: 8px 10px; cursor: pointer; font-weight:500; font-family: 'DM Mono', monospace; font-size: 13px; flex: 1; text-align: left; transition: color 0.2s; }
+.fav-load-btn:hover { color: #7DD3FC; }
+.fav-remove-btn { background: transparent; color: var(--text-dim); border: none; padding: 6px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+.fav-remove-btn:hover { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+/* Sous-sections repliables d'un onglet (Horaires du service, Avitaillement)
+ * — repliées par défaut. PIÈGE : jamais display:flex sur .ss-body, il
+ * écraserait le display:none du repli par spécificité. */
+.card-ss { margin-top: 8px; }
+.ss-head { display: flex; align-items: center; gap: 7px; width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 7px 10px; cursor: pointer; color: var(--text-color); font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+.ss-head:hover { background: var(--input-bg); }
+.card-ss .ss-body { display: none; }
+.card-ss.open .ss-body { display: block; padding-top: 6px; }
+.card-ss.open .ss-chev { transform: rotate(180deg); }
+
+/* Classement des favoris à la souris : poignée + repère d'insertion */
+.fav-drag-handle { background: transparent; color: var(--text-dim); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: var(--radius-sm); transition: color 0.2s; }
+.fav-drag-handle:hover { color: var(--text-muted); }
+.fav-item[draggable="true"], .fav-item[draggable="true"] .fav-drag-handle { cursor: grabbing; }
+.fav-item.fav-dragging { opacity: 0.35; }
+.fav-item.fav-drop-before { box-shadow: inset 0 2px 0 var(--primary); }
+.fav-item.fav-drop-after { box-shadow: inset 0 -2px 0 var(--primary); }
+.favorite-item.dragging { background: var(--hover-bg-strong); border: 1px dashed var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4); transform: scale(1.02); z-index: 10; }
+
+#search-history-container { display: flex; flex-direction: column; gap: 0; background: var(--inner-bg); border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.history-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: all 0.2s; display: flex; flex-direction: column; text-align: left; background: transparent; border-left: none; border-right: none; border-top: none; width: 100%; border-radius: 0; }
+.history-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.history-item:last-child { border-bottom: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+.history-item:hover { background: var(--input-bg); }
+.history-icao { font-weight:500; color: var(--primary); font-size: 13px; font-family: 'DM Mono', monospace;}
+.history-name { color: var(--text-muted); font-size: 11px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-empty { color: var(--text-dim); font-style: italic; font-size: 12px; text-align: center; margin: 10px 0; }
+.search-history-title { padding: 10px 15px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; background: transparent; border-bottom: 1px solid var(--border-color); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.btn-clear-history { margin: 10px 0 0 0; padding: 8px 12px; background: var(--inner-bg); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; font-size: 11px; font-weight: 600; width: 100%; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-clear-history:hover { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border-color: rgba(239, 68, 68, 0.3); }
+
+.autocomplete-wrapper { position: relative; flex: 1 1 0%; min-width: 50px; }
+.autocomplete-dropdown, .search-history { position: absolute; top: 100%; left: 0; right: 0; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 0 0 var(--radius-md) var(--radius-md); max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none; margin-top: 5px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.autocomplete-dropdown::-webkit-scrollbar, .search-history::-webkit-scrollbar { width: 5px; }
+.autocomplete-dropdown::-webkit-scrollbar-track, .search-history::-webkit-scrollbar-track { background: transparent; }
+.autocomplete-dropdown::-webkit-scrollbar-thumb, .search-history::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.autocomplete-dropdown.visible, .search-history.visible { display: block; }
+.autocomplete-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: all 0.2s; display: flex; flex-direction: column; text-align: left; background: none; border-left: none; border-right: none; border-top: none; width: 100%; }
+.autocomplete-item:hover, .autocomplete-active { background: var(--hover-bg); }
+.autocomplete-icao { font-weight:500; color: var(--primary); font-size: 14px; font-family: 'DM Mono', monospace;}
+.autocomplete-name { color: var(--text-color); font-size: 13px; margin-top: 2px; }
+/* Item destination (barre de nav) : code + distance depuis le départ sur une ligne. */
+.autocomplete-topline { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.autocomplete-topline .autocomplete-icao { flex-shrink: 0; }
+.autocomplete-dist { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(4px); }
+.modal-content { background: var(--panel-bg); border-radius: var(--radius-lg); max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color); scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.modal-overlay.visible { display: flex; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color); }
+.modal-header h2 { margin: 0; font-size: 20px; color: var(--text-color); font-weight: 700; display:flex; align-items:center; }
+.btn-close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; display:flex; align-items:center; justify-content:center;}
+.btn-close-modal:hover { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.modal-body { padding: 20px; }
+.threshold-section { margin-bottom: 20px; padding: 15px; background: var(--inner-bg); border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+.threshold-header { margin-bottom: 12px; }
+.threshold-label { font-weight: 600; font-size: 15px; color: var(--text-color); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.threshold-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.threshold-inputs--quad { grid-template-columns: 1fr 1fr 1fr 1fr; }
+@media (max-width: 500px) { .threshold-inputs--quad { grid-template-columns: 1fr 1fr; } }
+.threshold-inputs label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-muted); font-weight: 500;}
+.threshold-inputs input[type="number"] { padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 14px; background: var(--input-bg); color: var(--text-color); font-family: 'DM Mono', monospace; font-weight: bold;}
+.modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 20px; border-top: 1px solid var(--border-color); background: var(--inner-bg);}
+
+.audio-controls { display: flex; gap: 10px; margin-top: 15px; align-items: center; flex-wrap: wrap; }
+
+/* Toggle Départ/Destination (mode Navigation uniquement). */
+.dep-dest-toggle {
+    display: none;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    gap: 2px;
+}
+body.mode-nav .dep-dest-toggle { display: flex; }
+.dep-dest-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 7px 12px;
+    border-radius: calc(var(--radius-sm) - 2px);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.dep-dest-btn:hover { color: var(--text-color); }
+.dep-dest-btn.active {
+    background: var(--primary);
+    color: white;
+}
+.btn-primary { background: #0284C7; color: white; border: none; padding: 10px 15px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: all 0.25s cubic-bezier(0.22,1,0.36,1); display: flex; align-items:center; position: relative; overflow: hidden;}
+.btn-primary:hover { background: #0369A1; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4); }
+.side-column .btn-primary { background: rgba(15, 23, 42, 0.65); color: var(--primary); border: 1px solid var(--border-color); font-size: 12px; padding: 8px 12px; width: 100%; justify-content: center; }
+.side-column .btn-primary:hover { background: var(--input-bg); border-color: var(--border-hover); box-shadow: none; }
+.btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-color); border: 1px solid var(--border-color); padding: 10px 15px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: all 0.25s cubic-bezier(0.22,1,0.36,1); display: flex; align-items:center; position: relative; overflow: hidden;}
+.btn-secondary:hover { background: var(--hover-bg-strong); border-color: var(--border-hover); transform: translateY(-1px); }
+
+.footer { font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+.footer-wrap { margin-top: auto; display: flex; flex-direction: column; gap: 15px; }
+.footer a { color: #0288D1; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+.info-bar { width: 100%; text-align: left; min-height: 20px; margin-top: 10px; }
+.graph-container { position: relative; }
+.taf-canvas { touch-action: none; }
+.legend-bar-bottom { border-radius: 0 0 8px 8px; }
+.btn-add-favorite { margin-top: 10px; }
+.warning { color: var(--danger); font-weight: bold; margin-top: 5px;}
+
+.btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+.btn-loading::after { content: ""; position: absolute; width: 16px; height: 16px; top: 0; left: 0; right: 0; bottom: 0; margin: auto; border: 3px solid transparent; border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ========== ANIMATIONS D'ENTRÉE DES CARTES ========== */
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.card { animation: cardFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.side-column-left { animation-delay: 0s; }
+.center-column > header { animation-delay: 0.08s; }
+.center-column > main { animation-delay: 0.16s; }
+.side-column-right { animation-delay: 0.12s; }
+.center-column > aside { animation-delay: 0.24s; }
+.center-column > footer { animation-delay: 0.3s; }
+
+@keyframes windArrowPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media print {
+    body { background: #fff; color: #000; padding: 0; }
+    .side-column, .btn-fetch-metar, .btn-fetch-taf, .btn-help, .btn-lang-toggle, 
+    .btn-add-favorite, .btn-read-metar, .btn-stop-audio, .audio-controls, 
+    .btn-clear-history, .fav-remove-btn, .fav-drag-handle, .canvas-tooltip, .aero-legend-bar { display: none !important; }
+    .container { grid-template-columns: 1fr; max-width: 100%; }
+    .card { box-shadow: none; border: 1px solid #ccc; background: #fff; }
+    .metar-dashboard { grid-template-columns: 1fr; }
+    .graph-container { overflow: visible; }
+    .footer { color: #666; }
+    .warning { color: #c00; }
+    #lbl-info { color: #333; border-color: #ccc; }
+}
+.btn-floating-toc {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #0288D1;
+    color: #ffffff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 1000;
+}
+
+.btn-floating-toc:hover {
+	background-color: #00695C;
+	transform: scale(1.05);
+}
+
+/* ================================================================
+ * COMPARATEUR D'ALTERNATES
+ * ================================================================ */
+.alternates-panel { padding: 0; overflow: hidden; }
+.alternates-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; cursor: pointer;
+    font-weight: 600; font-size: 14px; color: var(--text-color);
+    transition: background 0.2s;
+}
+.alternates-header:hover { background: var(--hover-bg); }
+.alternates-chevron { color: var(--text-muted); transition: transform 0.3s; }
+.alternates-panel.open .alternates-chevron { transform: rotate(180deg); }
+.alternates-body {
+    display: none;
+    flex-direction: column;
+    padding: 0 12px 12px;
+}
+.alternates-panel.open .alternates-body { display: flex; }
+.alternates-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr 1.2fr;
+    gap: 1px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+.alt-header {
+    background: var(--inner-bg);
+    padding: 8px 10px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+.alt-cell {
+    background: rgba(15, 23, 42, 0.6);
+    padding: 10px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+}
+.alt-cell-name { flex-direction: column; align-items: flex-start; gap: 2px; transition: background 0.2s; }
+.alt-cell-name:hover { background: var(--hover-bg); }
+.alt-code { font-weight: 800; color: var(--primary); }
+.alt-name { font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--text-muted); font-weight: 400; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 700px) {
+    .alternates-grid { grid-template-columns: 1.5fr 1fr 1fr; }
+    /* En mobile, on masque les colonnes Plafond (4) et Vent (5).
+       Chaque ligne fait 5 cellules (nom, cat, visi, plafond, vent) ;
+       on cible la 4e et la 5e de chaque groupe de 5. */
+    .alternates-grid > *:nth-child(5n+4),
+    .alternates-grid > *:nth-child(5n) { display: none; }
+}
+
+/* ================================================================
+ * CARTE RÉGIONALE — Radar précip + catégories voisines
+ * ================================================================ */
+.regional-map-panel { padding: 0; overflow: hidden; }
+.regional-map-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; cursor: pointer;
+    font-weight: 600; font-size: 14px; color: var(--text-color);
+    transition: background 0.2s;
+}
+.regional-map-header:hover { background: var(--hover-bg); }
+.regional-map-chevron { color: var(--text-muted); transition: transform 0.3s; }
+.regional-map-panel.open .regional-map-chevron { transform: rotate(180deg); }
+
+.regional-map-body {
+    display: none;
+    flex-direction: column;
+    padding: 0 12px 12px;
+}
+.regional-map-panel.open .regional-map-body { display: flex; }
+
+/* Barre de navigation Départ → Destination : carte autonome, visible
+   uniquement en mode navigation (plus besoin d'ouvrir le panneau carte). */
+.route-planner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    /* La dropdown d'autocomplétion déborde sous la carte : chaque .card a un
+       backdrop-filter (stacking context isolé), il faut hisser la carte entière
+       au-dessus des suivantes pour que la dropdown ne soit pas recouverte. */
+    position: relative;
+    z-index: 20;
+}
+body.mode-nav .route-planner { display: flex; }
+/* En navigation, la barre Départ → Destination vit DANS la carte d'en-tête
+   (déplacée par flight-mode.js), entre le titre et la rangée Code OACI /
+   METAR-TAF qui descend d'un cran : style « boîte interne » aligné sur la
+   rangée de recherche. Le débordement de la carte devient visible pour que
+   l'autocomplétion et le menu de sauvegarde du plan ne soient pas rognés. */
+body.mode-nav header.card { overflow: visible; }
+header.card > .route-planner {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    margin: 0 0 10px;
+    position: relative;
+    z-index: 20;
+}
+/* Bandeau « Fenêtre de vol » déplacé sous la rangée titre (les deux modes) :
+   même crénelage vertical que la barre de route ci-dessus. */
+header.card > .flight-window {
+    margin: 0 0 10px;
+    position: relative;
+    z-index: 1;
+}
+.route-planner input:focus { border-color: var(--primary); }
+.route-planner .route-to-wrapper { flex: 1 1 170px; max-width: 320px; }
+/* Nom du terrain destination (confirmation visuelle du code saisi). */
+.route-to-name {
+    flex-basis: 100%;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.route-to-name:empty { display: none; }
+
+/* Bouton Sauvegarder/Importer le plan (barre de navigation). */
+.plan-io-wrapper { position: relative; flex-shrink: 0; }
+.plan-io-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
+    background: var(--input-bg); border: 1px solid var(--border-color);
+    color: var(--text-muted); transition: all 0.15s;
+}
+.plan-io-btn:hover { border-color: var(--primary); color: var(--primary); }
+.plan-io-menu {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0;
+    min-width: 190px; z-index: 1100;
+    background: var(--panel-bg); border: 1px solid var(--border-color);
+    border-radius: 8px; padding: 4px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.plan-io-menu.visible { display: flex; flex-direction: column; }
+.plan-io-menu button {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border: none; border-radius: 6px;
+    background: none; color: var(--text-color); font-size: 12px;
+    font-family: 'DM Sans', sans-serif; text-align: left; cursor: pointer;
+}
+.plan-io-menu button:hover { background: var(--hover-bg); }
+
+/* ================================================================
+ * ADAPTATION DU DASHBOARD AU MODE DE VOL (Local / Navigation)
+ * ================================================================
+ * En vol LOCAL : le pilote briefe l'instant présent (tour de piste,
+ * balette). On met en avant METAR live, vent/piste, densité-altitude,
+ * takeoff, créneau jour, NOTAMs. On masque les éléments de navigation
+ * (route, alternates) qui ne le concernent pas.
+ *
+ * En NAVIGATION : le pilote briefe l'heure d'arrivée et le long terme.
+ * On met en avant la carte régionale (corridor), les alternates, et on
+ * laisse le scrubber temporel central. Le takeoff reste utile (départ).
+ * ================================================================ */
+
+/* --- Mode LOCAL : masque les widgets de navigation --- */
+/* Le comparateur d'alternates est déjà géré en JS (app.js), mais on
+ * ajoute une garde CSS au cas où. */
+body.mode-local #alternates-container { display: none !important; }
+
+/* La carte régionale reste à la même position en mode local et
+ * navigation (seuls les widgets de nav — planner, alternates —
+ * s'ajoutent en mode navigation). */
+
+/* Badge de contexte sous le toggle : aide le pilote à comprendre ce
+ * que le mode change. */
+.flight-mode-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+}
+
+.regional-map {
+    width: 100%;
+    height: 420px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: #0F172A;
+}
+/* Correction Leaflet : le filtre sombre ne s'applique qu'au fond "dark".
+   Sur satellite/aéro, on garde les couleurs intactes pour distinguer les pistes. */
+.regional-map[data-base-layer="dark"] .leaflet-tile { filter: brightness(0.9); }
+.regional-map .leaflet-control-attribution { background: rgba(15,23,42,0.8) !important; color: #94A3B8 !important; }
+.regional-map .leaflet-control-attribution a { color: #38BDF8 !important; }
+.regional-map .leaflet-bar a { background: #1E293B !important; color: #F8FAFC !important; border-color: var(--border-color) !important; }
+.regional-map .leaflet-bar a:hover { background: #334155 !important; }
+.regional-map .leaflet-tooltip { background: rgba(15,23,42,0.95); border: 1px solid var(--border-color); color: #F8FAFC; }
+
+/* Popup METAR : même fond sombre que airspace-popup (Leaflet est blanc par défaut). */
+.metar-popup .leaflet-popup-content-wrapper {
+    background: #1E293B;
+    color: #F8FAFC;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.metar-popup .leaflet-popup-content { margin: 10px 12px; }
+.metar-popup .leaflet-popup-tip { background: #1E293B; }
+.metar-popup .leaflet-popup-close-button { color: #94A3B8 !important; }
+
+/* Contenu du popup METAR (cliqué sur un aéroport). */
+.mp-inner { min-width: 200px; }
+.mp-inner .mp-title { font-size: 12px; margin-bottom: 6px; color: #F8FAFC; }
+.mp-inner .mp-cat {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    color: #fff; font-weight: 700; font-size: 10px; letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.mp-inner .mp-rows { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.mp-inner .mp-row { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; }
+.mp-inner .mp-k { color: #94A3B8; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+.mp-inner .mp-v { font-family: 'DM Mono', monospace; color: #E2E8F0; font-weight:500; }
+.mp-inner .mp-raw {
+    background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px; padding: 6px 8px; margin: 0 0 8px 0;
+    font-family: 'DM Mono', monospace; font-size: 10px; color: #94A3B8;
+    white-space: pre-wrap; word-break: break-all; max-height: 90px; overflow-y: auto;
+}
+.mp-inner .mp-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.mp-inner .mp-btns .mp-load-btn, .mp-inner .mp-btns .mp-dest-btn { flex: 1 1 130px; }
+.mp-inner .mp-load-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(56,189,248,0.15); color: #38BDF8; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(56,189,248,0.4); transition: background 0.15s;
+    white-space: nowrap;
+}
+.mp-inner .mp-load-btn:hover { background: rgba(56,189,248,0.3); }
+/* En mode Navigation, « Charger ce terrain » devient « Définir comme départ » :
+   vert, la couleur du point de départ sur la carte. */
+.mp-inner .mp-load-btn.mp-dep-btn {
+    background: rgba(74,222,128,0.14); color: #4ADE80;
+    border-color: rgba(74,222,128,0.45);
+}
+.mp-inner .mp-load-btn.mp-dep-btn:hover { background: rgba(74,222,128,0.28); }
+/* « Définir comme destination » : rouge du point d'arrivée sur la carte. */
+.mp-inner .mp-dest-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(239,68,68,0.15); color: #F87171; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(239,68,68,0.4); transition: background 0.15s;
+    white-space: nowrap;
+}
+.mp-inner .mp-dest-btn:hover { background: rgba(239,68,68,0.3); }
+/* « + Waypoint » : ambre comme les marqueurs d'étapes sur la carte. */
+.mp-inner .mp-waypoint-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(251,191,36,0.15); color: #FBBF24; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(251,191,36,0.4); transition: background 0.15s;
+    white-space: nowrap;
+}
+.mp-inner .mp-waypoint-btn:hover { background: rgba(251,191,36,0.3); }
+/* « Carte VAC » : même gabarit que les autres, bleu ciel comme le bouton
+ * Carte VAC de la fiche terrain. */
+.mp-inner .mp-vac-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(56,189,248,0.15); color: #38BDF8; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(56,189,248,0.4); transition: background 0.15s;
+    white-space: nowrap;
+}
+.mp-inner .mp-vac-btn:hover { background: rgba(56,189,248,0.3); }
+
+/* ---- Waypoints libres (clic droit) & bandeaux transitoires ---- */
+.regional-map-body { position: relative; }
+.wp-insert-hint {
+    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    z-index: 1100; padding: 6px 12px; border-radius: 6px;
+    background: rgba(251,191,36,0.94); color: #1E293B;
+    font-size: 11px; font-weight: 700; pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+/* Étiquette permanente du repère (tooltip Leaflet custom). */
+.leaflet-tooltip.free-wp-label {
+    background: rgba(15,23,42,0.92); border: 1px solid rgba(251,191,36,0.55);
+    color: #FBBF24; font-size: 11px; font-weight: 600;
+    padding: 2px 7px; border-radius: 5px; box-shadow: none;
+}
+.leaflet-tooltip.free-wp-label::before { display: none; }
+/* Étiquettes des couches radio — encadrés façon carte aéro (SIA/OACI). */
+.leaflet-tooltip.rp-label {
+    background: rgba(2,6,23,0.82); border: 1px solid; border-radius: 3px;
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    text-align: center; line-height: 1.25; padding: 2px 6px;
+    box-shadow: none; pointer-events: none;
+}
+.leaflet-tooltip.rp-label::before { display: none; }
+.leaflet-tooltip.rp-label .rp-freq { font-size: 9px; font-weight: 600; opacity: 0.85; }
+.leaflet-tooltip.rp-label-vor { color: #60A5FA; border-color: #60A5FA; }
+.leaflet-tooltip.rp-label-ndb { color: #4ADE80; border-color: #4ADE80; }
+.leaflet-tooltip.rp-label-vrp { color: #3B82F6; border-color: rgba(37,99,235,0.65);
+    font-family: 'DM Sans', sans-serif; font-weight: 500; font-style: italic; }
+/* Hauteur des obstacles (m) : même mono, encre rouge danger. */
+.leaflet-tooltip.rp-label-obstacle { color: #F87171; border-color: rgba(248,113,113,0.65); font-size: 9px; padding: 1px 4px; }
+/* Étiquettes des extrémités de route : code OACI vert (départ) / rouge (arrivée). */
+.leaflet-tooltip.route-dep-label,
+.leaflet-tooltip.route-arr-label {
+    background: rgba(15,23,42,0.92);
+    color: #F8FAFC; font-size: 11px; font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    padding: 2px 7px; border-radius: 5px; box-shadow: none;
+}
+.leaflet-tooltip.route-dep-label { border: 1px solid rgba(74,222,128,0.7); color: #4ADE80; }
+.leaflet-tooltip.route-arr-label { border: 1px solid rgba(239,68,68,0.7); color: #F87171; }
+.leaflet-tooltip.route-dep-label::before,
+.leaflet-tooltip.route-arr-label::before { display: none; }
+/* Éditeur de nom (création / renommage). */
+.fw-inner { min-width: 200px; display: flex; flex-direction: column; gap: 8px; }
+.fw-inner .fw-title { font-size: 12px; color: #F8FAFC; }
+.fw-inner .fw-title .fw-code { font-family: 'DM Mono', monospace; color: #94A3B8; font-size: 10px; margin-left: 4px; }
+.fw-inner .fw-name-input {
+    background: #0F172A; border: 1px solid #334155; color: #F8FAFC;
+    border-radius: 6px; padding: 6px 8px; font-size: 12px; width: 100%;
+    box-sizing: border-box; font-family: inherit; outline: none;
+}
+.fw-inner .fw-name-input:focus { border-color: #FBBF24; }
+.fw-inner .fw-ok-btn {
+    flex: 1; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(251,191,36,0.15); color: #FBBF24; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(251,191,36,0.4); transition: background 0.15s; white-space: nowrap;
+}
+.fw-inner .fw-ok-btn:hover { background: rgba(251,191,36,0.3); }
+.fw-inner .fw-add-btn {
+    flex: 1; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(56,189,248,0.15); color: #38BDF8; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(56,189,248,0.4); transition: background 0.15s; white-space: nowrap;
+}
+.fw-inner .fw-add-btn:hover { background: rgba(56,189,248,0.3); }
+.fw-inner .fw-del-btn {
+    width: 100%; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(239,68,68,0.12); color: #F87171; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(239,68,68,0.35); transition: background 0.15s; white-space: nowrap;
+}
+.fw-inner .fw-del-btn:hover { background: rgba(239,68,68,0.25); }
+
+/* Popup d'un waypoint de route (étape du plan vue sur la carte). */
+.mp-inner .mp-rmwp-btn {
+    flex: 1; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(239,68,68,0.12); color: #F87171; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(239,68,68,0.35); transition: background 0.15s; white-space: nowrap;
+}
+.mp-inner .mp-rmwp-btn:hover { background: rgba(239,68,68,0.25); }
+.mp-inner .mp-renamewp-btn {
+    flex: 1; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    background: rgba(251,191,36,0.15); color: #FBBF24; font-weight: 700; font-size: 11px;
+    border: 1px solid rgba(251,191,36,0.4); transition: background 0.15s; white-space: nowrap;
+}
+.mp-inner .mp-renamewp-btn:hover { background: rgba(251,191,36,0.3); }
+
+/* Bouton « Imprimer le log de nav » : action finale de la préparation —
+   il doit sauter aux yeux dans le panneau Calcul de navigation. */
+.fp-print-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 16px; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(180deg, #38BDF8 0%, #0EA5E9 100%);
+    color: #04131F; font-weight: 800; font-size: 12.5px;
+    border: 1px solid rgba(125, 211, 252, 0.8);
+    box-shadow: 0 2px 12px rgba(14, 165, 233, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: transform 0.12s, box-shadow 0.12s;
+    white-space: nowrap;
+}
+.fp-print-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.fp-print-btn:active { transform: translateY(0); }
+.fp-print-btn svg { width: 15px; height: 15px; }
+
+/* Liste des étapes intermédiaires du plan (code + nom, renommage des repères). */
+.fp-waypoint-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+.fp-wp-row { display: flex; align-items: center; gap: 7px; font-size: 11px; min-width: 0; }
+.fp-wp-row .fp-wp-num { color: var(--text-muted); min-width: 14px; text-align: right; }
+.fp-wp-row .fp-wp-code { font-family: 'DM Mono', monospace; color: var(--primary); font-weight: 600; min-width: 42px; }
+.fp-wp-row .fp-wp-name { color: var(--text-color); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-wp-rename { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px; display: flex; flex-shrink: 0; }
+.fp-wp-rename:hover { color: var(--secondary); }
+.fp-wp-rename svg { width: 12px; height: 12px; }
+.fp-wp-del { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px; display: flex; flex-shrink: 0; }
+.fp-wp-del:hover { color: #F87171; }
+.fp-wp-del svg { width: 12px; height: 12px; }
+
+/* Désignateurs de piste (divIcon Leaflet). */
+.regional-map .runway-designator span {
+    display: inline-block;
+    background: rgba(15,23,42,0.85);
+    color: #F8FAFC;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(148,163,184,0.6);
+    text-align: center;
+    width: 26px;
+    line-height: 1.2;
+}
+
+.regional-map-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    padding: 10px 4px 2px; font-size: 11px; color: var(--text-muted);
+}
+.map-legend-item { display: flex; align-items: center; gap: 5px; }
+.map-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+@media (max-width: 600px) { .regional-map { height: 320px; } }
+
+/* PLEIN CADRE INTÉGRÉ (consigne pilote) : le panneau carte passe au-dessus
+   de tout — même rendu PC / tablette / téléphone, sans popup ni API
+   Fullscreen du navigateur (celle-ci n'existe pas pour une carte sur
+   iPhone/iPad Safari). Sortie : bouton (✕) ou Échap. */
+#regional-map-panel.map-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel-bg);
+}
+/* En plein cadre, l'en-tête (titre + chevron) cède la place à la carte —
+   et son chevron de repli ne peut plus refermer la carte en plein écran. */
+#regional-map-panel.map-fullscreen .regional-map-header { display: none; }
+#regional-map-panel.map-fullscreen .regional-map-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    padding: 8px 10px 10px;
+}
+#regional-map-panel.map-fullscreen .regional-map {
+    flex: 1;
+    height: auto;
+    border: none;
+    border-radius: 0;
+}
+body.map-overlay-open { overflow: hidden; }
+/* Icône du bouton : ⛶ en mode normal, ✕ en plein cadre. */
+.map-fs-btn .fs-ic-min { display: none; }
+#regional-map-panel.map-fullscreen .map-fs-btn .fs-ic-max { display: none; }
+#regional-map-panel.map-fullscreen .map-fs-btn .fs-ic-min { display: inline-flex; }
+@media print { #regional-map-panel.map-fullscreen { position: static; } }
+
+/* ================================================================
+ * BANNIÈRE GO / NO-GO — Verdict synthétique de décision
+ * ================================================================ */
+.go-nogo {
+    padding: 0;
+    border-radius: 10px;
+    border-left-width: 5px;
+    transition: background 0.4s ease, border-color 0.4s ease;
+    animation: cardFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.go-nogo-content { width: 100%; }
+.go-nogo-icon { transition: transform 0.3s ease; }
+.go-nogo:hover .go-nogo-icon { transform: scale(1.08); }
+
+/* ================================================================
+ * TOGGLE « VOL LOCAL / NAVIGATION »
+ * ================================================================ */
+.flight-mode-toggle {
+    display: inline-flex;
+    position: relative;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    transition: border-color 0.2s;
+}
+.flight-mode-toggle:hover { border-color: var(--border-hover); }
+.flight-mode-toggle .seg {
+    position: relative;
+    z-index: 2;
+    padding: 6px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: 90px;
+}
+.flight-mode-toggle .seg-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
+    background: var(--primary);
+    border-radius: 5px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+/* Mode Navigation : le curseur glisse à droite. */
+.flight-mode-toggle[data-mode="nav"] .seg-slider { transform: translateX(100%); }
+/* Le segment actif devient blanc. */
+.flight-mode-toggle[data-mode="local"] .seg-local,
+.flight-mode-toggle[data-mode="nav"] .seg-nav {
+    color: #fff;
+}
+
+/* (thème : le toggle suit les variables) */
+
+/* Adaptation mobile : header wraps dès tablette, compact sur téléphone. */
+@media (max-width: 900px) {
+    .header-controls { flex-wrap: wrap; gap: 6px; }
+}
+@media (max-width: 700px) {
+    .header-controls { gap: 4px; }
+    .btn-help, .btn-night-mode, .btn-cockpit-mode, .btn-share, .btn-watchdog {
+        padding: 6px 8px; font-size: 11px;
+    }
+    .flight-mode-toggle .seg { width: 75px; font-size: 11px; }
+}
+/* Rangée d'heures de la bannière fenêtre de vol. Styles en CLASSE (pas en
+   inline) pour que la variante téléphone ci-dessous ne soit pas écrasée. */
+.flight-window-times {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    flex-wrap: wrap;
+    margin-left: 6px;
+    flex: 1;
+    justify-content: space-evenly;
+    min-width: 0;
+}
+/* Valeur aéro « 04:53 Z · 19:34 Z » : une ligne sur grand écran ; les
+   SPAN permettront au téléphone de la replier sur deux lignes centrées
+   au lieu de déborder de la carte (styles inline interdits ici). */
+.fw-aero {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--primary);
+    font-size: 14px;
+    white-space: nowrap;
+}
+.fw-aero i { font-style: normal; margin: 0 4px; }
+
+@media (max-width: 600px) {
+    .header-controls { flex-wrap: wrap; }
+    .flight-mode-toggle { width: 100%; justify-content: center; }
+    .flight-mode-toggle .seg { flex: 1; justify-content: center; width: auto; }
+    /* Bannière fenêtre de vol : la rangée d'heures passe SOUS le statut,
+       pleine largeur — et la valeur aéro se replie sur DEUX lignes
+       centrées (séparateur · masqué) : quel que soit le téléphone, la
+       police système ou la taille d'écriture, elle ne peut plus déborder. */
+    .flight-window-times {
+        flex-basis: 100%;
+        margin-left: 0;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .fw-aero { white-space: normal; }
+    .fw-aero span { display: block; }
+    .fw-aero i { display: none; }
+}
+
+/* ================================================================
+ * BANNIÈRE CRÉNEAU DE VOL JOUR VFR
+ * ================================================================ */
+.flight-window {
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    border-left-width: 4px;
+    transition: background 0.4s ease, border-color 0.4s ease;
+    animation: cardFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.flight-window-content { gap: 14px; }
+
+
+
+
+/* Le fond du body : on retire les halos bleu/cyan (délétères) pour
+ * ne garder qu'un dégradé rouge très sombre. */
+
+/* Bouton thème (clair/sombre). */
+#btn-theme {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+}
+#btn-theme:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+#btn-theme.active {
+    background: rgba(232, 160, 130, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+#btn-theme .icon-sm { margin: 0; }
+
+/* ---- Filtrage du CANVAS vers le rouge ----
+ * Le canvas météo utilise des couleurs codées en dur (vert=VFR, etc.).
+ * On applique une rotation de teinte + sépia + saturation qui pousse
+ * TOUT le spectre vers le rouge/ambre. Les rapports de luminosité entre
+ * catégories sont préservés (le LIFR reste plus saturé que le VFR). */
+
+/* La grille et le fond du canvas sont repeints en rouge sombre par
+ * dessinerGraphique (qui lit ctx.fillStyle = '#0F172A' en dur).
+ * On ne peut pas intercepter cela en CSS, mais le filtre ci-dessus
+ * atténue fortement le bleu initial. Pour parfaire le rendu, le
+ * conteneur reçoit un fond rouge cohérent. */
+
+/* Les chips du dashboard VFR ont des couleurs rgba() en dur via style
+ * inline. On les atténue avec un voile rouge via un pseudo-élément
+ * sur le conteneur — léger et non intrusif. */
+
+/* La légende des nuages (tags verts/rouges) est filtrée elle aussi. */
+
+/* Les cartes prennent le fond rouge sombre du thème. */
+
+/* La zone d'info (bleu clair en thème normal) devient rouge chaud. */
+
+/* ================================================================
+ * COLLAPSIBLE — Style générique des widgets repliables
+ * ================================================================
+ * Appliqué par makeCollapsible() (collapsible.js) aux widgets dont
+ * le contenu est rendu dynamiquement (takeoff, frequencies, planner,
+ * go-nogo, flight-window). Même visuel que la carte régionale.
+ */
+.collapsible-panel {
+    padding: 0 !important;
+    overflow: hidden;
+}
+.collapsible-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-color);
+    transition: background 0.2s;
+    user-select: none;
+}
+.collapsible-header:hover {
+    background: var(--hover-bg);
+}
+.collapsible-title {
+    flex: 1;
+}
+.collapsible-chevron {
+    width: 18px !important;
+    height: 18px !important;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+}
+.collapsible-panel.open .collapsible-chevron {
+    transform: rotate(180deg);
+}
+.collapsible-body {
+    display: none;
+    flex-direction: column;
+    padding: 14px 18px;
+}
+.collapsible-panel.open .collapsible-body {
+    display: flex;
+}
+
+/* ================================================================
+ * TAKEOFF WIDGET — Performance décollage
+ * ================================================================ */
+.takeoff-panel {
+    padding: 14px 18px;
+}
+/* Indicateurs de décollage : UNE ligne de texte « Libellé : valeur »,
+   typographie homogène, répartie sur la largeur — JAMAIS de retour à la
+   ligne (compactage 11 px si nécessaire pour tenir). Mobile (≤ 800 px) :
+   la rangée passe à la ligne — cinq items insécables ne tiennent pas sous
+   ~640 px de large. */
+.to-metrics-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 10px;
+    font-size: 11px;
+    line-height: 1.6;
+}
+@media (max-width: 800px) {
+    .to-metrics-grid { flex-wrap: wrap; gap: 4px 14px; }
+}
+.to-metrics-grid > span { white-space: nowrap; }
+.to-metrics-grid .lab { color: var(--text-muted); }
+.to-metrics-grid .val {
+    font-family: 'DM Mono', monospace;
+    color: var(--text-color);
+}
+.takeoff-panel input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.takeoff-panel input[type="number"]:focus {
+    border-color: var(--primary);
+}
+
+/* ================================================================
+ * AIRCRAFT FLEET — Modal de gestion de la flotte
+ * ================================================================ */
+.fleet-open-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.fleet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.fleet-modal {
+    background: var(--bg-card, #0F172A);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.fleet-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: var(--bg-card, #0F172A);
+    z-index: 1;
+}
+.fleet-modal-header h2 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color, #F8FAFC);
+}
+
+.fleet-close {
+    background: none;
+    border: none;
+    color: var(--text-muted, #94A3B8);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+}
+.fleet-close:hover { background: rgba(255,255,255,0.08); color: var(--text-color); }
+
+.fleet-content { padding: 18px 22px; }
+
+.fleet-list-section { margin-bottom: 24px; }
+.fleet-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.fleet-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+}
+.fleet-item-active {
+    border-color: var(--primary, #38BDF8);
+    background: rgba(56, 189, 248, 0.06);
+}
+
+.fleet-item-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-color);
+}
+.fleet-item-reg {
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    color: var(--secondary, #FBBF24);
+    font-size: 12px;
+}
+.fleet-item-stats {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    display: flex;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+}
+
+.fleet-item-actions { display: flex; gap: 4px; }
+.fleet-mini-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+}
+.fleet-mini-btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: var(--text-color); }
+.fleet-mini-btn.active { color: #4ADE80; }
+.fleet-mini-btn.fleet-delete:hover { color: #EF4444; }
+.fleet-mini-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.fleet-form-section { border-top: 1px solid var(--border-color); padding-top: 18px; }
+.fleet-form { display: flex; flex-direction: column; gap: 12px; }
+.fleet-form-row { display: flex; gap: 12px; }
+.fleet-form-row label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.fleet-form-row input {
+    background: var(--input-bg, #1E293B);
+    border: 1px solid var(--border-color);
+    color: var(--text-color, #F8FAFC);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    font-weight: 600;
+}
+.fleet-form-row input:focus { border-color: var(--primary); }
+
+/* Champ nom avec autocomplétion (base d'avions). */
+.fleet-name-field { position: relative; }
+.fleet-suggest {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    z-index: 20;
+    margin-top: 4px;
+    background: var(--input-bg, #1E293B);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    max-height: 220px;
+    overflow-y: auto;
+}
+.fleet-suggest-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.fleet-suggest-item:last-child { border-bottom: none; }
+.fleet-suggest-item:hover {
+    background: rgba(56, 189, 248, 0.12);
+}
+.fleet-suggest-name {
+    color: var(--text-color, #F8FAFC);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.fleet-suggest-dist {
+    color: var(--text-muted);
+    font-size: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.fleet-form-hint {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(56, 189, 248, 0.05);
+    border-left: 3px solid var(--primary);
+    padding: 8px 10px;
+    border-radius: 6px;
+    line-height: 1.5;
+}
+.fleet-form-hint i { flex-shrink: 0; margin-top: 1px; }
+
+/* Export / Import de la flotte — même gabarit que les boutons du
+ * formulaire, répartis sur la largeur de la liste. */
+.fleet-io { display: flex; gap: 8px; margin: 10px 0 4px 0; }
+.fleet-io .fleet-io-btn {
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.fleet-io .fleet-io-btn i { width: 14px; height: 14px; }
+
+.fleet-form-actions { display: flex; gap: 8px; }
+.fleet-form-actions .btn-primary,
+.fleet-form-actions .btn-secondary {
+    padding: 9px 18px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --- Section Centrage (fenêtre flotte) --- */
+.fleet-wb-badge {
+    font-size: 9px;
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ADE80;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.fleet-wb { border: 1px solid var(--border-color); border-radius: 8px; }
+.fleet-wb summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    list-style: none;
+}
+.fleet-wb summary::-webkit-details-marker { display: none; }
+.fleet-wb summary::after {
+    content: '▸';
+    margin-left: auto;
+    color: var(--text-muted);
+    transition: transform 0.15s;
+}
+.fleet-wb[open] summary::after { transform: rotate(90deg); }
+.fleet-wb summary:hover { color: var(--text-color, #F8FAFC); }
+.fleet-wb-state { font-size: 10px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+.fleet-wb-state.ok { color: #4ADE80; }
+.fleet-wb-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.fleet-wb-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.fleet-wb-row label {
+    flex: 1;
+    min-width: 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.fleet-wb-row input, .fleet-wb-row select {
+    background: var(--input-bg, #1E293B);
+    border: 1px solid var(--border-color);
+    color: var(--text-color, #F8FAFC);
+    border-radius: 6px;
+    padding: 7px 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+}
+.fleet-wb-row input:focus, .fleet-wb-row select:focus { border-color: var(--primary); }
+.fleet-wb-units { align-items: flex-end; }
+.fleet-wb-units label { flex: 0 0 auto; min-width: 108px; }
+.fleet-wb-note { font-size: 10px; color: var(--text-muted); font-style: italic; align-self: center; }
+.fleet-wb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fleet-wb-sub {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.wb-tbl-head {
+    display: grid;
+    gap: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    padding: 0 2px 3px;
+}
+.wb-tbl-head.st { grid-template-columns: 1fr 64px 52px 24px; }
+.wb-tbl-head.env { grid-template-columns: 1fr 1fr 24px; }
+.wb-tbl-row { display: grid; gap: 4px; margin-bottom: 4px; }
+.wb-tbl-row.st { grid-template-columns: 1fr 64px 52px 24px; }
+.wb-tbl-row.env { grid-template-columns: 1fr 1fr 24px; }
+.wb-tbl-row input {
+    background: var(--input-bg, #1E293B);
+    border: 1px solid var(--border-color);
+    color: var(--text-color, #F8FAFC);
+    border-radius: 5px;
+    padding: 5px 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    outline: none;
+    min-width: 0;
+}
+.wb-tbl-row input.wb-st-name { font-family: 'DM Sans', sans-serif; font-weight: 600; }
+.wb-tbl-row input.wb-st-fuel { border-color: rgba(251, 191, 36, 0.45); }
+.wb-tbl-row input:focus { border-color: var(--primary); }
+.wb-del {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    border-radius: 4px;
+    align-self: center;
+}
+.wb-del:hover { color: var(--danger, #EF4444); background: rgba(255, 255, 255, 0.06); }
+.wb-add {
+    background: none;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 2px;
+}
+.wb-add:hover { color: var(--primary); border-color: var(--primary); }
+.wb-empty-note { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 4px 2px; }
+.wb-preview {
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+}
+.wb-preview-empty { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 8px 4px; line-height: 1.5; }
+.wb-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 4px 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    align-self: flex-start;
+}
+.wb-remove-btn:hover { color: var(--danger, #EF4444); }
+
+@media (max-width: 480px) {
+    .fleet-wb-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Widget dashboard « Centrage » --- */
+/* display:flex UNIQUEMENT en .open : ne doit pas écraser le display:none
+   du repli (.collapsible-body, spécificité moindre). */
+.wb-panel .collapsible-body { flex-direction: column; gap: 10px; }
+.wb-panel.open .collapsible-body { display: flex; }
+
+.wb-ac-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    background: var(--input-bg, #0F172A);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 10px;
+}
+.wb-ac-reg {
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--primary, #38BDF8);
+}
+.wb-units {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+}
+
+.wb-chart-host {
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.wb-results { display: flex; flex-direction: column; gap: 5px; }
+.wb-res {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-color, #F8FAFC);
+}
+.wb-res b { font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--text-muted); }
+.wb-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; align-self: center; }
+.wb-dot-to { background: #34D399; }
+.wb-dot-ar { background: #FBBF24; }
+.wb-dot-zf { background: #F87171; }
+.wb-out { color: #F87171; }
+
+/* Chargement du jour : 4 postes MAX par ligne ; le carburant (et la
+   consommée en navigation) ouvre toujours la ligne suivante, accompagné
+   des postes restants (ex. Bagages 1/2). Écran étroit : 2 colonnes. */
+.wb-load-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px 10px;
+}
+@media (max-width: 700px) {
+    .wb-load-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Sécurité libellés : jamais de retour à la ligne, ellipse si trop long. */
+.wb-load-grid .wb-load-lab .lab {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Essence consommée (mode navigation) : lecture seule, issue du plan de vol —
+   même gabarit visuel que le champ carburant, bordure en pointillés. */
+.wb-burn-ro {
+    background: var(--input-bg, #0F172A);
+    border: 1px dashed var(--border-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    padding: 6px 9px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+}
+.wb-load input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary, #38BDF8);
+    margin-top: 3px;
+    cursor: pointer;
+}
+.wb-load {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+/* Libellé du champ sur UNE ligne, style « Performance décollage » :
+   libellé gris + « Max N » en valeur mono, jamais de retour à la ligne. */
+.wb-load-lab {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    white-space: nowrap;
+}
+.wb-load-lab .val {
+    font-family: 'DM Mono', monospace;
+    color: var(--text-color);
+    font-weight: 500;
+}
+.wb-load-lab .val.dim { color: var(--text-muted); font-weight: 400; }
+.wb-load input {
+    background: var(--input-bg, #0F172A);
+    border: 1px solid var(--border-color);
+    color: var(--primary, #38BDF8);
+    border-radius: 6px;
+    padding: 6px 9px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    outline: none;
+}
+.wb-load input:focus { border-color: var(--primary); }
+.wb-load input.wb-over {
+    border-color: #F59E0B;
+    background: rgba(251, 191, 36, 0.08);
+}
+/* Sécurité carburant (navigation) : embarqué insuffisant vs requis du plan. */
+.wb-load input.wb-under {
+    border-color: var(--danger, #EF4444);
+    color: var(--danger, #EF4444);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.wb-verdict {
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+.wb-verdict.ok {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid #10B981;
+    color: #34D399;
+}
+.wb-verdict.danger {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #EF4444;
+    color: #F87171;
+}
+
+.wb-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+    .wb-load-grid { grid-template-columns: 1fr; }
+}
+
+/* ================================================================
+ * FREQUENCIES WIDGET — Fréquences radio du terrain
+ * ================================================================ */
+.frequencies-panel {
+    padding: 14px 18px;
+}
+
+/* ================================================================
+ * MAP LAYERS BAR — Contrôles calques (radar / espaces)
+ * ================================================================ */
+.map-layers-bar {
+    display: flex;
+    align-items: center;
+    /* UNE ligne en desktop : l'horloge radar est le tampon élastique qui
+       absorbe les variations de largeur de la fenêtre (nowrap > 600 px). */
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 6px 8px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+}
+@media (min-width: 601px) {
+    .map-layers-bar { flex-wrap: nowrap; }
+}
+
+.precip-control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Incompressible : seul le slider horloge absorbe les variations de
+       largeur — sinon les libellés passent sur 2 lignes et les boutons
+       n'ont plus la même hauteur. */
+    flex-shrink: 0;
+}
+
+.basemap-select {
+    /* Hauteur alignée sur les boutons de la barre (le select natif prend
+       2px de plus à padding égal). */
+    box-sizing: border-box;
+    height: 26px;
+    padding: 0 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-color);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+}
+.basemap-select:hover { border-color: var(--border-hover); }
+.basemap-select:focus { border-color: var(--focus-ring); }
+
+.precip-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    /* Libellé toujours sur une ligne (hauteur homogène de la barre). */
+    white-space: nowrap;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.3px;
+}
+.precip-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text-color);
+}
+.precip-toggle.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.precip-toggle.active.precip-toggle-radar {
+    background: rgba(74, 222, 128, 0.12);
+    border-color: #4ADE80;
+    color: #4ADE80;
+}
+.precip-toggle.active.precip-toggle-airspaces {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: #FBBF24;
+    color: #FBBF24;
+}
+/* Sélecteur de fond de carte : couleur cyan distinctive. */
+.base-layer-btn.active {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: #38BDF8;
+    color: #38BDF8;
+}
+
+.precip-play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.precip-play-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.precip-slider-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Groupe horloge élastique : il s'étire quand la fenêtre est large et
+       rétrécit quand elle est étroite — la barre reste sur une ligne. */
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.precip-slider {
+    flex: 1 1 auto;
+    min-width: 40px;
+    max-width: 160px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--input-bg);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.precip-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--bg-color);
+    cursor: pointer;
+}
+.precip-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--bg-color);
+    cursor: pointer;
+}
+
+.precip-time-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 64px;
+    text-align: right;
+}
+
+/* ---- Night mode : tuiles Leaflet passées en filtre rouge ----
+ * Les tuiles radar/fond de carte sont des images RGB codées
+ * en dur. On applique le même filtre que pour le canvas météo afin de
+ * préserver la vision nocturne (rhodopsine) tout en gardant la
+ * sémantique des couleurs (vert=léger, rouge=fort).
+ */
+
+/* ---- Responsive : barre de calques compacte sur petits écrans ----
+   (seuil 700 px : en dessous, le nowrap couperait le dernier bouton —
+   on repasse en icônes seules avec l'horloge en seconde ligne). */
+@media (max-width: 700px) {
+    .map-layers-bar {
+        gap: 6px;
+        padding: 6px;
+        flex-wrap: wrap;
+    }
+    .precip-slider-group {
+        order: 3;
+        flex-basis: 100%;
+        min-width: 0;
+    }
+    .precip-slider { min-width: 0; }
+    .precip-toggle span:not(.airspace-count) {
+        display: none;  /* icônes seules sur mobile */
+    }
+}
+
+/* ================================================================
+ * AIRSPACE STACK SELECTOR — Sélecteur de zones superposées
+ * ================================================================
+ * Quand le pilote clique sur une zone où plusieurs espaces se
+ * superposent (ex: ATZ sous TMA sous CTR), un popup liste toutes
+ * les zones à cet endroit pour permettre d'accéder aux zones
+ * masquées. Le polygone cliqué est aussi surligné (contour blanc). */
+.airspace-popup .leaflet-popup-content-wrapper {
+    background: var(--inner-bg, #1E293B);
+    color: var(--text-color, #F8FAFC);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.airspace-popup .leaflet-popup-content { margin: 0; width: auto !important; }
+.airspace-popup .leaflet-popup-tip { background: var(--inner-bg, #1E293B); }
+
+/* Popup METAR : même fond sombre que airspace-popup (Leaflet est blanc par défaut). */
+.metar-popup .leaflet-popup-content-wrapper {
+    background: #1E293B;
+    color: #F8FAFC;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.metar-popup .leaflet-popup-content { margin: 10px 12px; }
+.metar-popup .leaflet-popup-tip { background: #1E293B; }
+.metar-popup .leaflet-popup-close-button { color: #94A3B8 !important; }
+
+.airspace-stack { padding: 10px 12px; min-width: 200px; }
+.airspace-stack-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color);
+}
+.airspace-stack-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+.airspace-stack-item:hover {
+    background: rgba(56, 189, 248, 0.12);
+}
+.airspace-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+.airspace-stack-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ================================================================
+ * CARTE RÉGIONALE — cases à cocher Cap/Distance/Temps + étiquettes
+ * ================================================================ */
+.route-labels-ctl {
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.route-labels-ctl label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.route-labels-ctl input { accent-color: #38BDF8; margin: 0; }
+
+/* Étiquette d'un tronçon : pilule sombre mono, pas de flèche, positionnée
+   à droite du sens de vol par le code (direction du tooltip). */
+.leaflet-tooltip.route-leg-label {
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    line-height: 1.45;
+    padding: 3px 7px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+.leaflet-tooltip.route-leg-label::before { display: none; }
+.route-leg-label .rll-cap  { color: #38BDF8; font-weight: 700; }
+.route-leg-label .rll-dist { color: #F8FAFC; }
+.route-leg-label .rll-time { color: #2DD4BF; font-weight: 700; }
+
+/* ================================================================
+ * FLIGHT PLANNER — Panneau de navigation VFR
+ * ================================================================ */
+.flight-planner-panel {
+    padding: 14px 18px;
+    /* Le re-render « chargement → résultat » fait varier fortement la hauteur
+       du panneau : sans ceci, l'ancre de défilement du navigateur déplace la
+       fenêtre (le pilote perd la carte qu'il regardait). */
+    overflow-anchor: none;
+}
+.fp-cell {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+}
+.fp-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.fp-value {
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    color: var(--text-color);
+    font-size: 14px;
+}
+.fp-section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+.fp-input-label,
+.fp-night-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.fp-night-label {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-color);
+    cursor: pointer;
+    padding-bottom: 8px;
+}
+.fp-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 5px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+}
+.fp-input:focus {
+    border-color: var(--primary);
+}
+
+/* Grilles du planificateur de vol (définies en CSS, pas en inline). */
+.fp-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 8px;
+    align-items: end;
+}
+.fp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    font-size: 12px;
+}
+.fp-grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px 12px;
+}
+
+@media (max-width: 600px) {
+    .fp-inputs { grid-template-columns: 1fr 1fr; }
+    .fp-grid, .fp-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* === Log de navigation (tableau waypoints) === */
+.fp-navlog { width: 100%; border-collapse: collapse; font-family: 'DM Mono', monospace; font-size: 11px; }
+.fp-navlog th {
+    text-transform: uppercase; font-size: 9px; color: var(--text-muted);
+    font-weight: 700; padding: 4px 6px; text-align: right;
+    border-bottom: 1px solid var(--border-color); letter-spacing: 0.5px;
+}
+.fp-navlog th:first-child { text-align: left; }
+.fp-navlog td {
+    padding: 4px 6px; text-align: right;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-color);
+}
+.fp-navlog td:first-child { text-align: left; color: var(--text-muted); white-space: nowrap; }
+.fp-navlog td:first-child b { color: var(--text-color); }
+.fp-navlog tr.total td { font-weight: 700; border-top: 1px solid var(--border-color); border-bottom: none; color: var(--primary); }
+.fp-navlog .freq-cell { color: #38BDF8; white-space: nowrap; }
+@media (max-width: 600px) {
+    .fp-navlog { font-size: 10px; }
+    .fp-navlog th, .fp-navlog td { padding: 3px 4px; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ================================================================
+ * COCKPIT MODE — Briefing express (vue épurée)
+ * ================================================================ */
+body.cockpit-mode .side-column,
+body.cockpit-mode #route-planner,
+body.cockpit-mode #regional-map-panel,
+body.cockpit-mode .legend-bar-bottom,
+body.cockpit-mode .aero-legend-bar,
+body.cockpit-mode #alertes-meteo,
+body.cockpit-mode #takeoff-widget,
+body.cockpit-mode #frequencies-widget,
+body.cockpit-mode #alternates-container,
+body.cockpit-mode #flight-planner-panel,
+body.cockpit-mode .audio-controls,
+body.cockpit-mode #main-content {
+    display: none !important;
+}
+
+/* En cockpit mode, on recentre et on agrandit. */
+body.cockpit-mode .container {
+    grid-template-columns: 1fr !important;
+    max-width: 700px;
+    margin: 0 auto;
+}
+body.cockpit-mode #go-nogo-banner {
+    font-size: 1.1em;
+}
+body.cockpit-mode #go-nogo-banner .go-nogo-icon {
+    width: 52px !important;
+    height: 52px !important;
+}
+body.cockpit-mode #go-nogo-banner .go-nogo-icon i {
+    width: 28px !important;
+    height: 28px !important;
+}
+body.cockpit-mode #flight-window-banner {
+    font-size: 1.05em;
+}
+body.cockpit-mode header.card {
+    padding: 16px 20px;
+}
+
+/* Boutons header (cockpit, share) — même style que night-mode */
+.btn-cockpit-mode,
+.btn-share {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.btn-cockpit-mode:hover,
+.btn-share:hover {
+    border-color: var(--border-hover);
+    color: var(--text-color);
+}
+.btn-cockpit-mode.active {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ================================================================
+ * SHARE MODAL — Partage par URL + QR code
+ * ================================================================ */
+.share-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.share-modal {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.share-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.share-modal-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+}
+.share-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+.share-close:hover {
+    color: var(--text-color);
+    background: var(--hover-bg);
+}
+.share-modal-body {
+    padding: 20px;
+}
+.share-url-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.share-url-input {
+    flex: 1;
+    min-width: 0;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    outline: none;
+}
+.share-url-input:focus {
+    border-color: var(--primary);
+}
+.share-qr-section {
+    text-align: center;
+}
+.share-qr-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+.share-qr-img {
+    width: 220px;
+    height: 220px;
+    border-radius: var(--radius-md);
+    background: #fff;
+    padding: 8px;
+}
+.share-qr-fallback {
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 12px;
+    background: var(--input-bg);
+    border-radius: var(--radius-md);
+}
+
+/* ================================================================
+ * WATCHDOG — Surveillance des favoris
+ * ================================================================ */
+.btn-watchdog {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.btn-watchdog:hover {
+    border-color: var(--border-hover);
+    color: var(--text-color);
+}
+.btn-watchdog.active {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: #F59E0B;
+    color: #F59E0B;
+}
+/* Pastille "actif" sur la cloche quand le watchdog tourne */
+.btn-watchdog.active::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 7px;
+    height: 7px;
+    background: #4ADE80;
+    border-radius: 50%;
+    border: 1.5px solid var(--panel-bg);
+    animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Voyant météo des favoris (watchdog) : UNE pastille ronde par ligne, posée
+   DEVANT le code OACI dans un emplacement réservé (flex-shrink:0 → jamais
+   écrasée par le nom). COULEUR SEULE, SANS TEXTE (consigne pilote) : la
+   couleur de remplissage porte l'info (vert/orange/rouge, posé en inline par
+   watchdog.js) ; le libellé complet reste en infobulle (title). Sans donnée
+   météo (vide), le voyant ne s'affiche pas. */
+.fav-status-badge {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    padding: 0;
+    font-size: 0;   /* l'insécable du voyant ne l'étire pas */
+    border-radius: 50%;
+    border: 1px solid;
+}
+.fav-status-badge:empty { display: none; }
+
+/* Modal de réglages watchdog (réutilise le style .share-overlay) */
+.watchdog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.watchdog-modal {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.watchdog-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.watchdog-modal-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+}
+.watchdog-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.wd-setting {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.wd-setting-label {
+    font-size: 12px;
+    color: var(--text-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.wd-setting-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+.wd-toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.wd-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+.wd-toggle.on {
+    background: rgba(74, 222, 128, 0.2);
+    border-color: #4ADE80;
+}
+.wd-toggle.on::after {
+    left: 20px;
+    background: #4ADE80;
+}
+.wd-interval-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wd-interval-row input {
+    width: 60px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+}
+.wd-perm-btn {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #A855F7;
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.wd-perm-btn.granted {
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.3);
+    color: #4ADE80;
+}
+.wd-check-btn {
+    background: var(--primary);
+    color: #020617;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+}
+
+/* 2026-08-19 : test chaîne de déploiement automatique (commentaire sans effet) */
+
+/* ================================================================
+ * THÈME CLAIR — la classe .theme-light sur <html> surcharge les
+ * variables (l'app naît sombre). Les canvas/SVG pigent leurs
+ * couleurs via themeTokens() (night-mode.js) et se redessinent sur
+ * l'événement 'theme-changed'.
+ * ================================================================ */
+html.theme-light {
+    --bg-color: #E2E8F0;
+    --panel-bg: #F8FAFC;
+    --inner-bg: #F1F5F9;
+    --input-bg: #FFFFFF;
+
+    --text-color: #0F172A;
+    --text-muted: #475569;
+    --text-dim: rgba(15, 23, 42, 0.55);
+
+    --border-color: rgba(15, 23, 42, 0.15);
+    --border-hover: rgba(15, 23, 42, 0.30);
+
+    --shadow: rgba(15, 23, 42, 0.12);
+    --hover-bg: rgba(2, 132, 209, 0.07);
+    --hover-bg-strong: rgba(2, 132, 209, 0.13);
+}
+html.theme-light body {
+    background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(2, 132, 209, 0.06) 0%, transparent 60%),
+        var(--bg-color);
+}
+/* Cartes translucides sombres en dur → claires. */
+html.theme-light .card { background: rgba(248, 250, 252, 0.9); }
+/* Champ OACI / ligne d'info (bleu clair codé) → encre sombre. */
+html.theme-light #icaoInput,
+html.theme-light #lbl-info { color: #0F172A; }
+html.theme-light .editor-textarea { color: #0F172A; }
+/* Barre d'outils de la carte + ses boutons (fonds sombres en dur). */
+html.theme-light .map-layers-bar { background: var(--panel-bg); }
+html.theme-light .precip-toggle,
+html.theme-light .precip-play-btn { background: var(--panel-bg); color: var(--text-muted); }
+/* Le bandeau titre du PDF habillé reste sombre : ok dans les 2 thèmes. */
+
+/* ---- Bouton THÈME (hérite des styles #btn-theme) : icône + libellé ----
+ * Sombre → icône SOLEIL, libellé « Clair » (l'action) ;
+ * clair  → icône LUNE,   libellé « Sombre ». */
+#btn-theme { width: auto; gap: 6px; padding: 0 10px; font-size: 11px; font-weight: 600; }
+html.theme-light .theme-ic-light { display: none !important; }
+html:not(.theme-light) .theme-ic-dark { display: none !important; }
+
+/* ================================================================
+ * CHARGEMENT DES PASTILLES MÉTÉO VOISINES — icône animée sur la carte
+ * (apparaît pendant le fetch des METAR, disparaît au rendu).
+ * ================================================================ */
+.neighbors-loading {
+    position: absolute;
+    top: 46px; right: 12px;
+    z-index: 1100;
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #E2E8F0;
+    font-size: 11px; font-weight: 600;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+html.theme-light .neighbors-loading { background: rgba(255, 255, 255, 0.9); color: #0F172A; }
+.neighbors-loading svg { animation: neighbors-spin 1s linear infinite; }
+@keyframes neighbors-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* « Vérifier maintenant » (panneau surveillance) : icône rotative pendant
+ * le check — retour visuel immédiat au clic (demande pilote). */
+.wd-check-btn.wd-checking svg { animation: wd-check-spin 0.9s linear infinite; }
+.wd-check-btn:disabled { opacity: 0.85; cursor: wait; }
+@keyframes wd-check-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Zone de clic des pastilles de la carte régionale : disque transparent
+ * superposé au cercle SVG (clic gauche = panneau, clic droit = waypoint). */
+.pin-hit { background: transparent; border-radius: 50%; }
