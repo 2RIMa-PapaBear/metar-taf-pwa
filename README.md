@@ -37,8 +37,9 @@ dans une PWA installable qui fonctionne aussi hors ligne.
 ### Navigation
 - **Planificateur de vol** : recherche de terrain par code OACI (validation
   alphanumérique, ex. CNU8 ou K6RE), waypoints intelligents ou libres,
-  alternates, compagnie du trajet, autocomplétion. - **Log de nav PDF multi-pages** : au-delà de 10 tronçons, une page
-  « Détail des waypoints (suite) » prolonge le tableau (même gabarit).
+  alternates, compagnie du trajet, autocomplétion. - **Log de nav PDF multi-pages** : au-delà de 9 tronçons, une page « VFR Flight Log
+  (suite) » prolonge le log dans la même trame (lignes vierges + checks en bas de page) ;
+  le tableau des calculs remplit la page avant d'appeler « Détail des waypoints (suite) ».
 Le champ « Waypoints »
   affiche les **vrais noms** des repères (VOR, NDB, points de repère VFR).
 - **Carte régionale** (Leaflet) : route, étiquettes de tronçons
@@ -192,7 +193,7 @@ npm run pub -- "message du commit"   # commit + push + attente du déploiement
 - **2026-09-05** — FICHE TERRAIN v3 — feu vert pilote après aperçu PDF (Apercu_fiche_terrain.pdf, 3 terrains LFRN/LFRV/LFPF) : section Terrain en LIGNES LIBELL…
 - **2026-09-05** — FICHE TERRAIN v2 (retours pilote : ordre + lisibilité) : ① FRÉQUENCES en tête (sans sous-titre redondant) ② PISTES (seuils officiels affiché…
 - **2026-09-05** — FICHE TERRAIN COMPLÈTE dans l onglet « Fréquences & info terrain » (demande pilote, 4 arbitrages validés) : ① IDENTITÉ en chips — élévation,…
-<!-- docs:lastSha=2298052f3f5deb8c0cd1e1b2a9aa58beed3e1cc2 -->
+<!-- docs:lastSha=fc6b73ad8ab1f80fe142b93104ad80b37d808bf9 -->
 
 
 

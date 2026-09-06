@@ -22,6 +22,10 @@
 //   - 3 cadres Check (Croisière / Point Tournant / Vent Arrière) + légende
 //     6 mnémoniques par colonne, séparées par des filets verticaux
 //
+// Pages « VFR Flight Log (suite) » — au-delà de 9 tronçons, le log de nav
+// se poursuit sur la MÊME trame (bandeau, tableau de nav à 18 lignes, cadres
+// Check + légende en bas), juste après la page 1 (retour pilote 06/09).
+//
 // Page 2 — « Calcul de navigation » : reproduction compacte du bloc écran du
 // planificateur (flight-planner-ui.js, _renderResult), sans le bouton
 // « Log de nav PDF » : ligne Départ → Destination, paramètres saisis, puis
@@ -196,6 +200,145 @@ function _alertBanner(doc, L, R, W, y, danger, text) {
  *   Les valeurs sont reçues en kg/mm (brutes de wb-core.js) et converties
  *   localement dans les unités d'affichage de l'avion.
  */
+// ---------------------------------------------------------------------------
+// Tableau de nav — trame partagée par la page 1 et les pages « suite » :
+// en-têtes bilingues (HEA/HRA → ETA/ATA, Z sécu → MSA), lignes remplies
+// puis lignes vierges à compléter en vol, grille verticale et contour.
+// ---------------------------------------------------------------------------
+function _drawNavTable(doc, rows, fr, top, nRows) {
+    const T_HEAD_H = 27;
+    const headers = fr
+        ? [['FROM/TO'], ['Dist', 'restante'], ['Distance'], ['Z sécu'], ['Z', 'retenue'], ['RM/CM'], ['Tsv/Tav'], ['HEA'], ['HRA']]
+        : [['FROM/TO'], ['Dist', 'rem.'], ['Distance'], ['MSA'], ['Alt', 'sel'], ['RM/CM'], ['ETE', 'c/w'], ['ETA'], ['ATA']];
+    doc.setFillColor(...BANDL);
+    doc.rect(COLS[0], top, COLS[COLS.length - 1] - COLS[0], T_HEAD_H, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.thead); _setInk(doc, INK);
+    headers.forEach((lines, i) => {
+        const cx = (COLS[i] + COLS[i + 1]) / 2;
+        if (lines.length === 2) {
+            // En-tête sur deux lignes, bloc centré verticalement dans la bande.
+            doc.text(lines[0], cx, top + 12.5, { align: 'center' });
+            doc.text(lines[1], cx, top + 21.5, { align: 'center' });
+        } else {
+            doc.text(lines[0], cx, top + 17, { align: 'center' });
+        }
+    });
+    // Lignes de données puis lignes vierges.
+    const nData = Math.min((rows || []).length, nRows);
+    for (let r = 0; r < nRows; r++) {
+        const yTop = top + T_HEAD_H + r * ROW_H;
+        const base = yTop + 14.5;
+        if (r < nData) {
+            const row = rows[r];
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.body); _setInk(doc, INK);
+            doc.text(`${row.from}-${row.to}`, (COLS[0] + COLS[1]) / 2, base, { align: 'center' });
+            doc.setFont('helvetica', 'normal');
+            const cells = [row.distRemain, row.dist, row.zSecu, row.zRet, `${row.rm}/${row.cm}`, '', '', ''];
+            cells.forEach((v, i) => {
+                if (v !== '' && v != null) doc.text(String(v), (COLS[i + 1] + COLS[i + 2]) / 2, base, { align: 'center' });
+            });
+            // Tsv/Tav : « 21/19 » — le temps AVEC vent (Tav) est en gras.
+            if (row.tsv !== '' && row.tav !== '') {
+                const cx = (COLS[6] + COLS[7]) / 2;
+                const sep = `${row.tsv}/`;
+                doc.setFont('helvetica', 'normal');
+                const w1 = doc.getTextWidth(sep);
+                doc.setFont('helvetica', 'bold');
+                const w2 = doc.getTextWidth(String(row.tav));
+                const x0 = cx - (w1 + w2) / 2;
+                doc.setFont('helvetica', 'normal'); _setInk(doc, INK);
+                doc.text(sep, x0, base);
+                doc.setFont('helvetica', 'bold');
+                doc.text(String(row.tav), x0 + w1, base);
+            }
+        }
+        doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
+        doc.line(COLS[0], yTop + ROW_H, COLS[COLS.length - 1], yTop + ROW_H);
+    }
+    // Grille verticale + contour.
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
+    for (let i = 1; i < COLS.length - 1; i++) doc.line(COLS[i], top, COLS[i], top + T_HEAD_H + nRows * ROW_H);
+    doc.setDrawColor(...INK); doc.setLineWidth(0.6);
+    doc.rect(COLS[0], top, COLS[COLS.length - 1] - COLS[0], T_HEAD_H + nRows * ROW_H, 'S');
+}
+
+// ---------------------------------------------------------------------------
+// Cadres Check + légende des mnémoniques — bas de page des pages
+// « VFR Flight Log ». GRILLE COMMUNE de 3 colonnes de même largeur
+// (gouttière 5 pt) : bandes titres et colonnes mnémoniques
+// (PAGER / TRAMER / DRAGER) alignées verticalement.
+// ---------------------------------------------------------------------------
+function _drawChecksBlock(doc, fr) {
+    const GUT = 5;
+    const COL_W = (386.3 - 2 * GUT) / 3;
+    const colX = (k) => 16.4 + k * (COL_W + GUT);
+    const CHECKS = fr
+        ? ['Check Croisière', 'Check Point Tournant', 'Check Vent Arrière']
+        : ['Cruise check', 'Turning point check', 'Downwind check'];
+    CHECKS.forEach((lab, k) => {
+        doc.setFillColor(...DARK);
+        doc.rect(colX(k), 486.7, COL_W, 12.1, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.title); _setInk(doc, [255, 255, 255]);
+        doc.text(lab, colX(k) + COL_W / 2, 496.2, { align: 'center' });
+    });
+
+    // Légende des mnémoniques (6 lettres par colonne, filets séparateurs
+    // placés au milieu des gouttières de la grille).
+    doc.setDrawColor(...LINE); doc.setLineWidth(0.5);
+    doc.rect(16.4, 503.8, 386.3, 77.1, 'S');
+    for (let k = 1; k <= 2; k++) doc.line(colX(k) - GUT / 2, 503.8, colX(k) - GUT / 2, 580.9);
+    const LEGEND = fr
+        ? [
+            [['P', 'Paramètres'], ['I', 'Instruments'], ['A', 'Altitude'], ['G', 'Gyro / Cap'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
+            [['T', 'Top / Estimé Point Suiv.'], ['R', 'Route / Cap'], ['A', 'Altitude'], ['M', 'Moteur / Météo'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
+            [['D', 'Dégivrage'], ['R', 'Richesse'], ['A', 'Altitude'], ['G', 'Gyro / Cap'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
+        ]
+        : [
+            [['P', 'Parameters'], ['I', 'Instruments'], ['A', 'Altitude'], ['G', 'Gyro / Hdg'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
+            [['T', 'ETA next WPT'], ['R', 'Route / Hdg'], ['A', 'Altitude'], ['M', 'Engine / Wx'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
+            [['D', 'De-ice'], ['R', 'Mixture'], ['A', 'Altitude'], ['G', 'Gyro / Hdg'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
+        ];
+    const LEG_X = [0, 1, 2].map(k => colX(k) + 4);
+    LEGEND.forEach((col, c) => {
+        col.forEach(([letter, meaning], r) => {
+            const y = 512.3 + r * 11.5;
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.body); _setInk(doc, INK);
+            doc.text(letter, LEG_X[c], y);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`: ${meaning}`, LEG_X[c] + 8, y);
+        });
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Pages « VFR Flight Log (suite) » : au-delà de N_ROWS tronçons, le log de
+// nav se poursuit sur la MÊME trame, juste après la page 1. Sans les blocs
+// pilote/notes, le tableau monte sous le bandeau et offre 18 lignes
+// (tronçons restants puis lignes vierges) ; le bas de page conserve les
+// cadres Check Croisière / Point Tournant / Vent Arrière et la légende.
+// ---------------------------------------------------------------------------
+const SUITE_TOP = 46;     // haut du tableau : sous le bandeau titre (30.5) + aération
+const SUITE_ROWS = 18;    // 46 + 27 + 18×22 = 469 : remplit la page jusqu'aux checks (486.7)
+
+function _drawLogContinuation(doc, d) {
+    const fr = d.isFr !== false;
+    const rows = d.rows || [];
+    for (let i = N_ROWS; i < rows.length; i += SUITE_ROWS) {
+        const chunk = rows.slice(i, i + SUITE_ROWS);
+        doc.addPage([PAGE.w, PAGE.h], 'portrait');
+        doc.setFont('helvetica', 'normal');
+        doc.setFillColor(17, 24, 39);
+        doc.rect(16.4, 14.3, 386.3, 16.2, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.doc); _setInk(doc, [255, 255, 255]);
+        doc.text(fr ? 'VFR Flight Log (suite)' : 'VFR Flight Log (cont.)', PAGE.w / 2, 25.2, { align: 'center' });
+        doc.setDrawColor(...INK); doc.setLineWidth(0.8);
+        doc.rect(15, 29.9, 388.6, 551.9, 'S');
+        _drawNavTable(doc, chunk, fr, SUITE_TOP, SUITE_ROWS);
+        _drawChecksBlock(doc, fr);
+        _footer(doc, fr);
+    }
+}
+
 export function drawNavLogPdf(jsPDFCtor, d) {
     const doc = new jsPDFCtor({ unit: 'pt', format: [PAGE.w, PAGE.h], orientation: 'portrait' });
     doc.setFont('helvetica', 'normal');
@@ -321,107 +464,18 @@ export function drawNavLogPdf(jsPDFCtor, d) {
     doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
     for (let i = 0; i < 6; i++) doc.line(17.9, 188 + i * 13, 402.7, 188 + i * 13);
 
-    // ---- Tableau de nav ----
-    const T_TOP = 256, T_HEAD_H = 27;
-    // En-têtes bilingues : HEA/HRA → ETA/ATA, Z sécu → MSA (abréviations OACI).
-    const headers = fr
-        ? [['FROM/TO'], ['Dist', 'restante'], ['Distance'], ['Z sécu'], ['Z', 'retenue'], ['RM/CM'], ['Tsv/Tav'], ['HEA'], ['HRA']]
-        : [['FROM/TO'], ['Dist', 'rem.'], ['Distance'], ['MSA'], ['Alt', 'sel'], ['RM/CM'], ['ETE', 'c/w'], ['ETA'], ['ATA']];
-    doc.setFillColor(...BANDL);
-    doc.rect(COLS[0], T_TOP, COLS[COLS.length - 1] - COLS[0], T_HEAD_H, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.thead); _setInk(doc, INK);
-    headers.forEach((lines, i) => {
-        const cx = (COLS[i] + COLS[i + 1]) / 2;
-        if (lines.length === 2) {
-            // En-tête sur deux lignes, bloc centré verticalement dans la bande.
-            doc.text(lines[0], cx, T_TOP + 12.5, { align: 'center' });
-            doc.text(lines[1], cx, T_TOP + 21.5, { align: 'center' });
-        } else {
-            doc.text(lines[0], cx, T_TOP + 17, { align: 'center' });
-        }
-    });
-    // Lignes de données puis lignes vierges.
-    const nData = Math.min((d.rows || []).length, N_ROWS);
-    for (let r = 0; r < N_ROWS; r++) {
-        const yTop = T_TOP + T_HEAD_H + r * ROW_H;
-        const base = yTop + 14.5;
-        if (r < nData) {
-            const row = d.rows[r];
-            doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.body); _setInk(doc, INK);
-            doc.text(`${row.from}-${row.to}`, (COLS[0] + COLS[1]) / 2, base, { align: 'center' });
-            doc.setFont('helvetica', 'normal');
-            const cells = [row.distRemain, row.dist, row.zSecu, row.zRet, `${row.rm}/${row.cm}`, '', '', ''];
-            cells.forEach((v, i) => {
-                if (v !== '' && v != null) doc.text(String(v), (COLS[i + 1] + COLS[i + 2]) / 2, base, { align: 'center' });
-            });
-            // Tsv/Tav : « 21/19 » — le temps AVEC vent (Tav) est en gras.
-            if (row.tsv !== '' && row.tav !== '') {
-                const cx = (COLS[6] + COLS[7]) / 2;
-                const sep = `${row.tsv}/`;
-                doc.setFont('helvetica', 'normal');
-                const w1 = doc.getTextWidth(sep);
-                doc.setFont('helvetica', 'bold');
-                const w2 = doc.getTextWidth(String(row.tav));
-                const x0 = cx - (w1 + w2) / 2;
-                doc.setFont('helvetica', 'normal'); _setInk(doc, INK);
-                doc.text(sep, x0, base);
-                doc.setFont('helvetica', 'bold');
-                doc.text(String(row.tav), x0 + w1, base);
-            }
-        }
-        doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
-        doc.line(COLS[0], yTop + ROW_H, COLS[COLS.length - 1], yTop + ROW_H);
-    }
-    // Grille verticale + contour.
-    doc.setDrawColor(...LINE); doc.setLineWidth(0.4);
-    for (let i = 1; i < COLS.length - 1; i++) doc.line(COLS[i], T_TOP, COLS[i], T_TOP + T_HEAD_H + N_ROWS * ROW_H);
-    doc.setDrawColor(...INK); doc.setLineWidth(0.6);
-    doc.rect(COLS[0], T_TOP, COLS[COLS.length - 1] - COLS[0], T_HEAD_H + N_ROWS * ROW_H, 'S');
-
-    // ---- Cadres Check + légende : GRILLE COMMUNE de 3 colonnes de même
-    // largeur (gouttière 5 pt) — bandes titres et colonnes mnémoniques
-    // (PAGER / TRAMER / DRAGER) alignées verticalement. ----
-    const GUT = 5;
-    const COL_W = (386.3 - 2 * GUT) / 3;
-    const colX = (k) => 16.4 + k * (COL_W + GUT);
-    const CHECKS = fr
-        ? ['Check Croisière', 'Check Point Tournant', 'Check Vent Arrière']
-        : ['Cruise check', 'Turning point check', 'Downwind check'];
-    CHECKS.forEach((lab, k) => {
-        doc.setFillColor(...DARK);
-        doc.rect(colX(k), 486.7, COL_W, 12.1, 'F');
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.title); _setInk(doc, [255, 255, 255]);
-        doc.text(lab, colX(k) + COL_W / 2, 496.2, { align: 'center' });
-    });
-
-    // ---- Légende des mnémoniques (6 lettres par colonne, filets séparateurs
-    // placés au milieu des gouttières de la grille) ----
-    doc.setDrawColor(...LINE); doc.setLineWidth(0.5);
-    doc.rect(16.4, 503.8, 386.3, 77.1, 'S');
-    for (let k = 1; k <= 2; k++) doc.line(colX(k) - GUT / 2, 503.8, colX(k) - GUT / 2, 580.9);
-    const LEGEND = fr
-        ? [
-            [['P', 'Paramètres'], ['I', 'Instruments'], ['A', 'Altitude'], ['G', 'Gyro / Cap'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
-            [['T', 'Top / Estimé Point Suiv.'], ['R', 'Route / Cap'], ['A', 'Altitude'], ['M', 'Moteur / Météo'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
-            [['D', 'Dégivrage'], ['R', 'Richesse'], ['A', 'Altitude'], ['G', 'Gyro / Cap'], ['E', 'Essence'], ['R', 'Radio/Radio Nav']],
-        ]
-        : [
-            [['P', 'Parameters'], ['I', 'Instruments'], ['A', 'Altitude'], ['G', 'Gyro / Hdg'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
-            [['T', 'ETA next WPT'], ['R', 'Route / Hdg'], ['A', 'Altitude'], ['M', 'Engine / Wx'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
-            [['D', 'De-ice'], ['R', 'Mixture'], ['A', 'Altitude'], ['G', 'Gyro / Hdg'], ['E', 'Fuel'], ['R', 'Radio/Nav']],
-        ];
-    const LEG_X = [0, 1, 2].map(k => colX(k) + 4);
-    LEGEND.forEach((col, c) => {
-        col.forEach(([letter, meaning], r) => {
-            const y = 512.3 + r * 11.5;
-            doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.body); _setInk(doc, INK);
-            doc.text(letter, LEG_X[c], y);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`: ${meaning}`, LEG_X[c] + 8, y);
-        });
-    });
+    // ---- Tableau de nav + cadres Check / légende (trame partagée avec les
+    // pages « suite ») ----
+    _drawNavTable(doc, d.rows || [], fr, 256, N_ROWS);
+    _drawChecksBlock(doc, fr);
 
     _footer(doc, !(d.calc?.isFr === false || d.perf?.isFr === false));
+
+    // ---- Pages « VFR Flight Log (suite) » : les tronçons au-delà de la
+    // page 1 continuent sur la MÊME trame (retour pilote 06/09 : « le
+    // nombre de lignes nécessaire pour remplir la page, on garde le bas de
+    // page avec les checks croisière / point tournant / vent arrière »). ----
+    if ((d.rows || []).length > N_ROWS) _drawLogContinuation(doc, d);
 
     // ---- Page 2 : « Calcul de navigation » (bloc écran du planificateur) ----
     if (d.calc) {
@@ -553,16 +607,13 @@ function _drawCalcPage(doc, c) {
     }
 
     // ---- Tableau Détail des waypoints (multi-waypoints uniquement) ----
-    // > MAX_LEGS_PAGE tronçons : la page principale montre les premiers
-    // SANS total (mention « suite page suivante ») et une page de
-    // CONTINUATION reprend le même gabarit pour le reste (retour
-    // pilote 06/09 : au-delà de 10, les waypoints étaient tassés).
-    const MAX_LEGS_PAGE = 10;
+    // Capacité DYNAMIQUE : on remplit tout l'espace utile de la page
+    // (jusqu'à la note de bas de page) avant de créer une page de suite —
+    // retour pilote 06/09 : la coupure fixe à 10 laissait le bas de page
+    // vide alors que les tronçons suivants tenaient dedans.
     const allLegs = (c.isMultiLeg && Array.isArray(c.legs)) ? c.legs : [];
-    const hasMore = allLegs.length > MAX_LEGS_PAGE;
-    const legs = hasMore ? allLegs.slice(0, MAX_LEGS_PAGE) : allLegs;
     if (allLegs.length) {
-        y = section(`${fr ? 'Détail des waypoints' : 'Leg details'} (${allLegs.length}${hasMore ? ` - 1/${Math.ceil(allLegs.length / MAX_LEGS_PAGE)}` : ''})`, y);
+        y = section(`${fr ? 'Détail des waypoints' : 'Leg details'} (${allLegs.length})`, y);
         // Colonnes compactées à GAUCHE et textes alignés à gauche — même
         // règle que le tableau « Chargement » de la page Centrage : le blanc
         // résiduel va à droite, après la dernière colonne (Fréq).
@@ -582,6 +633,11 @@ function _drawCalcPage(doc, c) {
         // Hauteur de ligne adaptative : tout faire tenir au-dessus de la note
         // de bas de page (2 lignes + marge). Filets de séparation discrets.
         const FOOT_TOP = FRAME_BOT - 24;
+        // Capacité au rowH de confort 13.5, une ligne réservée au TOTAL (ou à
+        // la mention de suite) ; garde-fou 10 tronçons minimum par tassement.
+        const capacity = Math.max(10, Math.floor((FOOT_TOP - headBot) / 13.5) - 1);
+        const hasMore = allLegs.length > capacity;
+        const legs = hasMore ? allLegs.slice(0, capacity) : allLegs;
         let rowH = Math.min(13.5, Math.floor((FOOT_TOP - headBot) / (legs.length + 1)));
         if (rowH < 10) rowH = 10;
         const rowLine = (row, idx) => {
@@ -607,7 +663,7 @@ function _drawCalcPage(doc, c) {
             doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); _setInk(doc, MUTED);
             doc.text(fr ? `Suite des tronçons (${allLegs.length - legs.length}) page suivante` : `More legs (${allLegs.length - legs.length}) on next page`, L + 1.5, sBase);
             y = headBot + legs.length * rowH + 8;
-            c._legsContinuation = allLegs.slice(MAX_LEGS_PAGE);
+            c._legsContinuation = allLegs.slice(capacity);
         } else {
             const totBase = headBot + (legs.length + 1) * rowH - 3.5;
             doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
@@ -645,70 +701,87 @@ function _drawCalcPage(doc, c) {
 // Mêmes bandeau/cadre/cellules que la page 2 pour former un document cohérent.
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-// Page 2-bis — « Détail des waypoints (suite) » : même bandeau/cadre
-// que la page 2, tronçons restants puis ligne TOTAL. Insérée après la page
-// « Calcul de navigation » quand la route dépasse 10 tronçons.
+// Pages « Détail des waypoints (suite) » : même bandeau/cadre que la page
+// « Calcul de navigation », tronçons restants puis ligne TOTAL sur la
+// dernière. Comme la page principale, chaque page suite REMPLIT tout
+// l'espace utile avant d'en créer une autre (retour pilote 06/09).
 // ---------------------------------------------------------------------------
 function _drawLegsContinuation(doc, c) {
     const fr = c.isFr !== false;
     const L = 16.4, R = 402.7, MID = (L + R) / 2;
-
-    doc.addPage([PAGE.w, PAGE.h], 'portrait');
-    doc.setFont('helvetica', 'normal');
-
-    // Bandeau + cadre (identiques pages 1-2) + ligne mono from -> to.
-    doc.setFillColor(17, 24, 39);
-    doc.rect(16.4, 14.3, 386.3, 16.2, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.doc); _setInk(doc, [255, 255, 255]);
-    doc.text(fr ? 'Détail des waypoints (suite)' : 'Leg details (continued)', MID, 25.2, { align: 'center' });
-    doc.setDrawColor(...INK); doc.setLineWidth(0.8);
-    doc.rect(15, 29.9, 388.6, 551.9, 'S');
-    doc.setFont('courier', 'normal'); doc.setFontSize(8); _setInk(doc, MUTED);
-    const first = (c.legs && c.legs[0]) || {};
-    const last = (c.legs && c.legs[c.legs.length - 1]) || {};
-    doc.text(String(first.from || c.fromIcao || '') + '-' + String(last.to || c.toIcao || ''), L + 1.5, 45);
-
-    // Tableau : memes colonnes/en-tetes/filets que la page 2.
-    const legs = c._legsContinuation || [];
-    const COLR = [L + 95, L + 140, L + 182, L + 230, L + 272];
-    const FREQ_W = R - 5 - COLR[4];
-    const HEADS = fr ? ['Tronçon', 'Dist', 'Cap', 'ETE', 'Conso', 'Fréq']
-                     : ['Leg', 'Dist', 'Hdg', 'ETE', 'Fuel', 'Freq'];
-    let y = 60;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); _setInk(doc, MUTED);
-    doc.text(HEADS[0].toUpperCase(), L + 1.5, y + 8, { charSpace: 0.4 });
-    for (let i = 1; i < HEADS.length; i++) doc.text(HEADS[i].toUpperCase(), COLR[i - 1], y + 8, { charSpace: 0.4 });
-    const headBot = y + 11;
-    doc.setDrawColor(...LINE); doc.setLineWidth(0.5);
-    doc.line(L, headBot, R, headBot);
-
     const FOOT_TOP = 581.8 - 24;
-    let rowH = Math.min(13.5, Math.floor((FOOT_TOP - headBot) / (legs.length + 1)));
-    if (rowH < 10) rowH = 10;
-    legs.forEach((lg, i) => {
-        const base = headBot + i * rowH + rowH - 3.5;
-        doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, INK);
-        doc.text(String(lg.from) + '-' + String(lg.to), L + 1.5, base);
-        const vals = [lg.dist + ' NM', String(lg.hdg ?? '').padStart(3, '0') + '°', lg.eteLabel, lg.fuelL + ' L'];
-        doc.setFont('courier', 'normal');
-        vals.forEach((v, k) => doc.text(String(v ?? '-'), COLR[k], base));
-        if (lg.freq) { _setInk(doc, BLUE); doc.text(_trunc(doc, lg.freq, FREQ_W), COLR[4], base); }
-        if (i < legs.length - 1) {
-            doc.setDrawColor(...BANDL); doc.setLineWidth(0.3);
-            doc.line(L, headBot + (i + 1) * rowH, R, headBot + (i + 1) * rowH);
-        }
-    });
-    // Ligne TOTAL (identique page 2).
-    const totBase = headBot + legs.length * rowH + rowH - 3.5;
-    doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
-    doc.line(L, headBot + legs.length * rowH, R, headBot + legs.length * rowH);
-    doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, BLUE);
-    doc.text('TOTAL', L + 1.5, totBase);
-    const tots = [(c.distanceNm ?? '-') + ' NM', '-', c.timeLabel || '-', (c.fuel && c.fuel.tripL != null ? c.fuel.tripL + ' L' : '-')];
-    tots.forEach((v, i) => doc.text(String(v), COLR[i], totBase));
-    doc.text('-', COLR[4], totBase);
 
-    _footer(doc, fr);
+    let rest = c._legsContinuation || [];
+    while (rest.length) {
+        // Capacité de la page suite : tableau dès y=60, headBot=71, rowH de
+        // confort 13.5, une ligne pour le TOTAL ou la mention de suite.
+        const capacity = Math.max(10, Math.floor((FOOT_TOP - 71) / 13.5) - 1);
+        const legs = rest.length > capacity ? rest.slice(0, capacity) : rest;
+        const more = rest.length > capacity;
+        rest = more ? rest.slice(capacity) : [];
+
+        doc.addPage([PAGE.w, PAGE.h], 'portrait');
+        doc.setFont('helvetica', 'normal');
+
+        // Bandeau + cadre (identiques pages 1-2) + ligne mono from -> to.
+        doc.setFillColor(17, 24, 39);
+        doc.rect(16.4, 14.3, 386.3, 16.2, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(SZ.doc); _setInk(doc, [255, 255, 255]);
+        doc.text(fr ? 'Détail des waypoints (suite)' : 'Leg details (continued)', MID, 25.2, { align: 'center' });
+        doc.setDrawColor(...INK); doc.setLineWidth(0.8);
+        doc.rect(15, 29.9, 388.6, 551.9, 'S');
+        doc.setFont('courier', 'normal'); doc.setFontSize(8); _setInk(doc, MUTED);
+        const first = (c.legs && c.legs[0]) || {};
+        const last = (c.legs && c.legs[c.legs.length - 1]) || {};
+        doc.text(String(first.from || c.fromIcao || '') + '-' + String(last.to || c.toIcao || ''), L + 1.5, 45);
+
+        // Tableau : memes colonnes/en-tetes/filets que la page « Calcul ».
+        const COLR = [L + 95, L + 140, L + 182, L + 230, L + 272];
+        const FREQ_W = R - 5 - COLR[4];
+        const HEADS = fr ? ['Tronçon', 'Dist', 'Cap', 'ETE', 'Conso', 'Fréq']
+                         : ['Leg', 'Dist', 'Hdg', 'ETE', 'Fuel', 'Freq'];
+        let y = 60;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); _setInk(doc, MUTED);
+        doc.text(HEADS[0].toUpperCase(), L + 1.5, y + 8, { charSpace: 0.4 });
+        for (let i = 1; i < HEADS.length; i++) doc.text(HEADS[i].toUpperCase(), COLR[i - 1], y + 8, { charSpace: 0.4 });
+        const headBot = y + 11;
+        doc.setDrawColor(...LINE); doc.setLineWidth(0.5);
+        doc.line(L, headBot, R, headBot);
+
+        let rowH = Math.min(13.5, Math.floor((FOOT_TOP - headBot) / (legs.length + 1)));
+        if (rowH < 10) rowH = 10;
+        legs.forEach((lg, i) => {
+            const base = headBot + i * rowH + rowH - 3.5;
+            doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, INK);
+            doc.text(String(lg.from) + '-' + String(lg.to), L + 1.5, base);
+            const vals = [lg.dist + ' NM', String(lg.hdg ?? '').padStart(3, '0') + '°', lg.eteLabel, lg.fuelL + ' L'];
+            doc.setFont('courier', 'normal');
+            vals.forEach((v, k) => doc.text(String(v ?? '-'), COLR[k], base));
+            if (lg.freq) { _setInk(doc, BLUE); doc.text(_trunc(doc, lg.freq, FREQ_W), COLR[4], base); }
+            if (i < legs.length - 1) {
+                doc.setDrawColor(...BANDL); doc.setLineWidth(0.3);
+                doc.line(L, headBot + (i + 1) * rowH, R, headBot + (i + 1) * rowH);
+            }
+        });
+        if (more) {
+            // Encore une page après celle-ci : mention, pas de total.
+            const sBase = headBot + legs.length * rowH - 3.5;
+            doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); _setInk(doc, MUTED);
+            doc.text(fr ? `Suite des tronçons (${rest.length}) page suivante` : `More legs (${rest.length}) on next page`, L + 1.5, sBase);
+        } else {
+            // Ligne TOTAL (identique page « Calcul »).
+            const totBase = headBot + legs.length * rowH + rowH - 3.5;
+            doc.setDrawColor(...LINE); doc.setLineWidth(0.6);
+            doc.line(L, headBot + legs.length * rowH, R, headBot + legs.length * rowH);
+            doc.setFont('courier', 'bold'); doc.setFontSize(8); _setInk(doc, BLUE);
+            doc.text('TOTAL', L + 1.5, totBase);
+            const tots = [(c.distanceNm ?? '-') + ' NM', '-', c.timeLabel || '-', (c.fuel && c.fuel.tripL != null ? c.fuel.tripL + ' L' : '-')];
+            tots.forEach((v, i) => doc.text(String(v), COLR[i], totBase));
+            doc.text('-', COLR[4], totBase);
+        }
+
+        _footer(doc, fr);
+    }
 }
 
 function _drawPerfPage(doc, p) {
