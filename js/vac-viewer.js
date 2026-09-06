@@ -157,7 +157,7 @@ async function _showPage(n) {
     _ui.page = await _ui.pdf.getPage(_ui.pageNo);
     if (_ui.pageLbl) _ui.pageLbl.textContent = `${_ui.pageNo}/${_ui.numPages}`;
     if (_ui.prev) { _ui.prev.disabled = _ui.pageNo <= 1; _ui.next.disabled = _ui.pageNo >= _ui.numPages; }
-    await _zoomTo(null);   // ajustement largeur
+    await _zoomTo(null);   // ajustement hauteur : toute la carte visible
 }
 
 function _buildOverlay(code, numPages, data, isFr) {
@@ -187,7 +187,7 @@ function _buildOverlay(code, numPages, data, isFr) {
             <span data-vac="pagelbl" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted,#94A3B8);min-width:34px;text-align:center;">1/${numPages}</span>
             ${btn('next', isFr ? 'Page suivante' : 'Next page', '›', 'width:26px;')}
         </div>
-        <div data-vac="container" style="flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:14px;">
+        <div data-vac="container" style="flex:1;overflow:auto;display:flex;align-items:flex-start;padding:14px;">
             <canvas data-vac="canvas"></canvas>
         </div>`;
     document.body.appendChild(ov);
@@ -231,9 +231,12 @@ function _zoom(f) {
 async function _zoomTo(scale) {
     if (!_ui?.page) return;
     const dpr = window.devicePixelRatio || 1;
-    const avail = _ui.container.clientWidth - 28;
+    const availH = _ui.container.clientHeight - 28;   // padding 14 × 2
     const viewport1 = _ui.page.getViewport({ scale: 1 });
-    if (scale == null) scale = avail / viewport1.width;   // ajusté à la largeur
+    // Ajusté à la HAUTEUR (retour pilote 06/09) : toute la carte VAC est
+    // visible de haut en bas — le défilement horizontal montre les côtés.
+    const fitH = availH / viewport1.height;
+    if (scale == null) scale = fitH;
     scale = Math.min(8, Math.max(0.3, scale));
     _ui.scale = scale;
     const viewport = _ui.page.getViewport({ scale });
@@ -242,7 +245,12 @@ async function _zoomTo(scale) {
     canvas.height = Math.round(viewport.height * dpr);
     canvas.style.width = Math.round(viewport.width) + 'px';
     canvas.style.height = Math.round(viewport.height) + 'px';
-    _ui.pct.textContent = Math.round((scale / (avail / viewport1.width)) * 100) + '%';
+    // Carte plus large que la fenêtre (paysage ajusté en hauteur) : le
+    // centrage flex rendrait la gauche inaccessible au scroll — margin auto
+    // centre quand ça tient, aligne à gauche quand ça déborde.
+    canvas.style.display = 'block';
+    canvas.style.margin = '0 auto';
+    _ui.pct.textContent = Math.round((scale / fitH) * 100) + '%';
     // pdfjs interdit deux render() simultanés sur un même canvas : le
     // précédent est annulé, et le rendu est ATTENDU (les tests comme les
     // zooms rapides lisent le canvas avant la fin sinon).
