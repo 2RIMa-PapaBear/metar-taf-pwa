@@ -1,18 +1,16 @@
 /* ================================================================
- * FREQUENCIES UI — Fréquences radio + fiche du terrain
- * ================================================================
+ * FRÉQUENCES + INFO TERRAIN — deux onglets séparés (demande pilote
+ * 06/09) :
+ *   #frequencies-widget « Fréquences » : fréquences radio (avec
+ *     observations officielles eAIP et codes d'horaires) ;
+ *   #airfield-widget « Info terrain » : identité, pistes, HORAIRES DU
+ *     SERVICE et AVITAILLEMENT en sous-sections REPLIABLES, carte VAC
+ *     « Atterrissage à vue » en dernière ligne.
  *
- * Onglet « Fréquences & info terrain » du terrain courant :
- *   - identité : élévation, déclinaison (officielle SIA en France,
- *     modèle WMM ailleurs), usage VFR/IFR, statut, public/privé, pays ;
- *   - fréquences (corrections manuelles > eAIP/XML SIA > openAIP) ;
- *   - pistes en clair (officielles SIA en France, base embarquée
- *     17 000 terrains pour le reste du monde) ;
- *   - horaires du service ATS/AFIS + téléphone exploitant et
- *     avitaillement carburant (rubriques AD du XML SIA — France).
- *
- * Chaque section est omise silencieusement quand la donnée n'existe
- * pas (terrain sans fiche, hors France…).
+ * Sources : corrections manuelles > eAIP/XML SIA > openAIP (fréquences),
+ * base SIA (identité/pistes/horaires/avitaillement), base embarquée
+ * 17 000 terrains (monde), Atlas-VAC (cartes). Chaque section est omise
+ * silencieusement quand la donnée n'existe pas.
  * ================================================================ */
 
 import { state, escapeHtml } from './core.js';
@@ -25,27 +23,24 @@ import { hasVac, openVac } from './vac-viewer.js';
 import { getDeclinationForIcao } from './magvar.js';
 
 /**
- * Affiche/masque le widget fréquences pour le terrain courant.
- * @param {string|null} icao Code OACI (null = masquer).
+ * Affiche/masque les onglets du terrain courant.
+ * @param {string|null} icao Code OACI (null = tout masquer).
  */
 export async function showFrequenciesWidget(icao) {
-    const container = document.getElementById('frequencies-widget');
-    if (!container) return;
+    const freqContainer = document.getElementById('frequencies-widget');
+    const terrainContainer = document.getElementById('airfield-widget');
+    if (!freqContainer || !terrainContainer) return;
 
     if (!icao) {
-        container.style.display = 'none';
+        freqContainer.style.display = 'none';
+        terrainContainer.style.display = 'none';
         return;
     }
 
-    // Source des fréquences : corrections manuelles > eAIP officiel SIA
-    // (France métropole) > openAIP. Le premier affichage attend le chargement
-    // (120 Ko, puis cache IndexedDB) pour ne jamais montrer openAIP par erreur.
-    // Les pistes/terrains officiels France chargent en parallèle (cache IDB).
-    // La base embarquée (17 000 terrains) participe au rendu (pays/élévation/
-    // pistes hors France) : on l'attend, sinon le widget s'affiche complet
-    // pour la France mais AMPUTÉ hors France (base encore en cours de
-    // chargement, jamais re-rendue ensuite) — et apt n'est capturé QU'APRÈS
-    // cette attente (sinon null ou partiel au 1er rendu : course vue en QA).
+    // Les pistes/terrains officiels France et la base embarquée (17 000
+    // terrains, pays/élévation/pistes hors France) participent au rendu :
+    // on les attend, sinon l'onglet terrain s'afficherait amputé — et apt
+    // n'est capturé qu'APRÈS cette attente (course vue en QA EGHH).
     const [, aux] = await Promise.all([
         loadFreqSources(),
         loadSiaAux().catch(() => null),
@@ -54,26 +49,32 @@ export async function showFrequenciesWidget(icao) {
     const apt = getAirportByICAO(icao);
     const { source, freqs } = getAirportFreqs(icao, apt?.frequencies);
     const sia = aux ? getSiaAirfield(icao) : null;
-
-    // Lien VAC officiel (peut être null si le pays n'est pas reconnu).
     const vac = getVacLink(icao);
 
     const ident = identityRows(icao, apt, sia, state.lang === 'fr');
     const runways = runwayRows(icao, apt, sia);
-
     const avecCarte = await hasVac(icao).catch(() => false);
-    if (!freqs.length && !vac && !avecCarte && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
-        // Rien à raconter sur ce terrain → on masque.
-        container.style.display = 'none';
-        return;
+
+    // ---- Onglet 1 : FRÉQUENCES ----
+    if (freqs.length) {
+        const isFr = state.lang === 'fr';
+        const body = makeCollapsible(freqContainer, isFr ? 'Fréquences' : 'Frequencies', 'radio-tower');
+        renderFrequencies(body, freqs, source, isFr);
+        freqContainer.style.display = 'block';
+    } else {
+        freqContainer.style.display = 'none';
     }
 
-    const isFr = state.lang === 'fr';
-    // Prépare le panel repliable et rend dans le body.
-    const body = makeCollapsible(container, isFr ? 'Fréquences & info terrain' : 'Frequencies & airfield info', 'radio-tower');
-
-    render(body, { icao, freqs, source, vac, ident, runways, sia, isFr, avecCarte });
-    container.style.display = 'block';
+    // ---- Onglet 2 : INFO TERRAIN ----
+    const hasTerrain = ident.length || runways.length || sia?.horAts || sia?.tel || sia?.horAvt || avecCarte || !!vac;
+    if (hasTerrain) {
+        const isFr = state.lang === 'fr';
+        const body = makeCollapsible(terrainContainer, isFr ? 'Info terrain' : 'Airfield info', 'id-card');
+        renderTerrain(body, { icao, ident, runways, sia, vac, isFr, avecCarte });
+        terrainContainer.style.display = 'block';
+    } else {
+        terrainContainer.style.display = 'none';
+    }
 }
 
 /** Lignes d'identité « Libellé : valeur » (retour pilote 05/09 : chaque
@@ -155,14 +156,9 @@ function runwayRows(icao, apt, sia) {
     return rows;
 }
 
-/**
- * Génère le HTML du widget.
- */
-function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr, avecCarte }) {
-    // Sépare les fréquences principales des secondaires.
-    const primary = freqs.filter(f => f.primary);
-    const others = freqs.filter(f => !f.primary);
+// ---- Onglet 1 : FRÉQUENCES ---------------------------------------------------
 
+function renderFrequencies(container, freqs, source, isFr) {
     // Codes d'horaires des organismes (eAIP AD 2.18) — info-bulle du badge.
     const HOR_CODES = {
         H24: isFr ? 'Service permanent 24 h/24' : 'Continuous service',
@@ -172,10 +168,8 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         HN: isFr ? 'Du coucher au lever du soleil' : 'Sunset to sunrise',
     };
 
-    // Construit les lignes de fréquences. L'observation officielle eAIP
-    // (secteurs, fréquence supplétive, conditions…) différencie les
-    // fréquences multiples d'un même organisme — 2ᵉ ligne, texte complet
-    // au survol ( publié bilingue FR/EN par le SIA, FR en tête).
+    // Ligne de fréquence : observation officielle eAIP (secteurs,
+    // fréquence supplétive…) en 2ᵉ ligne, texte complet au survol.
     const freqRow = (f) => {
         const isPrimary = f.primary;
         const freqStr = f.freq.toFixed(3);
@@ -193,27 +187,72 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         </div>`;
     };
 
-    // Titre de sous-section (pistes / horaires / terrain / avitaillement).
-    const sectionTitle = (icon, label) => `<div style="display:flex; align-items:center; gap:6px; margin:14px 0 6px; color:var(--text-muted); font-size:10.5px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;">
-        <i data-lucide="${icon}" style="width:12px;height:12px;"></i><span>${label}</span></div>`;
+    const primary = freqs.filter(f => f.primary);
+    const others = freqs.filter(f => !f.primary);
 
     let html = `<div class="dash-title" style="margin-bottom:10px;">
         <i data-lucide="radio-tower" class="icon-sm"></i>
-        <span>${isFr ? 'Fréquences & info terrain' : 'Frequencies & airfield info'}</span>
+        <span>${isFr ? 'Fréquences' : 'Frequencies'}</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:5px;">`;
+    primary.forEach(f => { html += freqRow(f); });
+    others.forEach(f => { html += freqRow(f); });
+    html += `</div>`;
+
+    html += `<div style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
+        <i data-lucide="info" style="width:11px;height:11px;vertical-align:middle;"></i>
+        ${freqSourceNote(source, isFr)}
     </div>`;
 
-    // ---- 1. FRÉQUENCES (le réflexe prévol radio, en tête) ----
-    if (primary.length > 0 || others.length > 0) {
-        html += `<div style="display:flex; flex-direction:column; gap:5px;">`;
-        primary.forEach(f => { html += freqRow(f); });
-        others.forEach(f => { html += freqRow(f); });
-        html += `</div>`;
+    container.innerHTML = html;
+    if (window.lucide) window.lucide.createIcons({ root: container });
+}
+
+/** Mention de source des fréquences (pied de l'onglet). */
+function freqSourceNote(source, isFr) {
+    const airac = getSiaAirac();
+    if (source === 'overrides') return isFr ? 'Fréquences : corrections manuelles' : 'Frequencies: manual corrections';
+    if (source === 'sia') {
+        return isFr
+            ? `Fréquences : SIA · eAIP France${airac ? ' (AIRAC ' + airac + ')' : ''}`
+            : `Frequencies: SIA French AIP${airac ? ' (AIRAC ' + airac + ')' : ''}`;
+    }
+    return isFr ? 'Fréquences : OpenAIP' : 'Frequencies: OpenAIP';
+}
+
+// ---- Onglet 2 : INFO TERRAIN ---------------------------------------------------
+
+/** Sous-section repliable (horaires, avitaillement) — repliée par défaut. */
+function subsection(icon, label, innerHtml, isFr) {
+    return `<div class="card-ss">
+        <button type="button" class="ss-head" title="${isFr ? 'Afficher/masquer' : 'Toggle'}">
+            <i data-lucide="${icon}" style="width:12px;height:12px;"></i>
+            <span style="flex:1;text-align:left;">${escapeHtml(label)}</span>
+            <i data-lucide="chevron-down" class="ss-chev" style="width:13px;height:13px;transition:transform .15s;"></i>
+        </button>
+        <div class="ss-body">${innerHtml}</div>
+    </div>`;
+}
+
+function renderTerrain(container, { icao, ident, runways, sia, vac, isFr, avecCarte }) {
+    let html = `<div class="dash-title" style="margin-bottom:10px;">
+        <i data-lucide="id-card" class="icon-sm"></i>
+        <span>${isFr ? 'Info terrain' : 'Airfield info'}</span>
+    </div>`;
+
+    // Identité « Libellé : valeur », à la suite des deux-points (retour pilote).
+    if (ident.length) {
+        html += `<div style="display:flex; flex-direction:column; gap:2px;">` + ident.map(r =>
+            `<div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 7px; padding:3px 0; font-size:12px;">
+                <span style="color:var(--text-muted); white-space:nowrap;">${escapeHtml(r.l)} :</span>
+                <span style="color:var(--text-color); font-weight:500;${r.mono ? " font-family:'DM Mono',monospace; font-size:13px;" : ''}">${escapeHtml(r.v)}</span>
+            </div>`
+        ).join('') + `</div>`;
     }
 
-    // ---- 2. PISTES en clair (seuils officiels affichés, pas cachés) ----
+    // Pistes en clair (seuils officiels affichés).
     if (runways.length) {
-        html += sectionTitle('move-horizontal', isFr ? 'Pistes' : 'Runways');
-        html += `<div style="display:flex; flex-direction:column; gap:4px;">`;
+        html += `<div style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">`;
         for (const r of runways) {
             const dims = [r.lenM != null ? `${r.lenM}` : null, r.widM != null ? `${r.widM}` : null].filter(Boolean).join(' × ');
             html += `<div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 10px; padding:5px 10px; background:rgba(255,255,255,0.03); border-radius:6px;">
@@ -229,43 +268,28 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         html += `<div style="font-size:10.5px; color:var(--text-muted); margin-top:3px;">${isFr ? '★ piste principale · caps et dimensions officiels SIA' : '★ main runway · official SIA data'}</div>`;
     }
 
-    // ---- 3. HORAIRES du service ATS/AFIS + exploitant (France) ----
+    // HORAIRES DU SERVICE + exploitant : sous-section REPLIABLE.
     if (sia?.horAts || sia?.tel) {
-        html += sectionTitle('clock', isFr ? 'Horaires du service' : 'Service hours');
-        if (sia?.horAtsCode) html += `<span style="display:inline-block; font-size:10px; background:rgba(56,189,248,0.15); color:#38BDF8; padding:2px 7px; border-radius:3px; font-weight:700; font-family:'DM Mono',monospace;">${escapeHtml(sia.horAtsCode)}</span>`;
-        if (sia?.horAts) html += `<div style="margin-top:5px; padding:7px 11px; border-left:3px solid rgba(148,163,184,0.3); border-radius:6px; font-size:12px; color:var(--text-muted); line-height:1.55;">${sia.horAts.map(l => escapeHtml(l)).join('<br>')}</div>`;
-        if (sia?.tel) html += `<a href="tel:${escapeHtml(sia.tel.replace(/\s/g, ''))}" style="display:flex; align-items:center; gap:7px; margin-top:6px; color:var(--primary); font-size:12.5px; font-weight:600; text-decoration:none;">
+        let inner = '';
+        if (sia?.horAtsCode) inner += `<span style="display:inline-block; font-size:10px; background:rgba(56,189,248,0.15); color:#38BDF8; padding:2px 7px; border-radius:3px; font-weight:700; font-family:'DM Mono',monospace;">${escapeHtml(sia.horAtsCode)}</span>`;
+        if (sia?.horAts) inner += `<div style="${sia.horAtsCode ? 'margin-top:5px;' : ''}padding:7px 11px; border-left:3px solid rgba(148,163,184,0.3); border-radius:6px; font-size:12px; color:var(--text-muted); line-height:1.55;">${sia.horAts.map(l => escapeHtml(l)).join('<br>')}</div>`;
+        if (sia?.tel) inner += `<a href="tel:${escapeHtml(sia.tel.replace(/\s/g, ''))}" style="display:flex; align-items:center; gap:7px; margin-top:6px; color:var(--primary); font-size:12.5px; font-weight:600; text-decoration:none;">
             <i data-lucide="phone" style="width:13px;height:13px;"></i>
             <span style="font-family:'DM Mono',monospace; font-size:13.5px;">${escapeHtml(sia.tel)}</span>
             <span style="color:var(--text-muted); font-weight:400; font-size:11px;">${isFr ? '· exploitant' : '· operator'}</span></a>`;
+        html += subsection('clock', isFr ? 'Horaires du service' : 'Service hours', inner, isFr);
     }
 
-    // ---- 4. Le reste : identité du terrain puis avitaillement ----
-    if (ident.length) {
-        html += sectionTitle('id-card', isFr ? 'Terrain' : 'Airfield');
-        html += `<div style="display:flex; flex-direction:column; gap:2px;">` + ident.map(r =>
-            `<div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 7px; padding:3px 0; font-size:12px;">
-                <span style="color:var(--text-muted); white-space:nowrap;">${escapeHtml(r.l)} :</span>
-                <span style="color:var(--text-color); font-weight:500;${r.mono ? " font-family:'DM Mono',monospace; font-size:13px;" : ''}">${escapeHtml(r.v)}</span>
-            </div>`
-        ).join('') + `</div>`;
-    }
-
+    // AVITAILLEMENT : sous-section REPLIABLE.
     if (sia?.horAvt) {
-        html += sectionTitle('fuel', isFr ? 'Avitaillement' : 'Fuel');
-        html += `<div style="padding:7px 11px; border-left:3px solid rgba(148,163,184,0.3); border-radius:6px; font-size:12px; color:var(--text-muted); line-height:1.55;">${sia.horAvt.map(l => escapeHtml(l)).join('<br>')}</div>`;
+        const inner = `<div style="padding:7px 11px; border-left:3px solid rgba(148,163,184,0.3); border-radius:6px; font-size:12px; color:var(--text-muted); line-height:1.55;">${sia.horAvt.map(l => escapeHtml(l)).join('<br>')}</div>`;
+        html += subsection('fuel', isFr ? 'Avitaillement' : 'Fuel', inner, isFr);
     }
 
-    // Mention de source (avant le lien : celui-ci reste la DERNIÈRE ligne).
-    html += `<div style="font-size:10.5px; color:var(--text-muted); margin-top:10px;">
-        <i data-lucide="info" style="width:11px;height:11px;vertical-align:middle;"></i>
-        ${sourceNote(source, !!sia, isFr)}
-    </div>`;
-
-    // ---- DERNIÈRE LIGNE : carte VAC « Atterrissage à vue » (Atlas-VAC) ----
+    // DERNIÈRE LIGNE : carte VAC « Atterrissage à vue » (Atlas-VAC) ou portail.
     if (avecCarte) {
         html += `<button data-vac-open="${escapeHtml(icao)}"
-            style="display:flex; align-items:center; gap:8px; margin-top:6px; width:100%; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; color:var(--primary); font-size:12.5px; font-weight:600; cursor:pointer; transition:background 0.15s;"
+            style="display:flex; align-items:center; gap:8px; margin-top:10px; width:100%; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; color:var(--primary); font-size:12.5px; font-weight:600; cursor:pointer; transition:background 0.15s;"
             onmouseover="this.style.background='rgba(56,189,248,0.15)'"
             onmouseout="this.style.background='rgba(56,189,248,0.08)'">
             <i data-lucide="map" style="width:14px;height:14px;"></i>
@@ -274,7 +298,7 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         </button>`;
     } else if (vac) {
         html += `<a href="${escapeHtml(vac.url)}" target="_blank" rel="noopener noreferrer"
-            style="display:flex; align-items:center; gap:8px; margin-top:6px; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; text-decoration:none; color:var(--primary); font-size:12.5px; font-weight:600; transition:background 0.15s;"
+            style="display:flex; align-items:center; gap:8px; margin-top:10px; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; text-decoration:none; color:var(--primary); font-size:12.5px; font-weight:600; transition:background 0.15s;"
             onmouseover="this.style.background='rgba(56,189,248,0.15)'"
             onmouseout="this.style.background='rgba(56,189,248,0.08)'">
             <i data-lucide="map" style="width:14px;height:14px;"></i>
@@ -284,8 +308,19 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         </a>`;
     }
 
+    // Note de source des infos terrain.
+    html += `<div style="font-size:10.5px; color:var(--text-muted); margin-top:8px;">
+        <i data-lucide="info" style="width:11px;height:11px;vertical-align:middle;"></i>
+        ${terrainSourceNote(!!sia, isFr)}
+    </div>`;
+
     container.innerHTML = html;
     if (window.lucide) window.lucide.createIcons({ root: container });
+
+    // Sous-sections repliables (horaires, avitaillement).
+    container.querySelectorAll('.ss-head').forEach(h => {
+        h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+    });
 
     container.querySelector('[data-vac-open]')?.addEventListener('click', function () {
         this.disabled = true;
@@ -293,19 +328,11 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
     });
 }
 
-/** Mention de source du pied de page (fréquences + infos terrain).
- * Les deux cycles peuvent différer : fréquences = eAIP, infos terrain =
- * export XML (rubriques AD) — chacun cite SON AIRAC. */
-function sourceNote(source, hasSia, isFr) {
-    const airac = getSiaAirac();
+/** Mention de source des infos terrain. Les cycles peuvent différer :
+ * XML (rubriques AD) et eAIP — chacun cite SON AIRAC. */
+function terrainSourceNote(hasSia, isFr) {
     const auxAirac = getSiaAuxAirac();
-    const freqTxt = source === 'sia'
-        ? (isFr ? `Fréquences : SIA · eAIP France${airac ? ' (AIRAC ' + airac + ')' : ''}` : `Frequencies: SIA French AIP${airac ? ' (AIRAC ' + airac + ')' : ''}`)
-        : source === 'overrides'
-            ? (isFr ? 'Fréquences : corrections manuelles' : 'Frequencies: manual corrections')
-            : (isFr ? 'Fréquences : OpenAIP' : 'Frequencies: OpenAIP');
-    const infoTxt = hasSia
-        ? (isFr ? ` · infos terrain : SIA${auxAirac ? ' (AIRAC ' + auxAirac + ')' : ''}` : ` · field info: SIA${auxAirac ? ' (AIRAC ' + auxAirac + ')' : ''}`)
-        : (isFr ? ' · infos terrain : base embarquée' : ' · field info: embedded database');
-    return freqTxt + infoTxt;
+    return hasSia
+        ? (isFr ? `infos terrain : SIA${auxAirac ? ' (AIRAC ' + auxAirac + ')' : ''}` : `field info: SIA${auxAirac ? ' (AIRAC ' + auxAirac + ')' : ''}`)
+        : (isFr ? 'infos terrain : base embarquée' : 'field info: embedded database');
 }

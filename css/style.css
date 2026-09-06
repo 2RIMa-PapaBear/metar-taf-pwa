@@ -316,6 +316,16 @@ canvas { background-color: transparent; display: block; transition: opacity 0.3s
 .fav-load-btn:hover { color: #7DD3FC; }
 .fav-remove-btn { background: transparent; color: var(--text-dim); border: none; padding: 6px 8px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .fav-remove-btn:hover { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+/* Sous-sections repliables d'un onglet (Horaires du service, Avitaillement)
+ * — repliées par défaut. PIÈGE : jamais display:flex sur .ss-body, il
+ * écraserait le display:none du repli par spécificité. */
+.card-ss { margin-top: 8px; }
+.ss-head { display: flex; align-items: center; gap: 7px; width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 7px 10px; cursor: pointer; color: var(--text-color); font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
+.ss-head:hover { background: var(--input-bg); }
+.card-ss .ss-body { display: none; }
+.card-ss.open .ss-body { display: block; padding-top: 6px; }
+.card-ss.open .ss-chev { transform: rotate(180deg); }
+
 /* Classement des favoris à la souris : poignée + repère d'insertion */
 .fav-drag-handle { background: transparent; color: var(--text-dim); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: var(--radius-sm); transition: color 0.2s; }
 .fav-drag-handle:hover { color: var(--text-muted); }

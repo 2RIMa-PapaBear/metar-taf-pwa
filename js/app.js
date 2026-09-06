@@ -33,6 +33,7 @@ import { initWatchdog, openWatchdogPanel, getWatchdogSettings } from './watchdog
 import { fetchAirportByIcao } from './openaip.js';
 import { initPlanIo } from './flight-plan-io.js';
 import { loadFreqSources, getSiaAirac } from './freq-sia.js';
+import { getSiaAuxAirac } from './sia-data.js';
 import { config, applyLocalOverride } from './config.js';
 import { loadSiaAux } from './sia-data.js';
 
@@ -632,12 +633,16 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     sanitizeStorage(); await initAirportsDB();
-    // Paternité de l'Information SIA réutilisée (pied de page) : cycle AIRAC
-    // en vigueur, lu dans le fichier régénéré à chaque cycle — jamais saisi à la main.
-    loadFreqSources().then(() => {
-        const airac = getSiaAirac();
+    // Paternité de l'Information SIA réutilisée (pied de page), au format
+    // recommandé par la licence de réutilisation du SIA : nom de la source,
+    // URL de téléchargement et DATE DE DERNIÈRE MISE À JOUR de
+    // l'Information — ici le cycle AIRAC le plus récent parmi les bases
+    // chargées (eAIP fréquences, XML rubriques AD) — jamais saisi à la main.
+    Promise.all([loadFreqSources().catch(() => null), loadSiaAux().catch(() => null)]).then(() => {
+        const dates = [getSiaAirac(), getSiaAuxAirac()].filter(Boolean).sort();
+        const airac = dates[dates.length - 1];
         const el = document.getElementById('sia-airac');
-        if (el) el.textContent = airac ? ` · cycle AIRAC ${airac}` : '';
+        if (el && airac) el.textContent = `, mise à jour du ${airac.split('-').reverse().join('/')}`;
     }).catch(() => {});
 
     // Version servie (bump ?v= posé par le workflow à chaque déploiement) :
