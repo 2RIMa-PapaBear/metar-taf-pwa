@@ -21,8 +21,7 @@ import { getVacLink } from './atc-info.js';
 import { makeCollapsible } from './collapsible.js';
 import { loadFreqSources, getAirportFreqs, getSiaAirac } from './freq-sia.js';
 import { loadSiaAux, getSiaAirfield, getSiaRunways, getSiaAuxAirac } from './sia-data.js';
-import { hasSiaEaip } from './freq-sia.js';
-import { openVac } from './vac-viewer.js';
+import { hasVac, openVac } from './vac-viewer.js';
 import { getDeclinationForIcao } from './magvar.js';
 
 /**
@@ -62,7 +61,8 @@ export async function showFrequenciesWidget(icao) {
     const ident = identityRows(icao, apt, sia, state.lang === 'fr');
     const runways = runwayRows(icao, apt, sia);
 
-    if (!freqs.length && !vac && !hasSiaEaip(icao) && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
+    const avecCarte = await hasVac(icao).catch(() => false);
+    if (!freqs.length && !vac && !avecCarte && !ident.length && !runways.length && !sia?.horAts && !sia?.horAvt) {
         // Rien à raconter sur ce terrain → on masque.
         container.style.display = 'none';
         return;
@@ -72,7 +72,7 @@ export async function showFrequenciesWidget(icao) {
     // Prépare le panel repliable et rend dans le body.
     const body = makeCollapsible(container, isFr ? 'Fréquences & info terrain' : 'Frequencies & airfield info', 'radio-tower');
 
-    render(body, { icao, freqs, source, vac, ident, runways, sia, isFr });
+    render(body, { icao, freqs, source, vac, ident, runways, sia, isFr, avecCarte });
     container.style.display = 'block';
 }
 
@@ -158,7 +158,7 @@ function runwayRows(icao, apt, sia) {
 /**
  * Génère le HTML du widget.
  */
-function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr }) {
+function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr, avecCarte }) {
     // Sépare les fréquences principales des secondaires.
     const primary = freqs.filter(f => f.primary);
     const others = freqs.filter(f => !f.primary);
@@ -262,15 +262,14 @@ function render(container, { icao, freqs, source, vac, ident, runways, sia, isFr
         ${sourceNote(source, !!sia, isFr)}
     </div>`;
 
-    // ---- DERNIÈRE LIGNE : carte VAC (visionneuse hors ligne) ou portail ----
-    const avecCarte = hasSiaEaip(icao);
+    // ---- DERNIÈRE LIGNE : carte VAC « Atterrissage à vue » (Atlas-VAC) ----
     if (avecCarte) {
         html += `<button data-vac-open="${escapeHtml(icao)}"
             style="display:flex; align-items:center; gap:8px; margin-top:6px; width:100%; padding:9px 12px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; color:var(--primary); font-size:12.5px; font-weight:600; cursor:pointer; transition:background 0.15s;"
             onmouseover="this.style.background='rgba(56,189,248,0.15)'"
             onmouseout="this.style.background='rgba(56,189,248,0.08)'">
             <i data-lucide="map" style="width:14px;height:14px;"></i>
-            <span>${isFr ? 'Carte VAC officielle' : 'Official VAC chart'}</span>
+            <span>${isFr ? 'Carte VAC · Atterrissage à vue' : 'VAC · Visual approach'}</span>
             <span style="margin-left:auto; font-size:10px; color:var(--text-muted); font-weight:500;">${isFr ? 'lisible hors ligne' : 'works offline'}</span>
         </button>`;
     } else if (vac) {
